@@ -1,49 +1,80 @@
 ﻿@page "/weather"
 @attribute [StreamRendering]
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Authentication
+@using LongDistanceService.Shared.Services.Identity
+@using Microsoft.AspNetCore.Identity
+@using IAuthenticationService = LongDistanceService.Shared.Services.Identity.IAuthenticationService
+
 
 <PageTitle>Weather</PageTitle>
 
-<h1>Weather</h1>
 
-<p>This component demonstrates showing data.</p>
+<AuthorizeView >
+    <Authorized Context="auth">
+        <h1>Weather для шоколадного @auth.User.Identity?.Name</h1>
+        <p>This component demonstrates showing data.</p>
 
-@if (forecasts == null)
-{
-    <p>
-        <em>Loading...</em>
-    </p>
-}
-else
-{
-    <table class="table">
-        <thead>
-        <tr>
-            <th>Date</th>
-            <th>Temp. (C)</th>
-            <th>Temp. (F)</th>
-            <th>Summary</th>
-        </tr>
-        </thead>
-        <tbody>
-        @foreach (var forecast in forecasts)
+        @if (forecasts == null)
         {
-            <tr>
-                <td>@forecast.Date.ToShortDateString()</td>
-                <td>@forecast.TemperatureC</td>
-                <td>@forecast.TemperatureF</td>
-                <td>@forecast.Summary</td>
-            </tr>
+            <p>
+                <em>Loading...</em>
+            </p>
         }
-        </tbody>
-    </table>
-}
+        else
+        {
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Temp. (C)</th>
+                    <th>Temp. (F)</th>
+                    <th>Summary</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var forecast in forecasts)
+                {
+                    <tr>
+                        <td>@forecast.Date.ToShortDateString()</td>
+                        <td>@forecast.TemperatureC</td>
+                        <td>@forecast.TemperatureF</td>
+                        <td>@forecast.Summary</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        }
+
+        <form method="post" @onsubmit="LogOut" Context="lol" @formname="LogOutForm">
+            <AntiforgeryToken />
+            <button type="submit" class="w-100 btn btn-lg btn-primary">LOG OUT</button>
+        </form>
+    </Authorized>
+</AuthorizeView>
 
 @code {
+    [Inject] public NavigationManager NavigationManager { get; set; }
+    [Inject] public IAuthenticationService AuthenticationService { get; set; }
+    [CascadingParameter] private HttpContext HttpContext { get; set; } = default!;
+    [CascadingParameter] protected Task<AuthenticationState> AuthentificationState { get; set; }
+    [SupplyParameterFromForm] public EmptyModel Empty { get; set; } = new();
+
+    public class EmptyModel
+    {
+    }
+
     private WeatherForecast[]? forecasts;
 
     protected override async Task OnInitializedAsync()
     {
         // Simulate asynchronous loading to demonstrate streaming rendering
+        var user = (await AuthentificationState).User;
+        if (!user.Identity.IsAuthenticated)
+        {
+            NavigationManager.NavigateTo($"identity/login?returnUrl={Uri.EscapeDataString(NavigationManager.Uri)}");
+        }
+
         await Task.Delay(500);
 
         var startDate = DateOnly.FromDateTime(DateTime.Now);
@@ -54,6 +85,12 @@ else
             TemperatureC = Random.Shared.Next(-20, 55),
             Summary = summaries[Random.Shared.Next(summaries.Length)]
         }).ToArray();
+    }
+
+    public async Task LogOut()
+    {
+        await AuthenticationService.LogOut(null);
+        NavigationManager.NavigateTo($"identity/login?returnUrl={NavigationManager.Uri}");
     }
 
     private class WeatherForecast

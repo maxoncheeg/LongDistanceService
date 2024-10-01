@@ -1,10 +1,36 @@
+using LongDistanceService.Shared.DependencyInjection.Data;
+using LongDistanceService.Shared.DependencyInjection.Identity;
 using LongDistanceService.Web.Components;
+using LongDistanceService.Web.Services.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+#region cookie&identity
+
+var identitySection = builder.Configuration.GetSection("IdentityScheme");
+var identitySchemeConstants = new IdentitySchemeConstants(identitySection["Application"] ?? string.Empty,
+    identitySection["External"] ?? string.Empty);
+
+builder.Services.AddSingleton<IIdentitySchemeConstants>(identitySchemeConstants);
+
+builder.Services.AddAuthentication(options =>
+    {
+        options.DefaultScheme = identitySchemeConstants.ApplicationScheme;
+        options.DefaultSignInScheme = identitySchemeConstants.ExternalScheme;
+    })
+    .AddCookie();
+
+#endregion
+
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
+                       throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+
+builder.Services.AddPostgresDatabase(connectionString);
+builder.Services.AddApplicationIdentity().AddCascadingAuthenticationState();
 
 var app = builder.Build();
 
