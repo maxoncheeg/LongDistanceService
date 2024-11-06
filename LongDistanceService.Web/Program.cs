@@ -2,6 +2,7 @@ using LongDistanceService.Shared.DependencyInjection.Data;
 using LongDistanceService.Shared.DependencyInjection.Identity;
 using LongDistanceService.Web.Components;
 using LongDistanceService.Web.Services.Identity;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,7 +20,7 @@ builder.Services.AddSingleton<IIdentitySchemeConstants>(identitySchemeConstants)
 
 builder.Services.AddAuthentication(options =>
     {
-        options.DefaultScheme = identitySchemeConstants.ApplicationScheme;
+        options.DefaultScheme = IdentityConstants.ApplicationScheme;
         options.DefaultSignInScheme = identitySchemeConstants.ExternalScheme;
     })
     .AddCookie();

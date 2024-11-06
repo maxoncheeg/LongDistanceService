@@ -1,0 +1,115 @@
+﻿.media {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+    z-index: 0;
+
+    -webkit-user-drag: none;
+    user-select: none;
+}
+
+.intro {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+    opacity: 0.75;
+    background-color: black;
+    z-index: 1;
+}
+
+.shell {
+    height: 100vh;
+}
+
+.login {
+    margin: auto;
+    z-index: 3;
+    position: relative;
+    display: grid;
+    grid-template-rows: 15vh 75vh 10vh;
+}
+
+.loginTitle{
+    align-content: center;
+    text-align: center;
+    color: aliceblue;
+    grid-row: 1;
+}
+
+.loginCenter{
+    grid-row: 2;
+    display: grid;
+    grid-template-rows: 10% 75% 15%;
+    padding: 15px 5px;
+    
+    background-color: rgba(235,235,255, 0.05);
+    box-shadow: 0px 0px 15px 5px black;
+    
+}
+
+.loginText{
+    font-family: "Cascadia Mono Light", sans-serif;
+}
+
+.loginCenterLogo{
+    grid-row: 1;
+    text-align: center;
+}
+
+.loginCenterLogo img{
+    height: 100%;
+    margin: auto;
+    object-fit: cover;
+}
+
+.loginCenterForm{
+    grid-row: 2;
+    text-align: center;
+    overflow: hidden;
+    
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
+
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.loginCenterSocial{
+    grid-row: 3;
+    align-content: center;
+    text-align: center;
+    color: aliceblue;
+}
+
+.loginFooter{
+    grid-row: 3;
+    align-content: center;
+    text-align: center;
+    color: aliceblue;
+    opacity: 0.3;
+}
+
+
+
+@media (width > 800px) {
+    .login {
+        margin: auto;
+        width: 30%;
+    }
+}
+
+@media (width <= 800px) {
+    .login {
+        margin: auto;
+        width: 95%;
+    }
+}

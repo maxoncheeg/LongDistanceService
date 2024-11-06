@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 namespace LongDistanceService.Data.Contexts;
 
 public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-    : IdentityDbContext(options)
+    : IdentityDbContext(options), IApplicationDbContext
 {
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
