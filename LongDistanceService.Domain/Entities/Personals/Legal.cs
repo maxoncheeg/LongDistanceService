@@ -16,7 +16,7 @@ public class Legal : AbstractPersonalEntity
     public string CompanyName { get; set; }
     public string Phone { get; set; }
     public string TIN { get; set; }
-    public string Account { get; set; }
+    public string BankAccount { get; set; }
     public int HouseNumber { get; set; }
     public int OfficeNumber { get; set; }
 }

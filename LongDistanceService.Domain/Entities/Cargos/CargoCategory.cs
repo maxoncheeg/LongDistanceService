@@ -7,5 +7,5 @@ public class CargoCategory : AbstractNameEntity
 {
     public int UnitId { get; set; }
     public Unit Unit { get; set; }
-    public IList<Vehicle> Vehicles { get; set; }
+    public virtual IList<Vehicle> Vehicles { get; set; }
 }

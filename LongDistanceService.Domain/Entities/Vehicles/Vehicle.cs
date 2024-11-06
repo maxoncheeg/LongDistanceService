@@ -10,8 +10,8 @@ public class Vehicle : IEntity
     public VehicleModel Model { get; set; }
     public int Year { get; set; }
     public int OverhaulYear { get; set; }
-    public string Number { get; set; }
+    public string LicensePlate { get; set; }
     public int Kilometerage { get; set; }
     public string ImagePath { get; set; }
-    public IList<CargoCategory> CargoCategories { get; set; }
+    public virtual IList<CargoCategory> CargoCategories { get; set; }
 }
