@@ -3,10 +3,9 @@ using LongDistanceService.Domain.Entities.Enums;
 
 namespace LongDistanceService.Data.IdentityAdditionalEntities;
 
-public class UserClient : IEntity
+public class UserClient
 {
-    public int Id { get; set; }
-    public string IdentityUserId { get; set; }
+    public string IdentityUserId { get; set; } = String.Empty;
     public int ClientId { get; set; }
     public ClientTypes ClientType { get; set; }
 }

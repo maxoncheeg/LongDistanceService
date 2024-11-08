@@ -1,6 +1,8 @@
-﻿using LongDistanceService.Domain.Entities;
+﻿using System.Reflection;
+using LongDistanceService.Domain.Entities;
 using LongDistanceService.Domain.Entities.Addresses;
-using LongDistanceService.Domain.Entities.Cargos;
+using LongDistanceService.Domain.Entities.Cargoes;
+using LongDistanceService.Domain.Entities.Drivers;
 using LongDistanceService.Domain.Entities.Personals;
 using LongDistanceService.Domain.Entities.Vehicles;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -11,25 +13,30 @@ namespace LongDistanceService.Data.Contexts;
 public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
     : IdentityDbContext(options), IApplicationDbContext
 {
-    public DbSet<VehicleBrand> VehicleBrands { get; set; } 
-    public DbSet<VehicleModel> VehicleModels { get; set; } 
-    public DbSet<Vehicle> Vehicles { get; set; } 
+    public IQueryable<City> Cities => Set<City>();
+    public IQueryable<Street> Streets => Set<Street>();
+    public IQueryable<Bank> Banks => Set<Bank>();
+    public IQueryable<VehicleBrand> VehicleBrands => Set<VehicleBrand>();
+    public IQueryable<VehicleModel> VehicleModels => Set<VehicleModel>();
+    public IQueryable<Vehicle> Vehicles => Set<Vehicle>();
+    public IQueryable<Unit> Units => Set<Unit>();
+    public IQueryable<CargoCategory> CargoCategories => Set<CargoCategory>();
+    public IQueryable<Cargo> Cargoes => Set<Cargo>();
+    public IQueryable<DriverCategory> DriverCategories => Set<DriverCategory>();
+    public IQueryable<Driver> Drivers => Set<Driver>();
+    public IQueryable<Legal> Legals => Set<Legal>();
+    public IQueryable<Individual> Individuals => Set<Individual>();
+    public IQueryable<VehicleCargoCategory> VehicleCargoCategories => Set<VehicleCargoCategory>();
+    public IQueryable<OrderDriver> OrderDrivers => Set<OrderDriver>();
+    public IQueryable<OrderCargo> OrderCargoes => Set<OrderCargo>();
+    public IQueryable<Order> Orders => Set<Order>();
     
-    public DbSet<Unit> Units { get; set; }
-    public DbSet<CargoCategory> CargoCategories { get; set; }
-    public DbSet<Cargo> Cargoes { get; set; }
-    
-    public DbSet<VehicleCargoCategory> VehicleCargoCategories { get; set; }
-    
-    public DbSet<Bank> Banks { get; set; }
-    public DbSet<City> Cities { get; set; }
-    public DbSet<Street> Streets { get; set; }
-    public DbSet<Individual> Individuals { get; set; }
-    public DbSet<Legal> Legals { get; set; }
-    
-    public DbSet<OrderCargo> OrderCargoes { get; set; }
-    
-    public DbSet<Order> Orders { get; set; }
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+        
+        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+    }
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

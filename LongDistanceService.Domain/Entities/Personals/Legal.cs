@@ -9,14 +9,14 @@ public class Legal : AbstractPersonalEntity
     public int StreetId { get; set; }
     public int BankId { get; set; }
     
-    public City City { get; set; }
-    public Street Street { get; set; }
-    public Bank Bank { get; set; }
+    public City City { get; set; } = new();
+    public Street Street { get; set; } = new();
+    public Bank Bank { get; set; } = new();
     
-    public string CompanyName { get; set; }
-    public string Phone { get; set; }
-    public string TIN { get; set; }
-    public string BankAccount { get; set; }
+    public string CompanyName { get; set; }  = String.Empty;
+    public string Phone { get; set; }  = String.Empty;
+    public string TIN { get; set; }  = String.Empty;
+    public string BankAccount { get; set; }  = String.Empty;
     public int HouseNumber { get; set; }
     public int OfficeNumber { get; set; }
 }

@@ -1,16 +1,14 @@
 ﻿using LongDistanceService.Domain.Entities.Abstract;
-using LongDistanceService.Domain.Entities.Cargos;
+using LongDistanceService.Domain.Entities.Cargoes;
 
 namespace LongDistanceService.Domain.Entities;
 
-public class OrderCargo : IEntity
+public class OrderCargo
 {
-    public int Id { get; set; }
-    
     public int OrderId { get; set; }
-    public Order Order { get; set; }
+    public Order Order { get; set; } = new();
     public int CargoId { get; set; }
-    public Cargo Cargo { get; set; }
+    public Cargo Cargo { get; set; } = new();
     
     public decimal Amount { get; set; }
     public decimal Weight { get; set; }
