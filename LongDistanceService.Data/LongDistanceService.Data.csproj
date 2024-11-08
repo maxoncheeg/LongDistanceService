@@ -24,4 +24,8 @@
       <ProjectReference Include="..\LongDistanceService.Domain\LongDistanceService.Domain.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Migrations\" />
+    </ItemGroup>
+
 </Project>
