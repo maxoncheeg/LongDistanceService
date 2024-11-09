@@ -18,7 +18,7 @@ public class VehicleTypeConfiguration : IEntityTypeConfiguration<Vehicle>
         builder.Property(p => p.Id).HasColumnName("id");
         
         // constraints
-        builder.HasAlternateKey(p => p.LicensePlate); // TODO: удостоверится в работе
+        builder.HasAlternateKey(p => p.LicensePlate);
         
         builder.ToTable("vehicles", 
             t =>
@@ -28,6 +28,5 @@ public class VehicleTypeConfiguration : IEntityTypeConfiguration<Vehicle>
             .HasKey(p => p.Id);
 
         builder.HasMany(p => p.Orders).WithOne(p => p.Vehicle).HasForeignKey(p => p.VehicleId);
-
     }
 }
