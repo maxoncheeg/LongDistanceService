@@ -1,4 +1,8 @@
 ﻿@page "/counter"
+@using MediatR
+@using LongDistanceService.Domain.CQRS.Queries.DriverCategories
+@using LongDistanceService.Domain.CQRS.Responses.DriverCategories
+@using LongDistanceService.Shared.DependencyInjection
 @rendermode InteractiveServer
 
 @inject IJSRuntime JS
@@ -8,23 +12,55 @@
 
 <h1>Counter</h1>
 
-<p role="status">Current count: @currentCount</p>
+@* <p role="status">Current count: @currentCount</p> *@
+@* *@
+@* <button class="btn btn-primary" @onclick="IncrementCount">Click me</button> *@
 
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+<div>
+    <button @onclick="GetDriverCategories">GET DRIVER CATEGORIES</button>
+    @foreach (var category in Response)
+    {
+        <p>@category.Name</p>
+    }
+</div>
 
 @code {
     private int currentCount = 0;
+    [Inject] public IMediator Mediator { get; set; } = null!;
+    public IList<DriverCategoryResponse> Response { get; set; } = [];
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        var token = new CancellationToken();
+        Response = await Mediator.Send(new GetDriverCategoriesRequest(), token);
+        
+        StateHasChanged();
+        
+        await base.OnAfterRenderAsync(firstRender);
+    }
 
     private async void IncrementCount()
     {
         currentCount++;
-        bool confirm = await JS.InvokeAsync<bool>("confirm", "Подтвердите повторную отправку формы.");
+        // bool confirm = await JS.InvokeAsync<bool>("confirm", "Подтвердите повторную отправку формы.");
+        //
+        // if (confirm)
+        // {
+        //     await JS.InvokeVoidAsync("alert", "Зря...");
+        //     Nav.NavigateTo(@"https://forums.raspberrypi.com/viewtopic.php?t=44639");
+        // }
+    }
 
-        if (confirm)
-        {
-            await JS.InvokeVoidAsync("alert", "Зря...");
-            Nav.NavigateTo(@"https://forums.raspberrypi.com/viewtopic.php?t=44639");
-        }
+    private async Task GetDriverCategories()
+    {
+
+        StateHasChanged();
     }
 
 }

@@ -1,5 +1,8 @@
+using System.Reflection;
+using LongDistanceService.Shared.DependencyInjection;
 using LongDistanceService.Shared.DependencyInjection.Data;
 using LongDistanceService.Shared.DependencyInjection.Identity;
+using LongDistanceService.Shared.DependencyInjection.MediatR;
 using LongDistanceService.Web.Components;
 using LongDistanceService.Web.Services.Identity;
 using Microsoft.AspNetCore.Identity;
@@ -32,6 +35,9 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 
 builder.Services.AddPostgresDatabase(connectionString);
 builder.Services.AddApplicationIdentity().AddCascadingAuthenticationState();
+builder.Services.AddScoped<ITestService, TestService>();
+
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly())).AddMediatRHandlers();
 
 var app = builder.Build();
 
