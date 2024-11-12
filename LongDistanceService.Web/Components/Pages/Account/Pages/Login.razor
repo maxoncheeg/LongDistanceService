@@ -3,6 +3,7 @@
 @using LongDistanceService.Shared.Services.Identity
 @using LongDistanceService.Web.Components.Layout
 @using LongDistanceService.Web.Routes
+@using Microsoft.AspNetCore.Http.HttpResults
 
 @inject NavigationManager NavigationManager
 @inject IAuthenticationService AuthenticationService
@@ -13,7 +14,13 @@
 
 <div>
     <div class="intro"></div>
-    <image class="media" src="res/road.jpg" autoplay muted loop></image>
+    @if (Type == "admin")
+    {
+        <image class="media" src="res/trucker.gif" autoplay muted loop></image>
+    }
+    @if (Type != "admin"){
+        <image class="media" src="res/road.jpg" autoplay muted loop></image>
+    }
 
 
     <div class="shell">
@@ -21,50 +28,50 @@
             <div class="loginTitle loginText">
                 <h1>ГРУЗОВЫЕ АВТОПЕРЕВОЗКИ</h1>
             </div>
-            
+
             <div class="loginCenter">
                 <div class="loginCenterLogo">
                     <img src="https://lucaclinic.ru/bitrix/templates/main/planeta.png" alt="no"/>
                 </div>
                 <div class="loginCenterForm loginText">
-                     <EditForm class="login-form" Model="Input" method="post" OnValidSubmit="LoginUser" FormName="login">
-                                     <DataAnnotationsValidator/> 
-                                    @* <ValidationSummary class="text-danger" role="alert"/> *@
-                                    <div>
-                                        <h3 class="loginText" style="color:aliceblue">Вход в сервис для Администратора</h3>
-                                    </div>
-                                    <div class="form-floating mb-3">
-                                        <InputText @bind-Value="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com"/>
-                                        <label for="email" class="form-label">Почта</label>
-                                        <ValidationMessage For="() => Input.Email" class="text-danger"/>
-                                    </div>
-                                    <div class="form-floating mb-3">
-                                        <InputText type="password" @bind-Value="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password"/>
-                                        <label for="password" class="form-label">Пароль</label>
-                                        <ValidationMessage For="() => Input.Password" class="text-danger"/>
-                                    </div>
-                                    <div>
-                                        <button type="submit" class="w-100 btn btn-dark btn-lg">ВХОД</button>
-                                    </div>
-                                    <div>
-                                        @* <p> *@
-                                        @*     <a href="Account/ForgotPassword">Forgot your password?</a> *@
-                                        @* </p> *@
-                                        @* <p> *@
-                                        @*     <a class="link-light loginText" href="@(NavigationManager.GetUriWithQueryParameters("identity/register", new Dictionary<string, object?> { ["ReturnUrl"] = ReturnUrl }))">Зарегистрироваться</a> *@
-                                        @* </p> *@
-                                    </div>
-                                </EditForm>
+                    <EditForm class="login-form" Model="Input" method="post" OnValidSubmit="LoginUser" FormName="login">
+                        <DataAnnotationsValidator/>
+                        @* <ValidationSummary class="text-danger" role="alert"/> *@
+                        <div>
+                            <h3 class="loginText" style="color:aliceblue">Вход в сервис для Администратора</h3>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <InputText @bind-Value="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com"/>
+                            <label for="email" class="form-label">Почта</label>
+                            <ValidationMessage For="() => Input.Email" class="text-danger"/>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <InputText type="password" @bind-Value="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password"/>
+                            <label for="password" class="form-label">Пароль</label>
+                            <ValidationMessage For="() => Input.Password" class="text-danger"/>
+                        </div>
+                        <div>
+                            <button type="submit" class="w-100 btn btn-dark btn-lg">ВХОД</button>
+                        </div>
+                        <div>
+                            @* <p> *@
+                            @*     <a href="Account/ForgotPassword">Forgot your password?</a> *@
+                            @* </p> *@
+                            @* <p> *@
+                            @*     <a class="link-light loginText" href="@(NavigationManager.GetUriWithQueryParameters("identity/register", new Dictionary<string, object?> { ["ReturnUrl"] = ReturnUrl }))">Зарегистрироваться</a> *@
+                            @* </p> *@
+                        </div>
+                    </EditForm>
                 </div>
                 <div class="loginCenterSocial loginText">
                     <h4>входи через ВТентакли</h4>
                 </div>
             </div>
-            
+
             <div class="loginFooter loginText">
                 <h5>сайт мистера максонелиуса 2k24</h5>
             </div>
-            
+
             @* <div class=""> *@
             @*     <h2 class="lds-title">Сервис Грузовых<br/>Автоперевозок</h2> *@
             @*     @if (Type == "admin") *@
@@ -108,11 +115,21 @@
     [SupplyParameterFromQuery] public string? ReturnUrl { get; set; }
     [SupplyParameterFromForm] public LoginModel Input { get; set; } = new();
 
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        if ((new List<string>() { "admin", "user" }).All(x => x != Type))
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+
     public async Task LoginUser()
     {
+        
         var user = new ApplicationIdentityUser() { Email = Input.Email, Password = Input.Password };
         var result = await AuthenticationService.AuthenticateUser(user);
-        
+
         if (result) NavigationManager.NavigateTo(ReturnUrl);
     }
 

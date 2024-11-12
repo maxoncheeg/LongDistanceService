@@ -10,4 +10,7 @@ public static class ServiceRoutes
     public const string UserLogin = Login + "/user";
 
     public const string Register = Identity + "register";
+
+
+    public const string ReferenceInfo = "reference";
 }
