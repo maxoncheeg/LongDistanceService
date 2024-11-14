@@ -1,9 +1,7 @@
 ﻿@page "/identity/register"
 @using LongDistanceService.Web.Models.Identity
-@using LongDistanceService.Shared.Services.Identity
 
 @inject NavigationManager NavigationManager
-@inject IAuthenticationService AuthenticationService
 @inject IJSRuntime JsRuntime
 
 <PageTitle>Register</PageTitle>
@@ -51,10 +49,10 @@
 
     public async Task RegisterUser()
     {
-        var user = new ApplicationIdentityUser() { Email = Input.Email, Password = Input.Password };
-        var result = await AuthenticationService.RegisterUser(user);
+        // var user = new ApplicationIdentityUser() { Email = Input.Email, Password = Input.Password };
+        // var result = await AuthenticationService.RegisterUser(user);
 
-        if (result) NavigationManager.NavigateTo(ReturnUrl);
+        //if (result) NavigationManager.NavigateTo(ReturnUrl);
     }
 
 }

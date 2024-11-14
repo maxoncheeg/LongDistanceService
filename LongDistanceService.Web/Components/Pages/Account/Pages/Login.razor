@@ -1,14 +1,16 @@
 ﻿@attribute [Route(template: ServiceRoutes.LoginType)]
 @using LongDistanceService.Web.Models.Identity
-@using LongDistanceService.Shared.Services.Identity
 @using LongDistanceService.Web.Components.Layout
 @using LongDistanceService.Web.Routes
+@using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Http.HttpResults
+@using System.Net
 
 @inject NavigationManager NavigationManager
 @inject IAuthenticationService AuthenticationService
 @inject IJSRuntime JsRuntime
 @layout EmptyLayout
+@inject IHttpContextAccessor HttpContextAccessor
 
 <PageTitle>Login</PageTitle>
 
@@ -128,12 +130,15 @@
     public async Task LoginUser()
     {
         
-        var user = new ApplicationIdentityUser() { Email = Input.Email, Password = Input.Password };
-        var result = await AuthenticationService.AuthenticateUser(user);
+        // var user = new ApplicationIdentityUser() { Email = Input.Email, Password = Input.Password };
+        // var result = await AuthenticationService.AuthenticateUser(user);
 
 
-        if (result) 
-            NavigationManager.NavigateTo(ReturnUrl);
+        // if (result) 
+        //     NavigationManager.NavigateTo(ReturnUrl);
+        //
+        
+        
     }
 
 }

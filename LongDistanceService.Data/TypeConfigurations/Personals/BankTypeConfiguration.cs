@@ -1,4 +1,4 @@
-﻿using LongDistanceService.Domain.Entities.Personals;
+﻿using LongDistanceService.Data.Entities.Personals;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

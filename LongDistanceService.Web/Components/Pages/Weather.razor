@@ -2,10 +2,8 @@
 @attribute [StreamRendering]
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Authentication
-@using LongDistanceService.Shared.Services.Identity
 @using LongDistanceService.Web.Routes
 @using Microsoft.AspNetCore.Identity
-@using IAuthenticationService = LongDistanceService.Shared.Services.Identity.IAuthenticationService
 
 
 <PageTitle>Weather</PageTitle>
@@ -90,7 +88,7 @@
 
     public async Task LogOut()
     {
-        await AuthenticationService.LogOut(null);
+       // await AuthenticationService.LogOut(null);
         NavigationManager.NavigateTo($"{ServiceRoutes.AdminLogin}?returnUrl={NavigationManager.Uri}");
     }
 

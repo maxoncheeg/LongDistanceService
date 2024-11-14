@@ -1,0 +1,40 @@
+﻿@page "/test"
+@attribute [Authorize]
+@using LongDistanceService.Web.Models.Identity
+@using LongDistanceService.Domain.Services.Abstract
+@using Microsoft.AspNetCore.Authorization
+
+<PageTitle>Home</PageTitle>
+
+<h1>@Text</h1>
+
+
+@code{
+
+
+    
+    [SupplyParameterFromForm] public LoginModel Input { get; set; } = new();
+    [Inject] IAccessTokenService TokenService { get; set; }
+    [Inject] IHttpContextAccessor HttpContextAccessor { get; set; }
+
+    public string Text { get; set; } = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var cookies = HttpContextAccessor.HttpContext.User.Identity;
+        Console.WriteLine("\n\n\n" + "\n\n\n");
+        // foreach (var cok in cookies)
+        // {
+        //     Console.WriteLine(cok.Type + " " + cok.Value);
+        // }
+
+        //Console.WriteLine("\n\n\n" + HttpContextAccessor.HttpContext.Request. + "\n\n\n");
+
+        //cookies.TryGetValue("Token", out string token);
+
+        // var user = await TokenService.ValidateTokenAsync(token);
+        // Text = user?.Login ?? "failed"; 
+        await base.OnInitializedAsync();
+    }
+
+}

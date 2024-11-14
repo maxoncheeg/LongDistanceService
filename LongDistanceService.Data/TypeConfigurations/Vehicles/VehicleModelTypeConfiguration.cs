@@ -1,4 +1,4 @@
-﻿using LongDistanceService.Domain.Entities.Vehicles;
+﻿using LongDistanceService.Data.Entities.Vehicles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

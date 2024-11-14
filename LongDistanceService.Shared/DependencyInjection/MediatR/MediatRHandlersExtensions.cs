@@ -1,6 +1,9 @@
 ﻿using LongDistanceService.Data.Handlers.Queries.DriverCategories;
+using LongDistanceService.Data.Handlers.Queries.Users;
 using LongDistanceService.Domain.CQRS.Queries.DriverCategories;
+using LongDistanceService.Domain.CQRS.Queries.Users;
 using LongDistanceService.Domain.CQRS.Responses.DriverCategories;
+using LongDistanceService.Domain.CQRS.Responses.Users;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -17,7 +20,9 @@ public static class MediatRHandlersExtensions
         #region Queries
 
         @this.AddTransient<IRequestHandler<GetDriverCategoriesRequest, IList<DriverCategoryResponse>>,
-            GetDriverCategoriesHandler>();
+            GetDriverCategoriesHandler>()
+            .AddTransient<IRequestHandler<GetUserByLoginRequest, UserResponse?>,
+                GetUserHandler>();
 
         #endregion
 

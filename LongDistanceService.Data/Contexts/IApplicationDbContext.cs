@@ -1,9 +1,10 @@
-﻿using LongDistanceService.Domain.Entities;
-using LongDistanceService.Domain.Entities.Addresses;
-using LongDistanceService.Domain.Entities.Cargoes;
-using LongDistanceService.Domain.Entities.Drivers;
-using LongDistanceService.Domain.Entities.Personals;
-using LongDistanceService.Domain.Entities.Vehicles;
+﻿using LongDistanceService.Data.Entities;
+using LongDistanceService.Data.Entities.Addresses;
+using LongDistanceService.Data.Entities.Cargoes;
+using LongDistanceService.Data.Entities.Drivers;
+using LongDistanceService.Data.Entities.Identity;
+using LongDistanceService.Data.Entities.Personals;
+using LongDistanceService.Data.Entities.Vehicles;
 
 namespace LongDistanceService.Data.Contexts;
 
@@ -32,4 +33,8 @@ public interface IApplicationDbContext : IDbContext
     IQueryable<OrderCargo> OrderCargoes { get; }
 
     IQueryable<Order> Orders { get; }
+    
+    IQueryable<User> Users { get; }
+    IQueryable<MenuTab> MenuTabs { get; }
+    IQueryable<MenuTabRight> MenuTabRights { get; }
 }
