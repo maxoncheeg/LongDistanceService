@@ -1,4 +1,9 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿@using LongDistanceService.Web.Services.Abstract
+@using Microsoft.AspNetCore.Authentication.JwtBearer
+@using Microsoft.AspNetCore.Authorization
+@using IAuthorizationService = LongDistanceService.Web.Services.Abstract.IIdentityService
+
+<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">LongDistanceService.Web</a>
     </div>
@@ -14,6 +19,12 @@
             </NavLink>
         </div>
 
+
+        @if (IsAdmin)
+        {
+            <p style="color: aliceblue; font-size: 20px; text-indent: 5px;">АДМИН ИНФА!</p>
+        }
+
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="counter">
                 <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
@@ -27,3 +38,36 @@
         </div>
     </nav>
 </div>
+
+@code{
+    [Inject] public IAuthorizationService IdentityService { get; set; } = null!;
+    [Inject] public ISecurityService SecurityService { get; set; } = null!;
+    [Inject] public AuthenticationStateProvider StateProvider { get; set; } = null!;
+    [Inject] public NavigationManager NavigationManager { get; set; } = null!;
+    public bool IsAdmin { get; set; } = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        try
+        {
+            var token = await IdentityService.ExtractTokenAsync();
+
+            if (token != null)
+            {
+                var user = await SecurityService.ValidateTokenAsync(token);
+                if (user != null)
+                    IsAdmin = await SecurityService.IsAdminAsync(user);
+                else
+                {
+                   // NavigationManager.NavigateTo("/refresh");
+                }
+            }
+        }
+        catch
+        {
+        }
+    }
+
+}

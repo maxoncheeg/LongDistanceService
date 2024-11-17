@@ -6,7 +6,7 @@ namespace LongDistanceService.Domain.Tests.Services;
 [TestFixture]
 public class BCryptPasswordHasherTest
 {
-    private IPasswordHasher _passwordHasher;
+    private IPasswordHasher _passwordHasher = null!;
     
     [SetUp]
     public void SetUp()
@@ -23,5 +23,4 @@ public class BCryptPasswordHasherTest
         
         Assert.IsTrue(_passwordHasher.VerifyHashedPassword(hash, password));
     }
-    
 }

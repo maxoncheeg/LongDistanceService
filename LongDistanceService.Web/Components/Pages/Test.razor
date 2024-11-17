@@ -1,8 +1,9 @@
-﻿@page "/test"
-@attribute [Authorize]
+﻿@page "/refreаsh"
+
 @using LongDistanceService.Web.Models.Identity
 @using LongDistanceService.Domain.Services.Abstract
 @using Microsoft.AspNetCore.Authorization
+@inject AuthenticationStateProvider GetAuthenticationStateAsync
 
 <PageTitle>Home</PageTitle>
 
@@ -10,19 +11,18 @@
 
 
 @code{
-
-
-    
     [SupplyParameterFromForm] public LoginModel Input { get; set; } = new();
-    [Inject] IAccessTokenService TokenService { get; set; }
     [Inject] IHttpContextAccessor HttpContextAccessor { get; set; }
+    [Inject] AuthenticationStateProvider Provider { get; set; }
 
     public string Text { get; set; } = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
-        var cookies = HttpContextAccessor.HttpContext.User.Identity;
-        Console.WriteLine("\n\n\n" + "\n\n\n");
+        //var x = await AuthentificationState;
+        var y = HttpContextAccessor.HttpContext;
+        var z = Provider;
+        // Console.WriteLine("\n\n\n" + "\n\n\n");
         // foreach (var cok in cookies)
         // {
         //     Console.WriteLine(cok.Type + " " + cok.Value);

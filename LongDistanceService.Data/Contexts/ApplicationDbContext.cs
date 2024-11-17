@@ -33,6 +33,26 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public IQueryable<User> Users => Set<User>();
     public IQueryable<MenuTab> MenuTabs => Set<MenuTab>();
     public IQueryable<MenuTabRight> MenuTabRights => Set<MenuTabRight>();
+    
+    public void Create<TEntity>(TEntity entity) where TEntity : class
+    {
+        Set<TEntity>().Add(entity);
+    }
+
+    public new void Update<TEntity>(TEntity entity) where TEntity : class
+    {
+        Set<TEntity>().Update(entity);
+    }
+
+    public void Delete<TEntity>(TEntity entity) where TEntity : class
+    {
+        Set<TEntity>().Remove(entity);
+    }
+
+    public async Task SaveAsync()
+    {
+        await SaveChangesAsync();
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

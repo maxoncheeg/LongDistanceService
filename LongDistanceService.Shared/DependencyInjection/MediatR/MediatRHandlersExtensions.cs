@@ -22,7 +22,8 @@ public static class MediatRHandlersExtensions
         @this.AddTransient<IRequestHandler<GetDriverCategoriesRequest, IList<DriverCategoryResponse>>,
             GetDriverCategoriesHandler>()
             .AddTransient<IRequestHandler<GetUserByLoginRequest, UserResponse?>,
-                GetUserHandler>();
+                GetUserHandler>()
+            .AddTransient<IRequestHandler<IsUserAdminRequest, bool>, IsUserAdminHandler>();
 
         #endregion
 

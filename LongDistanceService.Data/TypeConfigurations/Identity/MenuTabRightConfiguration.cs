@@ -13,7 +13,7 @@ public class MenuTabRightConfiguration : IEntityTypeConfiguration<MenuTabRight>
         builder.Property(p => p.E).HasColumnName("e");
         builder.Property(p => p.D).HasColumnName("d");
         builder.Property(p => p.MenuTabId).HasColumnName("tab_id");
-        builder.Property(p => p.UserId).HasColumnName("id");
+        builder.Property(p => p.UserId).HasColumnName("user_id");
 
         builder.ToTable("menu_tab_rights").HasKey(p => new { p.UserId, p.MenuTabId });
     }

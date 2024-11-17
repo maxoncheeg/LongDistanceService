@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LongDistanceService.Data.Handlers.Queries.Users;
 
-public class GetUserHandler(ApplicationDbContext context) : IRequestHandler<GetUserByLoginRequest, UserResponse?>
+public class GetUserHandler(IApplicationDbContext context) : IRequestHandler<GetUserByLoginRequest, UserResponse?>
 {
     public async Task<UserResponse?> Handle(GetUserByLoginRequest request, CancellationToken cancellationToken)
     {
