@@ -16,5 +16,8 @@ public class MenuTabRightConfiguration : IEntityTypeConfiguration<MenuTabRight>
         builder.Property(p => p.UserId).HasColumnName("user_id");
 
         builder.ToTable("menu_tab_rights").HasKey(p => new { p.UserId, p.MenuTabId });
+
+        builder.HasOne(p => p.MenuTab).WithMany(p => p.Rights).HasForeignKey(p => p.MenuTabId);
+        builder.HasOne(p => p.User).WithMany(p => p.Rights).HasForeignKey(p => p.UserId);
     }
 }

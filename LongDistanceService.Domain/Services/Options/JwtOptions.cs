@@ -12,7 +12,7 @@ public record JwtOptions(
     string TokenAlgorithm,
     string RefreshTokenAlgorithm)
 {
-    public TimeSpan ClockSkew { get; set; } = TimeSpan.FromMinutes(0);
+    public TimeSpan ClockSkew { get; set; } = TimeSpan.FromMinutes(5);
     public SymmetricSecurityKey SymmetricSecurityKey =>
         new SymmetricSecurityKey(Encoding.ASCII.GetBytes(SigningKey));
 }

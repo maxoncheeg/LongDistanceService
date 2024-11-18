@@ -8,4 +8,7 @@ public class MenuTabRight
     public bool W { get; set; }
     public bool E { get; set; }
     public bool D { get; set; }
+
+    public MenuTab MenuTab { get; set; } = null!;
+    public User User { get; set; } = null!;
 }

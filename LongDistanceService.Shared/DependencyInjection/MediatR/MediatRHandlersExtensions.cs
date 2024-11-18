@@ -1,8 +1,11 @@
 ﻿using LongDistanceService.Data.Handlers.Queries.DriverCategories;
+using LongDistanceService.Data.Handlers.Queries.Menus;
 using LongDistanceService.Data.Handlers.Queries.Users;
 using LongDistanceService.Domain.CQRS.Queries.DriverCategories;
+using LongDistanceService.Domain.CQRS.Queries.Menus;
 using LongDistanceService.Domain.CQRS.Queries.Users;
 using LongDistanceService.Domain.CQRS.Responses.DriverCategories;
+using LongDistanceService.Domain.CQRS.Responses.Menus;
 using LongDistanceService.Domain.CQRS.Responses.Users;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,6 +26,8 @@ public static class MediatRHandlersExtensions
             GetDriverCategoriesHandler>()
             .AddTransient<IRequestHandler<GetUserByLoginRequest, UserResponse?>,
                 GetUserHandler>()
+            .AddTransient<IRequestHandler<GetMenuRequest, IList<MenuItemResponse>>,
+                GetMenuHandler>()
             .AddTransient<IRequestHandler<IsUserAdminRequest, bool>, IsUserAdminHandler>();
 
         #endregion

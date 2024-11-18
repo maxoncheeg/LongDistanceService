@@ -17,7 +17,7 @@
 }
 else
 {
-    <table class="table">
+    <table style="@style" class="table">
         <thead>
         <tr>
             <th>Date</th>
@@ -52,6 +52,8 @@ else
     [Inject] public NavigationManager NavigationManager { get; set; } = null!;
     [Inject] public IIdentityService IdentityService { get; set; } = null!;
     [Inject] public IScenarioService ScenarioService { get; set; } = null!;
+
+    public string style { get; set; } = "background-color:blue";
 
     public class EmptyModel
     {

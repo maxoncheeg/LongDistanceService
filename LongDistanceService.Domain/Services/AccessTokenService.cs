@@ -55,7 +55,7 @@ public class AccessTokenService(JwtOptions jwtOptions)
         
             if (normalId != expiredNormalId || normalName != expiredNormalName) return null;
         
-            var claims = new List<Claim>()
+            var claims = new List<Claim>() 
             {
                 new Claim(ClaimTypes.NameIdentifier, normalId),
                 new Claim(ClaimTypes.Name, normalName)

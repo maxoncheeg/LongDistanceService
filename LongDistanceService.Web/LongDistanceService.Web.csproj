@@ -27,7 +27,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Components\Pages\Reference\" />
+      <Folder Include="Components\Pages\Reference\Admin\" />
     </ItemGroup>
 
 </Project>
