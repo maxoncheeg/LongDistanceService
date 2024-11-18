@@ -22,7 +22,7 @@ namespace LongDistanceService.Data.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("LongDistanceService.Domain.Entities.Addresses.City", b =>
+            modelBuilder.Entity("LongDistanceService.Data.Entities.Addresses.City", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -42,7 +42,7 @@ namespace LongDistanceService.Data.Migrations
                     b.ToTable("сities", (string)null);
                 });
 
-            modelBuilder.Entity("LongDistanceService.Domain.Entities.Addresses.Street", b =>
+            modelBuilder.Entity("LongDistanceService.Data.Entities.Addresses.Street", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -62,7 +62,7 @@ namespace LongDistanceService.Data.Migrations
                     b.ToTable("streets", (string)null);
                 });
 
-            modelBuilder.Entity("LongDistanceService.Domain.Entities.Cargoes.Cargo", b =>
+            modelBuilder.Entity("LongDistanceService.Data.Entities.Cargoes.Cargo", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -88,7 +88,7 @@ namespace LongDistanceService.Data.Migrations
                     b.ToTable("cargoes", (string)null);
                 });
 
-            modelBuilder.Entity("LongDistanceService.Domain.Entities.Cargos.CargoCategory", b =>
+            modelBuilder.Entity("LongDistanceService.Data.Entities.Cargoes.CargoCategory", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -114,7 +114,7 @@ namespace LongDistanceService.Data.Migrations
                     b.ToTable("cargo_categories", (string)null);
                 });
 
-            modelBuilder.Entity("LongDistanceService.Domain.Entities.Cargos.Unit", b =>
+            modelBuilder.Entity("LongDistanceService.Data.Entities.Cargoes.Unit", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -134,7 +134,7 @@ namespace LongDistanceService.Data.Migrations
                     b.ToTable("units", (string)null);
                 });
 
-            modelBuilder.Entity("LongDistanceService.Domain.Entities.Drivers.Driver", b =>
+            modelBuilder.Entity("LongDistanceService.Data.Entities.Drivers.Driver", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -150,7 +150,8 @@ namespace LongDistanceService.Data.Migrations
                         .HasColumnName("birth_year");
 
                     b.Property<int>("CategoryId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("category_id");
 
                     b.Property<string>("Class")
                         .IsRequired()
@@ -201,7 +202,7 @@ namespace LongDistanceService.Data.Migrations
                         });
                 });
 
-            modelBuilder.Entity("LongDistanceService.Domain.Entities.Drivers.DriverCategory", b =>
+            modelBuilder.Entity("LongDistanceService.Data.Entities.Drivers.DriverCategory", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -221,7 +222,105 @@ namespace LongDistanceService.Data.Migrations
                     b.ToTable("driver_categories", (string)null);
                 });
 
-            modelBuilder.Entity("LongDistanceService.Domain.Entities.Order", b =>
+            modelBuilder.Entity("LongDistanceService.Data.Entities.Identity.MenuTab", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("DllName")
+                        .HasColumnType("text")
+                        .HasColumnName("dll");
+
+                    b.Property<string>("FunctionName")
+                        .HasColumnType("text")
+                        .HasColumnName("function");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("name");
+
+                    b.Property<int>("Order")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0)
+                        .HasColumnName("order");
+
+                    b.Property<int>("ParentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0)
+                        .HasColumnName("parent_id");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("menu_tabs", (string)null);
+                });
+
+            modelBuilder.Entity("LongDistanceService.Data.Entities.Identity.MenuTabRight", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("user_id");
+
+                    b.Property<int>("MenuTabId")
+                        .HasColumnType("integer")
+                        .HasColumnName("tab_id");
+
+                    b.Property<bool>("D")
+                        .HasColumnType("boolean")
+                        .HasColumnName("d");
+
+                    b.Property<bool>("E")
+                        .HasColumnType("boolean")
+                        .HasColumnName("e");
+
+                    b.Property<bool>("R")
+                        .HasColumnType("boolean")
+                        .HasColumnName("r");
+
+                    b.Property<bool>("W")
+                        .HasColumnType("boolean")
+                        .HasColumnName("w");
+
+                    b.HasKey("UserId", "MenuTabId");
+
+                    b.HasIndex("MenuTabId");
+
+                    b.ToTable("menu_tab_rights", (string)null);
+                });
+
+            modelBuilder.Entity("LongDistanceService.Data.Entities.Identity.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Login")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("login");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("password");
+
+                    b.HasKey("Id");
+
+                    b.HasAlternateKey("Login");
+
+                    b.ToTable("users", (string)null);
+                });
+
+            modelBuilder.Entity("LongDistanceService.Data.Entities.Order", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -241,14 +340,15 @@ namespace LongDistanceService.Data.Migrations
                     b.Property<string>("ReceiveHouseNumber")
                         .IsRequired()
                         .HasColumnType("text")
-                        .HasColumnName("receive_house_number");
+                        .HasColumnName("receive_house");
 
                     b.Property<int>("ReceiveStreetId")
                         .HasColumnType("integer")
                         .HasColumnName("receive_street_id");
 
                     b.Property<int>("ReceiverId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("receiver_id");
 
                     b.Property<int>("ReceiverType")
                         .HasColumnType("integer")
@@ -266,14 +366,15 @@ namespace LongDistanceService.Data.Migrations
                     b.Property<string>("SendHouseNumber")
                         .IsRequired()
                         .HasColumnType("text")
-                        .HasColumnName("send_house_number");
+                        .HasColumnName("send_house");
 
                     b.Property<int>("SendStreetId")
                         .HasColumnType("integer")
                         .HasColumnName("send_street_id");
 
                     b.Property<int>("SenderId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("sender_id");
 
                     b.Property<int>("SenderType")
                         .HasColumnType("integer")
@@ -305,7 +406,7 @@ namespace LongDistanceService.Data.Migrations
                         });
                 });
 
-            modelBuilder.Entity("LongDistanceService.Domain.Entities.OrderCargo", b =>
+            modelBuilder.Entity("LongDistanceService.Data.Entities.OrderCargo", b =>
                 {
                     b.Property<int>("CargoId")
                         .HasColumnType("integer")
@@ -344,7 +445,7 @@ namespace LongDistanceService.Data.Migrations
                         });
                 });
 
-            modelBuilder.Entity("LongDistanceService.Domain.Entities.OrderDriver", b =>
+            modelBuilder.Entity("LongDistanceService.Data.Entities.OrderDriver", b =>
                 {
                     b.Property<int>("DriverId")
                         .HasColumnType("integer")
@@ -361,7 +462,7 @@ namespace LongDistanceService.Data.Migrations
                     b.ToTable("order_drivers", (string)null);
                 });
 
-            modelBuilder.Entity("LongDistanceService.Domain.Entities.Personals.Bank", b =>
+            modelBuilder.Entity("LongDistanceService.Data.Entities.Personals.Bank", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -381,7 +482,7 @@ namespace LongDistanceService.Data.Migrations
                     b.ToTable("banks", (string)null);
                 });
 
-            modelBuilder.Entity("LongDistanceService.Domain.Entities.Personals.Individual", b =>
+            modelBuilder.Entity("LongDistanceService.Data.Entities.Personals.Individual", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -438,7 +539,7 @@ namespace LongDistanceService.Data.Migrations
                     b.ToTable("individuals", (string)null);
                 });
 
-            modelBuilder.Entity("LongDistanceService.Domain.Entities.Personals.Legal", b =>
+            modelBuilder.Entity("LongDistanceService.Data.Entities.Personals.Legal", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -465,12 +566,12 @@ namespace LongDistanceService.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("character varying(10)")
-                        .HasColumnName("company_name");
+                        .HasColumnName("company");
 
                     b.Property<int>("HouseNumber")
                         .HasMaxLength(32)
                         .HasColumnType("integer")
-                        .HasColumnName("house_number");
+                        .HasColumnName("house");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -479,7 +580,9 @@ namespace LongDistanceService.Data.Migrations
                         .HasColumnName("name");
 
                     b.Property<int>("OfficeNumber")
-                        .HasColumnType("integer");
+                        .HasMaxLength(32)
+                        .HasColumnType("integer")
+                        .HasColumnName("office");
 
                     b.Property<string>("Patronymic")
                         .IsRequired()
@@ -522,7 +625,7 @@ namespace LongDistanceService.Data.Migrations
                     b.ToTable("legals", (string)null);
                 });
 
-            modelBuilder.Entity("LongDistanceService.Domain.Entities.VehicleCargoCategory", b =>
+            modelBuilder.Entity("LongDistanceService.Data.Entities.VehicleCargoCategory", b =>
                 {
                     b.Property<int>("VehicleId")
                         .HasColumnType("integer")
@@ -539,7 +642,7 @@ namespace LongDistanceService.Data.Migrations
                     b.ToTable("vehicle_cargo_categories", (string)null);
                 });
 
-            modelBuilder.Entity("LongDistanceService.Domain.Entities.Vehicles.Vehicle", b =>
+            modelBuilder.Entity("LongDistanceService.Data.Entities.Vehicles.Vehicle", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -593,7 +696,7 @@ namespace LongDistanceService.Data.Migrations
                         });
                 });
 
-            modelBuilder.Entity("LongDistanceService.Domain.Entities.Vehicles.VehicleBrand", b =>
+            modelBuilder.Entity("LongDistanceService.Data.Entities.Vehicles.VehicleBrand", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -613,7 +716,7 @@ namespace LongDistanceService.Data.Migrations
                     b.ToTable("vehicle_brands", (string)null);
                 });
 
-            modelBuilder.Entity("LongDistanceService.Domain.Entities.Vehicles.VehicleModel", b =>
+            modelBuilder.Entity("LongDistanceService.Data.Entities.Vehicles.VehicleModel", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -639,205 +742,9 @@ namespace LongDistanceService.Data.Migrations
                     b.ToTable("vehicle_models", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
+            modelBuilder.Entity("LongDistanceService.Data.Entities.Cargoes.Cargo", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.Property<string>("NormalizedName")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("NormalizedName")
-                        .IsUnique()
-                        .HasDatabaseName("RoleNameIndex");
-
-                    b.ToTable("AspNetRoles", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ClaimType")
-                        .HasColumnType("text");
-
-                    b.Property<string>("ClaimValue")
-                        .HasColumnType("text");
-
-                    b.Property<string>("RoleId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RoleId");
-
-                    b.ToTable("AspNetRoleClaims", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUser", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
-
-                    b.Property<int>("AccessFailedCount")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Email")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("NormalizedEmail")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.Property<string>("NormalizedUserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.Property<string>("PasswordHash")
-                        .HasColumnType("text");
-
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("text");
-
-                    b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("SecurityStamp")
-                        .HasColumnType("text");
-
-                    b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("UserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("NormalizedEmail")
-                        .HasDatabaseName("EmailIndex");
-
-                    b.HasIndex("NormalizedUserName")
-                        .IsUnique()
-                        .HasDatabaseName("UserNameIndex");
-
-                    b.ToTable("AspNetUsers", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ClaimType")
-                        .HasColumnType("text");
-
-                    b.Property<string>("ClaimValue")
-                        .HasColumnType("text");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("AspNetUserClaims", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
-                {
-                    b.Property<string>("LoginProvider")
-                        .HasColumnType("text");
-
-                    b.Property<string>("ProviderKey")
-                        .HasColumnType("text");
-
-                    b.Property<string>("ProviderDisplayName")
-                        .HasColumnType("text");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("LoginProvider", "ProviderKey");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("AspNetUserLogins", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
-                {
-                    b.Property<string>("UserId")
-                        .HasColumnType("text");
-
-                    b.Property<string>("RoleId")
-                        .HasColumnType("text");
-
-                    b.HasKey("UserId", "RoleId");
-
-                    b.HasIndex("RoleId");
-
-                    b.ToTable("AspNetUserRoles", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
-                {
-                    b.Property<string>("UserId")
-                        .HasColumnType("text");
-
-                    b.Property<string>("LoginProvider")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Value")
-                        .HasColumnType("text");
-
-                    b.HasKey("UserId", "LoginProvider", "Name");
-
-                    b.ToTable("AspNetUserTokens", (string)null);
-                });
-
-            modelBuilder.Entity("LongDistanceService.Domain.Entities.Cargoes.Cargo", b =>
-                {
-                    b.HasOne("LongDistanceService.Domain.Entities.Cargos.CargoCategory", "Category")
+                    b.HasOne("LongDistanceService.Data.Entities.Cargoes.CargoCategory", "Category")
                         .WithMany("Cargoes")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -846,9 +753,9 @@ namespace LongDistanceService.Data.Migrations
                     b.Navigation("Category");
                 });
 
-            modelBuilder.Entity("LongDistanceService.Domain.Entities.Cargos.CargoCategory", b =>
+            modelBuilder.Entity("LongDistanceService.Data.Entities.Cargoes.CargoCategory", b =>
                 {
-                    b.HasOne("LongDistanceService.Domain.Entities.Cargos.Unit", "Unit")
+                    b.HasOne("LongDistanceService.Data.Entities.Cargoes.Unit", "Unit")
                         .WithMany("CargoCategories")
                         .HasForeignKey("UnitId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -857,9 +764,9 @@ namespace LongDistanceService.Data.Migrations
                     b.Navigation("Unit");
                 });
 
-            modelBuilder.Entity("LongDistanceService.Domain.Entities.Drivers.Driver", b =>
+            modelBuilder.Entity("LongDistanceService.Data.Entities.Drivers.Driver", b =>
                 {
-                    b.HasOne("LongDistanceService.Domain.Entities.Drivers.DriverCategory", "Category")
+                    b.HasOne("LongDistanceService.Data.Entities.Drivers.DriverCategory", "Category")
                         .WithMany("Drivers")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -868,33 +775,52 @@ namespace LongDistanceService.Data.Migrations
                     b.Navigation("Category");
                 });
 
-            modelBuilder.Entity("LongDistanceService.Domain.Entities.Order", b =>
+            modelBuilder.Entity("LongDistanceService.Data.Entities.Identity.MenuTabRight", b =>
                 {
-                    b.HasOne("LongDistanceService.Domain.Entities.Addresses.City", "ReceiveCity")
+                    b.HasOne("LongDistanceService.Data.Entities.Identity.MenuTab", "MenuTab")
+                        .WithMany("Rights")
+                        .HasForeignKey("MenuTabId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LongDistanceService.Data.Entities.Identity.User", "User")
+                        .WithMany("Rights")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MenuTab");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("LongDistanceService.Data.Entities.Order", b =>
+                {
+                    b.HasOne("LongDistanceService.Data.Entities.Addresses.City", "ReceiveCity")
                         .WithMany("ReceiveOrders")
                         .HasForeignKey("ReceiveCityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("LongDistanceService.Domain.Entities.Addresses.Street", "ReceiveStreet")
+                    b.HasOne("LongDistanceService.Data.Entities.Addresses.Street", "ReceiveStreet")
                         .WithMany("ReceiveOrders")
                         .HasForeignKey("ReceiveStreetId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("LongDistanceService.Domain.Entities.Addresses.City", "SendCity")
+                    b.HasOne("LongDistanceService.Data.Entities.Addresses.City", "SendCity")
                         .WithMany("SendOrders")
                         .HasForeignKey("SendCityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("LongDistanceService.Domain.Entities.Addresses.Street", "SendStreet")
+                    b.HasOne("LongDistanceService.Data.Entities.Addresses.Street", "SendStreet")
                         .WithMany("SendOrders")
                         .HasForeignKey("SendStreetId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("LongDistanceService.Domain.Entities.Vehicles.Vehicle", "Vehicle")
+                    b.HasOne("LongDistanceService.Data.Entities.Vehicles.Vehicle", "Vehicle")
                         .WithMany("Orders")
                         .HasForeignKey("VehicleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -911,15 +837,15 @@ namespace LongDistanceService.Data.Migrations
                     b.Navigation("Vehicle");
                 });
 
-            modelBuilder.Entity("LongDistanceService.Domain.Entities.OrderCargo", b =>
+            modelBuilder.Entity("LongDistanceService.Data.Entities.OrderCargo", b =>
                 {
-                    b.HasOne("LongDistanceService.Domain.Entities.Cargoes.Cargo", "Cargo")
+                    b.HasOne("LongDistanceService.Data.Entities.Cargoes.Cargo", "Cargo")
                         .WithMany("OrderCargoes")
                         .HasForeignKey("CargoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("LongDistanceService.Domain.Entities.Order", "Order")
+                    b.HasOne("LongDistanceService.Data.Entities.Order", "Order")
                         .WithMany("OrderCargoes")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -930,15 +856,15 @@ namespace LongDistanceService.Data.Migrations
                     b.Navigation("Order");
                 });
 
-            modelBuilder.Entity("LongDistanceService.Domain.Entities.OrderDriver", b =>
+            modelBuilder.Entity("LongDistanceService.Data.Entities.OrderDriver", b =>
                 {
-                    b.HasOne("LongDistanceService.Domain.Entities.Drivers.Driver", "Driver")
+                    b.HasOne("LongDistanceService.Data.Entities.Drivers.Driver", "Driver")
                         .WithMany("OrderDrivers")
                         .HasForeignKey("DriverId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("LongDistanceService.Domain.Entities.Order", "Order")
+                    b.HasOne("LongDistanceService.Data.Entities.Order", "Order")
                         .WithMany("OrderDrivers")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -949,21 +875,21 @@ namespace LongDistanceService.Data.Migrations
                     b.Navigation("Order");
                 });
 
-            modelBuilder.Entity("LongDistanceService.Domain.Entities.Personals.Legal", b =>
+            modelBuilder.Entity("LongDistanceService.Data.Entities.Personals.Legal", b =>
                 {
-                    b.HasOne("LongDistanceService.Domain.Entities.Personals.Bank", "Bank")
+                    b.HasOne("LongDistanceService.Data.Entities.Personals.Bank", "Bank")
                         .WithMany("Legals")
                         .HasForeignKey("BankId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("LongDistanceService.Domain.Entities.Addresses.City", "City")
+                    b.HasOne("LongDistanceService.Data.Entities.Addresses.City", "City")
                         .WithMany("Legals")
                         .HasForeignKey("CityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("LongDistanceService.Domain.Entities.Addresses.Street", "Street")
+                    b.HasOne("LongDistanceService.Data.Entities.Addresses.Street", "Street")
                         .WithMany("Legals")
                         .HasForeignKey("StreetId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -976,15 +902,15 @@ namespace LongDistanceService.Data.Migrations
                     b.Navigation("Street");
                 });
 
-            modelBuilder.Entity("LongDistanceService.Domain.Entities.VehicleCargoCategory", b =>
+            modelBuilder.Entity("LongDistanceService.Data.Entities.VehicleCargoCategory", b =>
                 {
-                    b.HasOne("LongDistanceService.Domain.Entities.Cargos.CargoCategory", "Category")
+                    b.HasOne("LongDistanceService.Data.Entities.Cargoes.CargoCategory", "Category")
                         .WithMany("VehicleCargoCategories")
                         .HasForeignKey("CargoCategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("LongDistanceService.Domain.Entities.Vehicles.Vehicle", "Vehicle")
+                    b.HasOne("LongDistanceService.Data.Entities.Vehicles.Vehicle", "Vehicle")
                         .WithMany("VehicleCargoCategories")
                         .HasForeignKey("VehicleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -995,9 +921,9 @@ namespace LongDistanceService.Data.Migrations
                     b.Navigation("Vehicle");
                 });
 
-            modelBuilder.Entity("LongDistanceService.Domain.Entities.Vehicles.Vehicle", b =>
+            modelBuilder.Entity("LongDistanceService.Data.Entities.Vehicles.Vehicle", b =>
                 {
-                    b.HasOne("LongDistanceService.Domain.Entities.Vehicles.VehicleModel", "Model")
+                    b.HasOne("LongDistanceService.Data.Entities.Vehicles.VehicleModel", "Model")
                         .WithMany("Vehicles")
                         .HasForeignKey("ModelId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1006,9 +932,9 @@ namespace LongDistanceService.Data.Migrations
                     b.Navigation("Model");
                 });
 
-            modelBuilder.Entity("LongDistanceService.Domain.Entities.Vehicles.VehicleModel", b =>
+            modelBuilder.Entity("LongDistanceService.Data.Entities.Vehicles.VehicleModel", b =>
                 {
-                    b.HasOne("LongDistanceService.Domain.Entities.Vehicles.VehicleBrand", "Brand")
+                    b.HasOne("LongDistanceService.Data.Entities.Vehicles.VehicleBrand", "Brand")
                         .WithMany("Models")
                         .HasForeignKey("BrandId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1017,58 +943,7 @@ namespace LongDistanceService.Data.Migrations
                     b.Navigation("Brand");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
-                {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
-                {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
-                {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
-                {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
-                {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("LongDistanceService.Domain.Entities.Addresses.City", b =>
+            modelBuilder.Entity("LongDistanceService.Data.Entities.Addresses.City", b =>
                 {
                     b.Navigation("Legals");
 
@@ -1077,7 +952,7 @@ namespace LongDistanceService.Data.Migrations
                     b.Navigation("SendOrders");
                 });
 
-            modelBuilder.Entity("LongDistanceService.Domain.Entities.Addresses.Street", b =>
+            modelBuilder.Entity("LongDistanceService.Data.Entities.Addresses.Street", b =>
                 {
                     b.Navigation("Legals");
 
@@ -1086,58 +961,68 @@ namespace LongDistanceService.Data.Migrations
                     b.Navigation("SendOrders");
                 });
 
-            modelBuilder.Entity("LongDistanceService.Domain.Entities.Cargoes.Cargo", b =>
+            modelBuilder.Entity("LongDistanceService.Data.Entities.Cargoes.Cargo", b =>
                 {
                     b.Navigation("OrderCargoes");
                 });
 
-            modelBuilder.Entity("LongDistanceService.Domain.Entities.Cargos.CargoCategory", b =>
+            modelBuilder.Entity("LongDistanceService.Data.Entities.Cargoes.CargoCategory", b =>
                 {
                     b.Navigation("Cargoes");
 
                     b.Navigation("VehicleCargoCategories");
                 });
 
-            modelBuilder.Entity("LongDistanceService.Domain.Entities.Cargos.Unit", b =>
+            modelBuilder.Entity("LongDistanceService.Data.Entities.Cargoes.Unit", b =>
                 {
                     b.Navigation("CargoCategories");
                 });
 
-            modelBuilder.Entity("LongDistanceService.Domain.Entities.Drivers.Driver", b =>
+            modelBuilder.Entity("LongDistanceService.Data.Entities.Drivers.Driver", b =>
                 {
                     b.Navigation("OrderDrivers");
                 });
 
-            modelBuilder.Entity("LongDistanceService.Domain.Entities.Drivers.DriverCategory", b =>
+            modelBuilder.Entity("LongDistanceService.Data.Entities.Drivers.DriverCategory", b =>
                 {
                     b.Navigation("Drivers");
                 });
 
-            modelBuilder.Entity("LongDistanceService.Domain.Entities.Order", b =>
+            modelBuilder.Entity("LongDistanceService.Data.Entities.Identity.MenuTab", b =>
+                {
+                    b.Navigation("Rights");
+                });
+
+            modelBuilder.Entity("LongDistanceService.Data.Entities.Identity.User", b =>
+                {
+                    b.Navigation("Rights");
+                });
+
+            modelBuilder.Entity("LongDistanceService.Data.Entities.Order", b =>
                 {
                     b.Navigation("OrderCargoes");
 
                     b.Navigation("OrderDrivers");
                 });
 
-            modelBuilder.Entity("LongDistanceService.Domain.Entities.Personals.Bank", b =>
+            modelBuilder.Entity("LongDistanceService.Data.Entities.Personals.Bank", b =>
                 {
                     b.Navigation("Legals");
                 });
 
-            modelBuilder.Entity("LongDistanceService.Domain.Entities.Vehicles.Vehicle", b =>
+            modelBuilder.Entity("LongDistanceService.Data.Entities.Vehicles.Vehicle", b =>
                 {
                     b.Navigation("Orders");
 
                     b.Navigation("VehicleCargoCategories");
                 });
 
-            modelBuilder.Entity("LongDistanceService.Domain.Entities.Vehicles.VehicleBrand", b =>
+            modelBuilder.Entity("LongDistanceService.Data.Entities.Vehicles.VehicleBrand", b =>
                 {
                     b.Navigation("Models");
                 });
 
-            modelBuilder.Entity("LongDistanceService.Domain.Entities.Vehicles.VehicleModel", b =>
+            modelBuilder.Entity("LongDistanceService.Data.Entities.Vehicles.VehicleModel", b =>
                 {
                     b.Navigation("Vehicles");
                 });

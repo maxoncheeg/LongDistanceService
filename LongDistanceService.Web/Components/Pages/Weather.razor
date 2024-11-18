@@ -1,65 +1,59 @@
 ﻿@page "/weather"
 @attribute [StreamRendering]
-@using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Authentication
-@using LongDistanceService.Shared.Services.Identity
 @using LongDistanceService.Web.Routes
-@using Microsoft.AspNetCore.Identity
-@using IAuthenticationService = LongDistanceService.Shared.Services.Identity.IAuthenticationService
-
+@using LongDistanceService.Web.Services.Abstract
 
 <PageTitle>Weather</PageTitle>
 
+<h1>Weather для шоколадного</h1>
+<p>This component demonstrates showing data.</p>
 
-<AuthorizeView >
-    <Authorized Context="auth">
-        <h1>Weather для шоколадного @auth.User.Identity?.Name</h1>
-        <p>This component demonstrates showing data.</p>
-
-        @if (forecasts == null)
+@if (forecasts == null)
+{
+    <p>
+        <em>Loading...</em>
+    </p>
+}
+else
+{
+    <table style="@style" class="table">
+        <thead>
+        <tr>
+            <th>Date</th>
+            <th>Temp. (C)</th>
+            <th>Temp. (F)</th>
+            <th>Summary</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var forecast in forecasts)
         {
-            <p>
-                <em>Loading...</em>
-            </p>
+            <tr>
+                <td>@forecast.Date.ToShortDateString()</td>
+                <td>@forecast.TemperatureC</td>
+                <td>@forecast.TemperatureF</td>
+                <td>@forecast.Summary</td>
+            </tr>
         }
-        else
-        {
-            <table class="table">
-                <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Temp. (C)</th>
-                    <th>Temp. (F)</th>
-                    <th>Summary</th>
-                </tr>
-                </thead>
-                <tbody>
-                @foreach (var forecast in forecasts)
-                {
-                    <tr>
-                        <td>@forecast.Date.ToShortDateString()</td>
-                        <td>@forecast.TemperatureC</td>
-                        <td>@forecast.TemperatureF</td>
-                        <td>@forecast.Summary</td>
-                    </tr>
-                }
-                </tbody>
-            </table>
-        }
+        </tbody>
+    </table>
+}
 
-        <form method="post" @onsubmit="LogOut" Context="lol" @formname="LogOutForm">
-            <AntiforgeryToken />
-            <button type="submit" class="w-100 btn btn-lg btn-primary">LOG OUT</button>
-        </form>
-    </Authorized>
-</AuthorizeView>
+<form method="post" @onsubmit="LogOut" Context="lol" @formname="logout">
+    <button type="submit" class="w-100 btn btn-lg btn-primary">LOG OUT</button>
+    <AntiforgeryToken/>
+</form>
+
 
 @code {
-    [Inject] public NavigationManager NavigationManager { get; set; }
-    [Inject] public IAuthenticationService AuthenticationService { get; set; }
-    [CascadingParameter] private HttpContext HttpContext { get; set; } = default!;
-    [CascadingParameter] protected Task<AuthenticationState> AuthentificationState { get; set; }
     [SupplyParameterFromForm] public EmptyModel Empty { get; set; } = new();
+
+    [Inject] public NavigationManager NavigationManager { get; set; } = null!;
+    [Inject] public IIdentityService IdentityService { get; set; } = null!;
+    [Inject] public IScenarioService ScenarioService { get; set; } = null!;
+
+    public string style { get; set; } = "background-color:blue";
 
     public class EmptyModel
     {
@@ -70,11 +64,8 @@
     protected override async Task OnInitializedAsync()
     {
         // Simulate asynchronous loading to demonstrate streaming rendering
-        var user = (await AuthentificationState).User;
-        if (!user.Identity.IsAuthenticated)
-        {
-            NavigationManager.NavigateTo($"{ServiceRoutes.AdminLogin}?returnUrl={NavigationManager.Uri}");
-        }
+
+        await ScenarioService.TryAuthenticateUserAsync(returnUrl: NavigationManager.Uri, redirectToLogin: true);
 
         await Task.Delay(500);
 
@@ -90,8 +81,8 @@
 
     public async Task LogOut()
     {
-        await AuthenticationService.LogOut(null);
-        NavigationManager.NavigateTo($"{ServiceRoutes.AdminLogin}?returnUrl={NavigationManager.Uri}");
+        await IdentityService.SignOutAsync();
+        NavigationManager.NavigateTo(ServiceRoutes.Home);
     }
 
     private class WeatherForecast

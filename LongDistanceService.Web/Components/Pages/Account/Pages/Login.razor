@@ -1,13 +1,9 @@
-﻿@attribute [Route(template: ServiceRoutes.LoginType)]
+﻿@attribute [Route(template: ServiceRoutes.Identity.LoginType)]
 @using LongDistanceService.Web.Models.Identity
-@using LongDistanceService.Shared.Services.Identity
 @using LongDistanceService.Web.Components.Layout
 @using LongDistanceService.Web.Routes
-@using Microsoft.AspNetCore.Http.HttpResults
+@using LongDistanceService.Web.Services.Abstract
 
-@inject NavigationManager NavigationManager
-@inject IAuthenticationService AuthenticationService
-@inject IJSRuntime JsRuntime
 @layout EmptyLayout
 
 <PageTitle>Login</PageTitle>
@@ -21,8 +17,7 @@
     @if (Type != "admin"){
         <image class="media" src="res/road.jpg" autoplay muted loop></image>
     }
-
-
+    
     <div class="shell">
         <div class="login">
             <div class="loginTitle loginText">
@@ -72,41 +67,6 @@
             <div class="loginFooter loginText">
                 <h5>сайт мистера максонелиуса 2k24</h5>
             </div>
-
-            @* <div class=""> *@
-            @*     <h2 class="lds-title">Сервис Грузовых<br/>Автоперевозок</h2> *@
-            @*     @if (Type == "admin") *@
-            @*     { *@
-            @*         <EditForm class="login-form" Model="Input" method="post" OnValidSubmit="LoginUser" FormName="login"> *@
-            @*             <DataAnnotationsValidator/> *@
-            @*             <ValidationSummary class="text-danger" role="alert"/> *@
-            @*             <div class="form-floating mb-3"> *@
-            @*                 <InputText @bind-Value="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com"/> *@
-            @*                 <label for="email" class="form-label">Email</label> *@
-            @*                 <ValidationMessage For="() => Input.Email" class="text-danger"/> *@
-            @*             </div> *@
-            @*             <div class="form-floating mb-3"> *@
-            @*                 <InputText type="password" @bind-Value="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password"/> *@
-            @*                 <label for="password" class="form-label">Password</label> *@
-            @*                 <ValidationMessage For="() => Input.Password" class="text-danger"/> *@
-            @*             </div> *@
-            @*             <div> *@
-            @*                 <button type="submit" class="w-100 btn btn-lg btn-primary">Log in</button> *@
-            @*             </div> *@
-            @*             <div> *@
-            @*                 $1$ <p> #1# *@
-            @*                 $1$     <a href="Account/ForgotPassword">Forgot your password?</a> #1# *@
-            @*                 $1$ </p> #1# *@
-            @*                 <p> *@
-            @*                     <a href="@(NavigationManager.GetUriWithQueryParameters("identity/register", new Dictionary<string, object?> { ["ReturnUrl"] = ReturnUrl }))">Register as a new user</a> *@
-            @*                 </p> *@
-            @*                 $1$ <p> #1# *@
-            @*                 $1$     <a href="Account/ResendEmailConfirmation">Resend email confirmation</a> #1# *@
-            @*                 $1$ </p> #1# *@
-            @*             </div> *@
-            @*         </EditForm> *@
-            @*     } *@
-            @* </div> *@
         </div>
     </div>
 </div>
@@ -116,24 +76,36 @@
     [SupplyParameterFromQuery] public string? ReturnUrl { get; set; }
     [SupplyParameterFromForm] public LoginModel Input { get; set; } = new();
 
-    protected override void OnInitialized()
+    [Inject] public IIdentityService IdentityService { get; set; } = null!;
+    [Inject] public NavigationManager NavigationManager { get; set; } = null!;
+    [Inject] public IScenarioService ScenarioService { get; set; } = null!;
+
+    protected override async Task OnInitializedAsync()
     {
-        base.OnInitialized();
+        await base.OnInitializedAsync();
+        
         if ((new List<string>() { "admin", "user" }).All(x => x != Type))
         {
-            NavigationManager.NavigateTo("notfound");
+            NavigationManager.NavigateTo(ServiceRoutes.Codes.NotFound);
         }
+
+        var result = await ScenarioService.TryAuthenticateUserAsync(returnUrl: ReturnUrl ?? string.Empty, tryRefreshToken: true, redirectToLogin: false);
+        
+        if (result != null)
+            NavigationManager.NavigateTo(ReturnUrl ?? ServiceRoutes.Home);
     }
 
     public async Task LoginUser()
     {
-        
-        var user = new ApplicationIdentityUser() { Email = Input.Email, Password = Input.Password };
-        var result = await AuthenticationService.AuthenticateUser(user);
-
-
-        if (result) 
-            NavigationManager.NavigateTo(ReturnUrl);
+        var result = await IdentityService.SignInAsync(Input.Email, Input.Password);
+        if (result != null)
+        {
+            IdentityService.AddRefreshToken(result.Value, Input.Email);
+            NavigationManager.NavigateTo(ReturnUrl ?? ServiceRoutes.Home);
+            
+        }
+        else 
+            NavigationManager.NavigateTo(ServiceRoutes.Codes.NotFound);
     }
 
 }

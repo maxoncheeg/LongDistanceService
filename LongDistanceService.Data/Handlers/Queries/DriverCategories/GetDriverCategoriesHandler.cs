@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LongDistanceService.Data.Handlers.Queries.DriverCategories;
 
-public class GetDriverCategoriesHandler(ApplicationDbContext context)
+public class GetDriverCategoriesHandler(IApplicationDbContext context)
     : IRequestHandler<GetDriverCategoriesRequest, IList<DriverCategoryResponse>>
 {
     public async Task<IList<DriverCategoryResponse>> Handle(GetDriverCategoriesRequest request,

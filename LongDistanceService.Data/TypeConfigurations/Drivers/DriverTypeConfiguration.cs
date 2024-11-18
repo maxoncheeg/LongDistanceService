@@ -1,4 +1,4 @@
-﻿using LongDistanceService.Domain.Entities.Drivers;
+﻿using LongDistanceService.Data.Entities.Drivers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -15,6 +15,7 @@ public class DriverTypeConfiguration : IEntityTypeConfiguration<Driver>
         builder.Property(p => p.Patronymic).HasMaxLength(32).IsRequired().HasColumnName("patronymic");
         builder.Property(p => p.BirthYear).HasDefaultValue(2004).IsRequired().HasColumnName("birth_year");
         builder.Property(p => p.Experience).HasDefaultValue(0).IsRequired().HasColumnName("experience");
+        builder.Property(p => p.CategoryId).HasColumnName("category_id");
         builder.Property(p => p.Id).HasColumnName("id");
         
         builder.ToTable("drivers", t =>

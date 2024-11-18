@@ -1,4 +1,4 @@
-﻿using LongDistanceService.Domain.Entities.Addresses;
+﻿using LongDistanceService.Data.Entities.Addresses;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

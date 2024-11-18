@@ -1,11 +1,14 @@
 using System.Reflection;
-using LongDistanceService.Shared.DependencyInjection;
+using LongDistanceService.Domain.Services.Abstract;
+using LongDistanceService.Domain.Services.Options;
 using LongDistanceService.Shared.DependencyInjection.Data;
-using LongDistanceService.Shared.DependencyInjection.Identity;
 using LongDistanceService.Shared.DependencyInjection.MediatR;
 using LongDistanceService.Web.Components;
-using LongDistanceService.Web.Services.Identity;
-using Microsoft.AspNetCore.Identity;
+using LongDistanceService.Web.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Components;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,18 +18,44 @@ builder.Services.AddRazorComponents()
 
 #region cookie&identity
 
-var identitySection = builder.Configuration.GetSection("IdentityScheme");
-var identitySchemeConstants = new IdentitySchemeConstants(identitySection["Application"] ?? string.Empty,
-    identitySection["External"] ?? string.Empty);
 
-builder.Services.AddSingleton<IIdentitySchemeConstants>(identitySchemeConstants);
+var jwtOptions = builder.Configuration
+    .GetSection("JwtOptions")
+    .Get<JwtOptions>();
 
-builder.Services.AddAuthentication(options =>
+if (jwtOptions == null) throw new ApplicationException("JwtOptions == null");
+
+builder.Services.AddSingleton(jwtOptions);
+
+builder.Services
+    .AddAuthentication(opt =>
     {
-        options.DefaultScheme = IdentityConstants.ApplicationScheme;
-        options.DefaultSignInScheme = identitySchemeConstants.ExternalScheme;
+        opt.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+        opt.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+        opt.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
     })
-    .AddCookie();
+    .AddJwtBearer(opts =>
+    {
+        opts.SaveToken = true;
+        //convert the string signing key to byte array
+        opts.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = jwtOptions.Issuer,
+            ValidAudience = jwtOptions.Audience,
+            IssuerSigningKey = jwtOptions.SymmetricSecurityKey
+        };
+    }).AddCookie();
+
+builder.Services.AddAuthorization();
+
+builder.Services.AddHttpContextAccessor()
+    .AddDomainAuthorizationServices()
+    .AddAuthorizationServices();
+
 
 #endregion
 
@@ -34,10 +63,9 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
                        throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
 builder.Services.AddPostgresDatabase(connectionString);
-builder.Services.AddApplicationIdentity().AddCascadingAuthenticationState();
-builder.Services.AddScoped<ITestService, TestService>();
 
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly())).AddMediatRHandlers();
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()))
+    .AddMediatRHandlers();
 
 var app = builder.Build();
 
@@ -50,11 +78,16 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseStaticFiles();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.UseAntiforgery();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
+
+
 
 app.Run();

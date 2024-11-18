@@ -1,4 +1,4 @@
-﻿using LongDistanceService.Domain.Entities;
+﻿using LongDistanceService.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

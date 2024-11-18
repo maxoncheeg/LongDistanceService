@@ -1,17 +1,17 @@
 ﻿using System.Reflection;
-using LongDistanceService.Domain.Entities;
-using LongDistanceService.Domain.Entities.Addresses;
-using LongDistanceService.Domain.Entities.Cargoes;
-using LongDistanceService.Domain.Entities.Drivers;
-using LongDistanceService.Domain.Entities.Personals;
-using LongDistanceService.Domain.Entities.Vehicles;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using LongDistanceService.Data.Entities;
+using LongDistanceService.Data.Entities.Addresses;
+using LongDistanceService.Data.Entities.Cargoes;
+using LongDistanceService.Data.Entities.Drivers;
+using LongDistanceService.Data.Entities.Identity;
+using LongDistanceService.Data.Entities.Personals;
+using LongDistanceService.Data.Entities.Vehicles;
 using Microsoft.EntityFrameworkCore;
 
 namespace LongDistanceService.Data.Contexts;
 
 public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-    : IdentityDbContext(options), IApplicationDbContext
+    : DbContext(options), IApplicationDbContext
 {
     public IQueryable<City> Cities => Set<City>();
     public IQueryable<Street> Streets => Set<Street>();
@@ -30,16 +30,34 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public IQueryable<OrderDriver> OrderDrivers => Set<OrderDriver>();
     public IQueryable<OrderCargo> OrderCargoes => Set<OrderCargo>();
     public IQueryable<Order> Orders => Set<Order>();
+    public IQueryable<User> Users => Set<User>();
+    public IQueryable<MenuTab> MenuTabs => Set<MenuTab>();
+    public IQueryable<MenuTabRight> MenuTabRights => Set<MenuTabRight>();
     
+    public void Create<TEntity>(TEntity entity) where TEntity : class
+    {
+        Set<TEntity>().Add(entity);
+    }
+
+    public new void Update<TEntity>(TEntity entity) where TEntity : class
+    {
+        Set<TEntity>().Update(entity);
+    }
+
+    public void Delete<TEntity>(TEntity entity) where TEntity : class
+    {
+        Set<TEntity>().Remove(entity);
+    }
+
+    public async Task SaveAsync()
+    {
+        await SaveChangesAsync();
+    }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
         
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-    }
-    
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        base.OnConfiguring(optionsBuilder);
     }
 }

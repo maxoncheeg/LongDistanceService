@@ -1,10 +1,56 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿@using LongDistanceService.Web.Services.Abstract
+@using Microsoft.AspNetCore.Authentication.JwtBearer
+@using Microsoft.AspNetCore.Authorization
+@using IAuthorizationService = LongDistanceService.Web.Services.Abstract.IIdentityService
+@using LongDistanceService.Web.Routes
+@using MediatR
+@using LongDistanceService.Domain.CQRS.Queries.Menus
+@using LongDistanceService.Domain.CQRS.Responses.Menus
+@using LongDistanceService.Domain.Models.Abstract
+
+<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">LongDistanceService.Web</a>
+        <a class="navbar-brand" style="font-size: 12pt; font-family: 'Cascadia Mono', serif" href="@ServiceRoutes.Home">Long Distance Service</a>
     </div>
 </div>
 
+<style>
+    .dropdown-menu .dropdown-menu {
+    	top: auto;
+    	left: 100%;
+    	transform: translateY(-2rem);
+    }
+    .dropdown-item + .dropdown-menu {
+    	display: none;
+    }
+    .dropdown-item.submenu::after {
+    	content: '▸';
+    	margin-left: 0.5rem;
+    }
+    .dropdown-item:hover + .dropdown-menu,
+    .dropdown-menu:hover {
+    	display: block;
+    }
+</style>
+
 <input type="checkbox" title="Navigation menu" class="navbar-toggler"/>
+
+@if (IsAdmin)
+{
+    <div class="nav">
+        <!-- Default dropend button -->
+        <div class="nav-item px-3 btn-group dropend">
+            @*dropend*@
+            <button type="button" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                Справочники
+            </button>
+
+            <div class="dropdown-menu">
+                @((MarkupString)Menu)
+            </div>
+        </div>
+    </div>
+}
 
 <div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
     <nav class="flex-column">
@@ -15,7 +61,7 @@
         </div>
 
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
+            <NavLink class="nav-link" href='counter'>
                 <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
             </NavLink>
         </div>
@@ -27,3 +73,52 @@
         </div>
     </nav>
 </div>
+
+
+@code{
+    [Inject] public IAuthorizationService IdentityService { get; set; } = null!;
+    [Inject] public ISecurityService SecurityService { get; set; } = null!;
+    [Inject] public IScenarioService ScenarioService { get; set; } = null!;
+    [Inject] public IMediator Mediator { get; set; } = null!;
+
+    public string Menu { get; set; } = string.Empty;
+
+    public bool IsAdmin { get; set; } = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        var result = await ScenarioService.TryAuthenticateUserAsync(tryRefreshToken: false);
+
+        if (result != null)
+        {
+            IsAdmin = await SecurityService.IsAdminAsync(result.User);
+            if (IsAdmin)
+            {
+                var menus = await Mediator.Send(new GetMenuRequest() { UserId = result.User.Id });
+                Menu = ParseMenuToHtmlDropdown([..menus]);
+            }
+        }
+    }
+
+    private string ParseMenuToHtmlDropdown(IList<IMenuItem> menu)
+    {
+        string html = "";
+
+        foreach (var item in menu)
+            if (item.Children == null)
+            {
+                string a = @"<a class='dropdown-item' href='" + item.Route + "'>" + item.Name + "</a>";
+                html += a;
+            }
+            else
+            {
+                string a = @"<a class='dropdown-item submenu'>" + item.Name + "</a>";
+                string dropdown = @"<div class='dropdown-menu'>" + ParseMenuToHtmlDropdown(item.Children) + "</div>";
+                html += a + dropdown;
+            }
+
+        return html;
+    }
+
+}

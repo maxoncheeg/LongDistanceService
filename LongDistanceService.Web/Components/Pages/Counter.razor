@@ -3,6 +3,7 @@
 @using LongDistanceService.Domain.CQRS.Queries.DriverCategories
 @using LongDistanceService.Domain.CQRS.Responses.DriverCategories
 @using LongDistanceService.Shared.DependencyInjection
+@using LongDistanceService.Web.Services.Abstract
 @rendermode InteractiveServer
 
 @inject IJSRuntime JS
@@ -12,9 +13,9 @@
 
 <h1>Counter</h1>
 
-@* <p role="status">Current count: @currentCount</p> *@
-@* *@
-@* <button class="btn btn-primary" @onclick="IncrementCount">Click me</button> *@
+<p role="status">Current count: @currentCount</p>
+
+<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
 
 <div>
     <button @onclick="GetDriverCategories">GET DRIVER CATEGORIES</button>
@@ -27,20 +28,41 @@
 @code {
     private int currentCount = 0;
     [Inject] public IMediator Mediator { get; set; } = null!;
+    [Inject] public ISecurityService SecurityService { get; set; } = null!;
+    [Inject] public IIdentityService IdentityService { get; set; } = null!;
+    [Inject] public NavigationManager NavigationManager { get; set; } = null!;
     public IList<DriverCategoryResponse> Response { get; set; } = [];
 
 
     protected override async Task OnInitializedAsync()
     {
+        try
+        {
+            var token = await IdentityService.ExtractTokenAsync();
+
+            if (token != null)
+            {
+                var user = await SecurityService.ValidateTokenAsync(token);
+                if (user != null)
+                    await SecurityService.IsAdminAsync(user);
+                else
+                {
+                    NavigationManager.NavigateTo("/refresh");
+                }
+            }
+        }
+        catch
+        {
+        }
         await base.OnInitializedAsync();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        var token = new CancellationToken();
-        Response = await Mediator.Send(new GetDriverCategoriesRequest(), token);
+        //var token = new CancellationToken();
+        //Response = await Mediator.Send(new GetDriverCategoriesRequest(), token);
         
-        StateHasChanged();
+        //StateHasChanged();
         
         await base.OnAfterRenderAsync(firstRender);
     }

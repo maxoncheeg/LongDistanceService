@@ -1,7 +1,57 @@
 ﻿@page "/"
+@using LongDistanceService.Web.Models.Identity
+@using LongDistanceService.Web.Services.Abstract
+@using LongDistanceService.Domain.Services.Abstract
 
 <PageTitle>Home</PageTitle>
 
 <h1>Hello, world!</h1>
 
-Welcome to your new app.
+@* <form class="login-form" method="post" @onsubmit="LoginUser" @formname="loginTest"> *@
+@*     $1$ <ValidationSummary class="text-danger" role="alert"/> #1# *@
+@*     <div> *@
+@*         <h3 class="loginText" style="color:aliceblue">Вход в сервис для Администратора</h3> *@
+@*     </div> *@
+@*     <div class="form-floating mb-3"> *@
+@*         <input name="login" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com"/> *@
+@*         <label for="login" class="form-label">Почта</label> *@
+@*     </div> *@
+@*     <div class="form-floating mb-3"> *@
+@*         <input type="password" name="password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password"/> *@
+@*         <label for="password" class="form-label">Пароль</label> *@
+@*     </div> *@
+@*     <div> *@
+@*         <button type="submit" class="w-100 btn btn-dark btn-lg">ВХОД</button> *@
+@*     </div> *@
+@*     <div> *@
+@*         $1$ <p> #1# *@
+@*         $1$     <a href="Account/ForgotPassword">Forgot your password?</a> #1# *@
+@*         $1$ </p> #1# *@
+@*         $1$ <p> #1# *@
+@*         $1$     <a class="link-light loginText" href="@(NavigationManager.GetUriWithQueryParameters("identity/register", new Dictionary<string, object?> { ["ReturnUrl"] = ReturnUrl }))">Зарегистрироваться</a> #1# *@
+@*         $1$ </p> #1# *@
+@*     </div> *@
+@*      *@
+@*     <AntiforgeryToken /> *@
+@* </form> *@
+
+
+@code{
+    [SupplyParameterFromForm(FormName = "loginTest")] public string Login { get; set; } = string.Empty;
+    [SupplyParameterFromForm(FormName = "loginTest")] public string Password { get; set; } = string.Empty;
+    [Inject] IIdentityService IdentityService { get; set; } = null!;
+    [Inject] IPasswordHasher PasswordHasher { get; set; } = null!;
+    [Inject] public NavigationManager NavigationManager { get; set; }
+
+    protected override Task OnInitializedAsync()
+    {
+        //Console.WriteLine("\n\n\n" + PasswordHasher.Hash("123") + "\n\n\n");
+        return base.OnInitializedAsync();
+    }
+
+    public async Task LoginUser()
+    {
+
+    }
+
+}
