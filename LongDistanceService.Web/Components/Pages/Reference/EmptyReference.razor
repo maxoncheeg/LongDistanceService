@@ -1,6 +1,13 @@
-﻿@page "/references/{type}"
+﻿@using LongDistanceService.Web.Routes
+@attribute [Route(ServiceRoutes.Reference.Blank)]
 
-<h3>Welcome to REFERENCE OF <span style="color: #0b5ed7">@Type</span></h3>
+
+<div class="gradientAnimation animationBox"></div>
+<div class="messageBox">
+    <h3 class="message">
+        Скоро здесь будет информация о таблице <span style="color: #b6effb">@Type</span>
+    </h3>
+</div>
 
 @code {
     [Parameter] public string Type { get; set; } = null!;

@@ -1,0 +1,29 @@
+﻿.sqlBox {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    display: flex;
+    flex-direction: row;
+    height: 26vh;
+}
+
+.sqlBox__item{
+    flex: 1;
+    margin: auto 15px;
+}
+
+.sqlText {
+    font-family: "Cascadia Mono", serif;
+}
+
+@media (width <= 800px) {
+    .sqlBox {
+        /*width: 40%;*/
+    }
+}
+
+@media (width > 800px) {
+    .sqlBox {
+        /*width: 80%;*/
+    }
+}

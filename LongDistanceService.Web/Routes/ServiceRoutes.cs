@@ -22,4 +22,13 @@ public static class ServiceRoutes
     {
         public const string NotFound = "notfound";
     }
+    
+    public static class Reference
+    {
+        private const string ReferenceRoute = "reference";
+
+        public const string Blank = ReferenceRoute + "/blank/{type}";
+        
+        public const string Sql = ReferenceRoute + "/sql";
+    }
 }

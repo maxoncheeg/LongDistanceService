@@ -1,4 +1,5 @@
 ﻿using LongDistanceService.Data.Contexts;
+using LongDistanceService.Data.Contexts.Abstract;
 using LongDistanceService.Domain.CQRS.Queries.Users;
 using MediatR;
 using Microsoft.EntityFrameworkCore;

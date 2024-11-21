@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using LongDistanceService.Data.Contexts.Abstract;
 using LongDistanceService.Data.Entities;
 using LongDistanceService.Data.Entities.Addresses;
 using LongDistanceService.Data.Entities.Cargoes;
@@ -52,6 +53,16 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public async Task SaveAsync()
     {
         await SaveChangesAsync();
+    }
+
+    public IQueryable<IList<object>> SqlQuery(string query)
+    {
+        return Database.SqlQueryRaw<List<object>>(query);
+    }
+
+    public int ExecuteSql(string query)
+    {
+        return Database.ExecuteSqlRaw(query);
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
