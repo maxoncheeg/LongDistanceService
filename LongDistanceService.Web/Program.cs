@@ -62,7 +62,7 @@ builder.Services.AddHttpContextAccessor()
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
                        throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
-builder.Services.AddPostgresDatabase(connectionString);
+builder.Services.AddPostgresDatabase(connectionString).AddPostresConnection(connectionString);
 
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()))
     .AddMediatRHandlers();

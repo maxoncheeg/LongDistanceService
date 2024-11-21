@@ -6,7 +6,7 @@ using LongDistanceService.Data.Entities.Identity;
 using LongDistanceService.Data.Entities.Personals;
 using LongDistanceService.Data.Entities.Vehicles;
 
-namespace LongDistanceService.Data.Contexts;
+namespace LongDistanceService.Data.Contexts.Abstract;
 
 public interface IApplicationDbContext : IDbContext
 {

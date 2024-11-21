@@ -1,9 +1,138 @@
-﻿<h3>Sql</h3>
+﻿@using LongDistanceService.Web.Routes
+@using MediatR
+@using LongDistanceService.Domain.CQRS.Responses.Sql
+@using LongDistanceService.Web.Models.Sql
+@using LongDistanceService.Domain.CQRS.Commands.Sql
 
-<form>
-    
-</form>
+@rendermode InteractiveServer
+@attribute [Route(ServiceRoutes.Reference.Sql)]
+
+<style>
+    .beauty{
+       margin-top: @Num
+       @Transition
+    }
+</style>
+
+<div class="sqlBox beauty ">
+    <div class="sqlBox__item">
+        <h3 class="sqlText">Напишите SQL запрос</h3>
+
+        <EditForm Model="Input" OnSubmit="SubmitMethod" FormName="sqlQuery">
+            <div class="mb-3 sqlText">
+                <label for="query" class="form-label sqlText">Введите ваш запрос:</label>
+                <InputTextArea class="form-control" @bind-Value="Input.Query" rows="3"></InputTextArea>
+            </div>
+            <input type="submit" class="sqlText btn-dark" content="Выполнить запрос"/>
+            <AntiforgeryToken/>
+        </EditForm>
+    </div>
+
+    <div class="sqlBox__item">
+        <h3 class="sqlText">Готовые команды</h3>
+        
+        <div class="list-group" style="height: 180px; overflow: auto; padding: 5px">
+            @for (int i = 0; i < ExampleQueries.Count; i++)
+            {
+                string tabId = i.ToString();
+                <h6 @onclick='@(() => SetQuery(tabId))' class="list-group-item list-group-item-action list-group-item-light">@ExampleQueries[i]</h6>
+            }
+        </div>
+    </div>
+</div>
+
+<div style="width: 80%; text-align: center; margin: 100px auto auto; height: 40vh; overflow: auto;">
+    @if (SelectResponse != null && QueryType == "select")
+    {
+        @if (SelectResponse.Message != string.Empty)
+        {
+            <h4 style="margin-top: 40px" class="sqlText">@SelectResponse.Message</h4>
+        }
+        else
+        {
+            <table class="table table-dark table-bordered sqlText">
+                <thead class="table-dark">
+                <tr >
+                    @foreach (var header in SelectResponse.Headers)
+                    {
+                        <th scope="col">@header</th>
+                    }
+                </tr>
+                </thead>
+
+                <tbody class="table-light">
+                @foreach (var row in SelectResponse.Rows)
+                {
+                    <tr >
+                        @foreach (var value in row)
+                        {
+                            <td>@value</td>
+                        }
+                    </tr>
+                }
+                </tbody>
+            </table>
+        }
+    }
+    @if (CommandResponse != null && QueryType == "command")
+    {
+        @if (CommandResponse.Message != string.Empty)
+        {
+            <h4 style="margin-top: 40px" class="sqlText">@CommandResponse.Message</h4>
+        }
+        else
+        {
+            <h4 style="margin-top: 40px" class="sqlText">Количество затронутых строк: @CommandResponse.Result</h4>
+        }
+    }
+</div>
 
 @code {
-    
+    [Inject] public IMediator Mediator { get; set; } = null!;
+
+    [SupplyParameterFromForm] public SqlModel Input { get; set; } = new();
+
+    public SqlSelectResponse? SelectResponse { get; set; } = null;
+    public SqlCommandResponse? CommandResponse { get; set; } = null;
+    public string QueryType { get; set; } = string.Empty;
+
+
+    public string Transition { get; set; } = string.Empty;
+    public string Num { get; set; } = "10%;";
+
+
+    public List<string> ExampleQueries =
+    [
+        "SELECT * FROM users",
+        "SELECT users.id, users.login, menu_tabs.name, menu_tab_rights.w AS \"Может добавлять?\" FROM USERS INNER JOIN menu_tab_rights ON menu_tab_rights.user_id = users.id INNER JOIN menu_tabs ON menu_tabs.id = menu_tab_rights.tab_id"
+    ];
+
+
+    public async Task SubmitMethod()
+    {
+        Input.Query = Input.Query.Trim();
+
+        if (Input.Query.StartsWith("select", StringComparison.InvariantCultureIgnoreCase))
+        {
+            QueryType = "select";
+            Transition = "transition: margin-top 3s;";
+            Num = "2%;";
+            SelectResponse = await Mediator.Send(new SelectSqlRequest(Input.Query));
+        }
+        else
+        {
+            QueryType = "command";
+            CommandResponse = await Mediator.Send(new CommandSqlRequest(Input.Query));
+        }
+        StateHasChanged();
+    }
+
+    public void SetQuery(string stringId)
+    {
+        if (!int.TryParse(stringId, out var id)) return;
+        if (id < 0 || id >= ExampleQueries.Count) return;
+        
+        Input.Query = ExampleQueries[id];
+    }
+
 }

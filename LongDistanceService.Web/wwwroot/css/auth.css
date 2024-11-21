@@ -1,4 +1,13 @@
-﻿.media {
+﻿html, body {
+    margin: 0;
+    padding: 0;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+.media {
     position: absolute;
     left: 0;
     top: 0;

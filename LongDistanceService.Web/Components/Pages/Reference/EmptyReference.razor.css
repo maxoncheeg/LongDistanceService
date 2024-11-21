@@ -1,0 +1,90 @@
+﻿.gradientAnimation {
+    background: linear-gradient(0deg, #38a3a4, #0d5b6e);
+    background-size: 800% 800%;
+
+    -webkit-animation: referenceBlankAnimation 14s ease infinite;
+    -moz-animation: referenceBlankAnimation 14s ease infinite;
+    -o-animation: referenceBlankAnimation 14s ease infinite;
+    animation: referenceBlankAnimation 14s ease infinite;
+}
+
+@-webkit-keyframes referenceBlankAnimation {
+    0% {
+        background-position: 76% 0%
+    }
+    50% {
+        background-position: 25% 100%
+    }
+    100% {
+        background-position: 76% 0%
+    }
+}
+
+@-moz-keyframes referenceBlankAnimation {
+    0% {
+        background-position: 76% 0%
+    }
+    50% {
+        background-position: 25% 100%
+    }
+    100% {
+        background-position: 76% 0%
+    }
+}
+
+@-o-keyframes referenceBlankAnimation {
+    0% {
+        background-position: 76% 0%
+    }
+    50% {
+        background-position: 25% 100%
+    }
+    100% {
+        background-position: 76% 0%
+    }
+}
+
+@keyframes referenceBlankAnimation {
+    0% {
+        background-position: 76% 0%
+    }
+    50% {
+        background-position: 25% 100%
+    }
+    100% {
+        background-position: 76% 0%
+    }
+}
+
+.animationBox {
+    position: relative;
+    height: 100vh;
+    width: 100%;
+    z-index: -2;
+}
+
+.boxContainer {
+    grid-template-columns: 35% 35% 30%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: grid;
+    width: 100%
+}
+
+.messageBox {
+    height: 100vh;
+    margin: -100vh auto auto;
+    grid-template-rows: 40% 20% 40%;
+    grid-template-columns: 20% 60% 20%;
+    display: grid;
+}
+
+.message {
+    color: aliceblue;
+    font-family: 'Cascadia Mono', serif;
+    text-align: center;
+    word-wrap: break-word;
+    grid-row: 2;
+    grid-column: 2;
+}
