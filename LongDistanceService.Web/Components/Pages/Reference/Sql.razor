@@ -3,6 +3,7 @@
 @using LongDistanceService.Domain.CQRS.Responses.Sql
 @using LongDistanceService.Web.Models.Sql
 @using LongDistanceService.Domain.CQRS.Commands.Sql
+@using LongDistanceService.Web.Services.Abstract
 
 @rendermode InteractiveServer
 @attribute [Route(ServiceRoutes.Reference.Sql)]
@@ -90,6 +91,10 @@
 @code {
     [Inject] public IMediator Mediator { get; set; } = null!;
 
+    [Inject] public NavigationManager NavigationManager { get; set; } = null!;
+    [Inject] public ISecurityService SecurityService { get; set; } = null!;
+    [Inject] public IScenarioService ScenarioService { get; set; } = null!;
+    
     [SupplyParameterFromForm] public SqlModel Input { get; set; } = new();
 
     public SqlSelectResponse? SelectResponse { get; set; } = null;
@@ -106,6 +111,18 @@
         "SELECT * FROM users",
         "SELECT users.id, users.login, menu_tabs.name, menu_tab_rights.w AS \"Может добавлять?\" FROM USERS INNER JOIN menu_tab_rights ON menu_tab_rights.user_id = users.id INNER JOIN menu_tabs ON menu_tabs.id = menu_tab_rights.tab_id"
     ];
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var authResult = await ScenarioService.TryAuthenticateUserAsync(returnUrl: ServiceRoutes.Reference.Sql, redirectToLogin: true);
+        if (authResult != null)
+        {
+            var haveAccess = await SecurityService.GetUserRightsToPageAsync(authResult.User, ServiceRoutes.Reference.Sql);
+            if(haveAccess is null) NavigationManager.NavigateTo(ServiceRoutes.Home);
+        }
+
+        await base.OnInitializedAsync();
+    }
 
 
     public async Task SubmitMethod()

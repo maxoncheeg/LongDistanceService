@@ -21,8 +21,8 @@ public class PostgreSqlConnection : ISqlConnection
         if (!query.Trim().StartsWith("select", StringComparison.InvariantCultureIgnoreCase))
             return new SqlQueryResult() { Message = "incorrect command" };
 
-        bool firstRow = true;
         List<string> headers = [];
+        List<Type> types = [];
         List<IList<string>> rows = [];
         await using var connection = new NpgsqlConnection(_connectionString);
 
@@ -31,16 +31,16 @@ public class PostgreSqlConnection : ISqlConnection
             await connection.OpenAsync();
             await using var command = new NpgsqlCommand(query, connection);
             await using var reader = await command.ExecuteReaderAsync();
-
+            
+            
+            for (int i = 0; i < reader.FieldCount; i++)
+            {
+                headers.Add(reader.GetName(i));
+                types.Add(reader.GetFieldType(i));
+            }
+            
             while (await reader.ReadAsync())
             {
-                if (firstRow)
-                {
-                    for (int i = 0; i < reader.FieldCount; i++)
-                        headers.Add(reader.GetName(i));
-                    firstRow = !firstRow;
-                }
-
                 List<string> row = [];
                 for (int i = 0; i < reader.FieldCount; i++)
                     row.Add(reader.GetValue(i).ToString() ?? "null");
@@ -58,6 +58,7 @@ public class PostgreSqlConnection : ISqlConnection
         return new SqlQueryResult()
         {
             Headers = headers,
+            HeaderTypes = types,
             Rows = rows
         };
     }

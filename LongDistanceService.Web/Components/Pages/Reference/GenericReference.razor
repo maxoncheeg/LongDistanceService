@@ -1,0 +1,123 @@
+﻿@using LongDistanceService.Web.Routes
+@using LongDistanceService.Web.Services.Abstract
+@using MediatR
+@using LongDistanceService.Domain.CQRS.Responses.Sql
+@using LongDistanceService.Domain.CQRS.Commands.Sql
+@using LongDistanceService.Domain.Models.Abstract
+@attribute [Route(ServiceRoutes.Reference.Generic)]
+
+@rendermode InteractiveServer
+
+
+@if (Rights != null)
+{
+    @if (Rights.Read)
+    {
+        <div style="width: 80%; text-align: center; margin: 50px auto auto; height: 40vh; overflow: auto;">
+            @if (Table != null)
+            {
+                @if (Table.Message != string.Empty)
+                {
+                    <h4 style="margin-top: 40px" class="sqlText">@Table.Message</h4>
+                }
+                else
+                {
+                    <table class="table table-dark table-bordered sqlText">
+                        <thead class="table-dark">
+                        <tr >
+                            @foreach (var header in Table.Headers)
+                            {
+                                <th scope="col">@header</th>
+                            }
+                        </tr>
+                        </thead>
+
+                        <tbody class="table-light">
+                        @foreach (var row in Table.Rows)
+                        {
+                            <tr >
+                                @foreach (var value in row)
+                                {
+                                    <td>@value</td>
+                                }
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                }
+            }
+        </div>
+    }
+
+    @if (Rights.Write)
+    {
+        <div style="width: 80%; text-align: center; margin: 10px auto auto; overflow: auto;">
+            <form  @formname="writeForm" method="post" @onsubmit="Alesha">
+                <AntiforgeryToken/>
+                @foreach (var data in WriteFormData)
+                {
+                    string key = data.Key;
+                    <label>@data.Key</label>
+                    <input @onchange="@(c => WriteFormData[key] = c.Value)"/>
+                }
+                <button type="submit" class="w-100 btn btn-dark btn-lg">погнали</button>
+
+            </form>
+        </div>
+    }
+
+    @if (Rights.Edit)
+    {
+        <div style="width: 80%; text-align: center; margin: 10px auto auto; overflow: auto;">
+            <p>ОГО ты умеешь изменять!</p>
+        </div>
+    }
+
+    @if (Rights.Delete)
+    {
+        <div style="width: 80%; text-align: center; margin: 10px auto auto; overflow: auto;">
+            <p>ОГО ты умеешь удалять!</p>
+        </div>
+    }
+}
+
+@code {
+    [Parameter] public string Type { get; set; } = null!;
+
+    [Inject] public IScenarioService ScenarioService { get; set; } = null!;
+    [Inject] public ISecurityService SecurityService { get; set; } = null!;
+    [Inject] public NavigationManager NavigationManager { get; set; } = null!;
+    [Inject] public IMediator Mediator { get; set; } = null!;
+
+    public SqlSelectResponse? Table { get; set; } = null;
+    public IUserRights? Rights { get; set; } = null;
+
+    public Dictionary<string, object> WriteFormData { get; set; } = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authResult = await ScenarioService.TryAuthenticateUserAsync(returnUrl: ServiceRoutes.Reference.ReferenceRoute + "/" + Type, redirectToLogin: true);
+        if (authResult != null)
+        {
+            var rights = await SecurityService.GetUserRightsToPageAsync(authResult.User, ServiceRoutes.Reference.ReferenceRoute + "/" + Type);
+            if (rights is null)
+                NavigationManager.NavigateTo(ServiceRoutes.Home);
+            else
+                Rights = rights;
+        }
+
+        Table = await Mediator.Send(new SelectSqlRequest($"select * from {Type}"));
+
+        foreach (var header in Table.Headers)
+            WriteFormData.Add(header, string.Empty);
+
+        await base.OnInitializedAsync();
+    }
+
+    public void Alesha()
+    {
+        var cccc = WriteFormData;
+        Console.Write("YEASS");
+    }
+
+}

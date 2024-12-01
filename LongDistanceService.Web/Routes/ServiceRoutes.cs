@@ -6,7 +6,7 @@ public static class ServiceRoutes
     
     public static class Identity
     {
-        private const string IdentityRoute = "identity";
+        public const string IdentityRoute = "identity";
         
         public const string Login = IdentityRoute + "/login";
         public const string Register = IdentityRoute + "/register";
@@ -25,9 +25,10 @@ public static class ServiceRoutes
     
     public static class Reference
     {
-        private const string ReferenceRoute = "reference";
+        public const string ReferenceRoute = "reference";
 
         public const string Blank = ReferenceRoute + "/blank/{type}";
+        public const string Generic = ReferenceRoute + "/{type}";
         
         public const string Sql = ReferenceRoute + "/sql";
     }

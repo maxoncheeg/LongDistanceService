@@ -10,6 +10,7 @@ using LongDistanceService.Domain.CQRS.Responses.DriverCategories;
 using LongDistanceService.Domain.CQRS.Responses.Menus;
 using LongDistanceService.Domain.CQRS.Responses.Sql;
 using LongDistanceService.Domain.CQRS.Responses.Users;
+using LongDistanceService.Domain.Models.Abstract;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -36,7 +37,9 @@ public static class MediatRHandlersExtensions
                 GetUserHandler>()
             .AddTransient<IRequestHandler<GetMenuRequest, IList<MenuItemResponse>>,
                 GetMenuHandler>()
-            .AddTransient<IRequestHandler<IsUserAdminRequest, bool>, IsUserAdminHandler>();
+            .AddTransient<IRequestHandler<GetUserRightsRequest, UserRightsResponse?>,
+                UserRightsHandler>()
+            .AddTransient<IRequestHandler<IsUserAdminRequest, bool>, UserRightsHandler>();
 
         #endregion
 

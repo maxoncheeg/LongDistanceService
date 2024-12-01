@@ -1,4 +1,5 @@
-﻿using LongDistanceService.Domain.CQRS.Queries.Users;
+﻿using LongDistanceService.Domain.CQRS.Queries.Menus;
+using LongDistanceService.Domain.CQRS.Queries.Users;
 using LongDistanceService.Domain.Models.Abstract;
 using LongDistanceService.Domain.Services.Abstract;
 using LongDistanceService.Web.Services.Abstract;
@@ -21,5 +22,10 @@ public class SecurityService(IMediator mediator, IAccessTokenService tokenServic
     public async Task<bool> IsAdminAsync(IUser user)
     {
         return await mediator.Send(new IsUserAdminRequest() { UserId = user.Id });
+    }
+
+    public async Task<IUserRights?> GetUserRightsToPageAsync(IUser user, string route)
+    {
+        return await mediator.Send(new GetUserRightsRequest(user, route));
     }
 }

@@ -1,10 +1,7 @@
-﻿using System.Reflection;
-using LongDistanceService.Data.Contexts;
-using LongDistanceService.Data.Contexts.Abstract;
+﻿using LongDistanceService.Data.Contexts.Abstract;
 using LongDistanceService.Domain.CQRS.Commands.Sql;
 using LongDistanceService.Domain.CQRS.Responses.Sql;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace LongDistanceService.Data.Handlers.Commands.Sql;
 
