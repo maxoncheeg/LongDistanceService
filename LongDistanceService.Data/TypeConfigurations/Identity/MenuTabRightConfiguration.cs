@@ -8,10 +8,10 @@ public class MenuTabRightConfiguration : IEntityTypeConfiguration<MenuTabRight>
 {
     public void Configure(EntityTypeBuilder<MenuTabRight> builder)
     {
-        builder.Property(p => p.R).HasColumnName("r");
-        builder.Property(p => p.W).HasColumnName("w");
-        builder.Property(p => p.E).HasColumnName("e");
-        builder.Property(p => p.D).HasColumnName("d");
+        builder.Property(p => p.R).HasColumnName("r").HasDefaultValue(false);
+        builder.Property(p => p.W).HasColumnName("w").HasDefaultValue(false);
+        builder.Property(p => p.E).HasColumnName("e").HasDefaultValue(false);
+        builder.Property(p => p.D).HasColumnName("d").HasDefaultValue(false);
         builder.Property(p => p.MenuTabId).HasColumnName("tab_id");
         builder.Property(p => p.UserId).HasColumnName("user_id");
 
