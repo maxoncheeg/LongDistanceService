@@ -1,0 +1,1 @@
+Copyright 2019 The Ruda Project Authors (https://github.com/marmonsalve/Ruda-new)

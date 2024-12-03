@@ -1,0 +1,23 @@
+﻿.bg-darkgreen{
+    background-color: #0D5B6E;
+}
+
+.bg-w{
+    background-color: white;
+}
+
+.bg-gray{
+    background-color: dimgray;
+}
+
+.c-dg{
+    color: #0D5B6E;
+}
+
+.c-g{
+    color: rgb(170, 170, 170);
+}
+
+.c-w{
+    color: white;
+}

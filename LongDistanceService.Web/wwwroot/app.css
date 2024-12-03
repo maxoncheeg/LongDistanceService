@@ -1,5 +1,11 @@
+@font-face {
+    font-family: 'Ruda';
+    src: url('./fonts/Ruda.ttf') format('truetype'),
+         url('./fonts/Ruda.woff') format('woff');
+}
+
 html, body {
-    font-family: 'Roboto Light', Roboto, serif;
+    font-family: 'Ruda', serif;
 }
 
 a, .btn-link {

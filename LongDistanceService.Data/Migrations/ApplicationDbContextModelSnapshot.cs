@@ -39,7 +39,9 @@ namespace LongDistanceService.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("сities", (string)null);
+                    b.HasAlternateKey("Name");
+
+                    b.ToTable("cities", (string)null);
                 });
 
             modelBuilder.Entity("LongDistanceService.Data.Entities.Addresses.Street", b =>
@@ -58,6 +60,8 @@ namespace LongDistanceService.Data.Migrations
                         .HasColumnName("name");
 
                     b.HasKey("Id");
+
+                    b.HasAlternateKey("Name");
 
                     b.ToTable("streets", (string)null);
                 });
@@ -82,6 +86,8 @@ namespace LongDistanceService.Data.Migrations
                         .HasColumnName("name");
 
                     b.HasKey("Id");
+
+                    b.HasAlternateKey("Name");
 
                     b.HasIndex("CategoryId");
 
@@ -109,6 +115,8 @@ namespace LongDistanceService.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasAlternateKey("Name");
+
                     b.HasIndex("UnitId");
 
                     b.ToTable("cargo_categories", (string)null);
@@ -130,6 +138,8 @@ namespace LongDistanceService.Data.Migrations
                         .HasColumnName("name");
 
                     b.HasKey("Id");
+
+                    b.HasAlternateKey("Name");
 
                     b.ToTable("units", (string)null);
                 });
@@ -219,7 +229,77 @@ namespace LongDistanceService.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasAlternateKey("Name");
+
                     b.ToTable("driver_categories", (string)null);
+                });
+
+            modelBuilder.Entity("LongDistanceService.Data.Entities.Identity.Application", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateOnly>("Created")
+                        .HasColumnType("date")
+                        .HasColumnName("created");
+
+                    b.Property<int>("CreatorId")
+                        .HasColumnType("integer")
+                        .HasColumnName("creator_id");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer")
+                        .HasColumnName("status");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatorId");
+
+                    b.ToTable("applications", (string)null);
+                });
+
+            modelBuilder.Entity("LongDistanceService.Data.Entities.Identity.ApplicationMessage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("AnsweredAt")
+                        .HasColumnType("integer")
+                        .HasColumnName("answered_at");
+
+                    b.Property<int>("ApplicationId")
+                        .HasColumnType("integer")
+                        .HasColumnName("application_id");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)")
+                        .HasColumnName("text");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("timestamp");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("application_messages", (string)null);
                 });
 
             modelBuilder.Entity("LongDistanceService.Data.Entities.Identity.MenuTab", b =>
@@ -236,6 +316,7 @@ namespace LongDistanceService.Data.Migrations
                         .HasColumnName("dll");
 
                     b.Property<string>("FunctionName")
+                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("function");
 
@@ -257,6 +338,10 @@ namespace LongDistanceService.Data.Migrations
                         .HasColumnName("parent_id");
 
                     b.HasKey("Id");
+
+                    b.HasAlternateKey("FunctionName");
+
+                    b.HasAlternateKey("Name");
 
                     b.ToTable("menu_tabs", (string)null);
                 });
@@ -479,6 +564,8 @@ namespace LongDistanceService.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasAlternateKey("Name");
+
                     b.ToTable("banks", (string)null);
                 });
 
@@ -535,6 +622,8 @@ namespace LongDistanceService.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasAlternateKey("PassportSeries");
+
+                    b.HasAlternateKey("Phone");
 
                     b.ToTable("individuals", (string)null);
                 });
@@ -613,6 +702,8 @@ namespace LongDistanceService.Data.Migrations
                         .HasColumnName("tin");
 
                     b.HasKey("Id");
+
+                    b.HasAlternateKey("Phone");
 
                     b.HasAlternateKey("TIN");
 
@@ -713,6 +804,8 @@ namespace LongDistanceService.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasAlternateKey("Name");
+
                     b.ToTable("vehicle_brands", (string)null);
                 });
 
@@ -737,7 +830,7 @@ namespace LongDistanceService.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BrandId");
+                    b.HasAlternateKey("BrandId", "Name");
 
                     b.ToTable("vehicle_models", (string)null);
                 });
@@ -773,6 +866,36 @@ namespace LongDistanceService.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("LongDistanceService.Data.Entities.Identity.Application", b =>
+                {
+                    b.HasOne("LongDistanceService.Data.Entities.Identity.User", "User")
+                        .WithMany("Applications")
+                        .HasForeignKey("CreatorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("LongDistanceService.Data.Entities.Identity.ApplicationMessage", b =>
+                {
+                    b.HasOne("LongDistanceService.Data.Entities.Identity.Application", "Application")
+                        .WithMany("Messages")
+                        .HasForeignKey("ApplicationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LongDistanceService.Data.Entities.Identity.User", "User")
+                        .WithMany("ApplicationMessages")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Application");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("LongDistanceService.Data.Entities.Identity.MenuTabRight", b =>
@@ -988,6 +1111,11 @@ namespace LongDistanceService.Data.Migrations
                     b.Navigation("Drivers");
                 });
 
+            modelBuilder.Entity("LongDistanceService.Data.Entities.Identity.Application", b =>
+                {
+                    b.Navigation("Messages");
+                });
+
             modelBuilder.Entity("LongDistanceService.Data.Entities.Identity.MenuTab", b =>
                 {
                     b.Navigation("Rights");
@@ -995,6 +1123,10 @@ namespace LongDistanceService.Data.Migrations
 
             modelBuilder.Entity("LongDistanceService.Data.Entities.Identity.User", b =>
                 {
+                    b.Navigation("ApplicationMessages");
+
+                    b.Navigation("Applications");
+
                     b.Navigation("Rights");
                 });
 

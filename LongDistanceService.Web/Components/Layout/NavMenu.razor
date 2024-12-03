@@ -7,6 +7,8 @@
 @using LongDistanceService.Domain.CQRS.Queries.Menus
 @using LongDistanceService.Domain.CQRS.Responses.Menus
 @using LongDistanceService.Domain.Models.Abstract
+@using LongDistanceService.Domain.Services.Abstract
+@using LongDistanceService.Web.Models.Scenario.Abstract
 
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
@@ -54,23 +56,40 @@
 
 <div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
     <nav class="flex-column">
+        @if (AuthResult != null)
+        {
+            <div class="nav-item px-3">
+                @if (IsAdmin)
+                {
+                    <div class="c-w">Хорошей работы, @AuthResult.User.Login &#128666;</div>
+                }
+                else
+                {
+                    <div class="c-w">Здравствуйте, @AuthResult.User.Login</div>
+                }
+            </div>
+        }
+        
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
+            <NavLink class="nav-link" href="@ServiceRoutes.Home" Match="NavLinkMatch.All">
+                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> ГЛАВНАЯ
             </NavLink>
         </div>
 
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href='counter'>
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
+            <NavLink class="nav-link" href='weather'>
+                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> ПОГОДА
             </NavLink>
         </div>
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="weather">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
-            </NavLink>
-        </div>
+        @if (AuthResult != null)
+        {
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="@ServiceRoutes.Application.List">
+                    <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> ЗАЯВКИ
+                </NavLink>
+            </div>
+        }
     </nav>
 </div>
 
@@ -84,18 +103,19 @@
     public string Menu { get; set; } = string.Empty;
 
     public bool IsAdmin { get; set; } = false;
+    public IAuthResult? AuthResult { get; set; } = null;
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        var result = await ScenarioService.TryAuthenticateUserAsync(tryRefreshToken: false);
+        AuthResult = await ScenarioService.TryAuthenticateUserAsync(tryRefreshToken: false);
 
-        if (result != null)
+        if (AuthResult != null)
         {
-            IsAdmin = await SecurityService.IsAdminAsync(result.User);
+            IsAdmin = await SecurityService.IsAdminAsync(AuthResult.User);
             if (IsAdmin)
             {
-                var menus = await Mediator.Send(new GetMenuRequest() { UserId = result.User.Id });
+                var menus = await Mediator.Send(new GetMenuRequest() { UserId = AuthResult.User.Id });
                 Menu = ParseMenuToHtmlDropdown([..menus]);
             }
         }

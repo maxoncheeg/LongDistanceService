@@ -34,7 +34,9 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public IQueryable<User> Users => Set<User>();
     public IQueryable<MenuTab> MenuTabs => Set<MenuTab>();
     public IQueryable<MenuTabRight> MenuTabRights => Set<MenuTabRight>();
-    
+    public IQueryable<Application> Applications => Set<Application>();
+    public IQueryable<ApplicationMessage> ApplicationMessages  => Set<ApplicationMessage>();
+
     public void Create<TEntity>(TEntity entity) where TEntity : class
     {
         Set<TEntity>().Add(entity);

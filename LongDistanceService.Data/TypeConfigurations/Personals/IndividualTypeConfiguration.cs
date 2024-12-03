@@ -15,9 +15,10 @@ public class IndividualTypeConfiguration : IEntityTypeConfiguration<Individual>
         builder.Property(p => p.PassportDate).HasMaxLength(10).IsRequired().HasColumnName("passport_date");
         builder.Property(p => p.PassportIssued).HasMaxLength(64).IsRequired().HasColumnName("passport_issued");
         builder.Property(p => p.PassportSeries).HasMaxLength(10).IsRequired().HasColumnName("passport_series");
-        builder.Property(p => p.Id).HasColumnName("id");
+        builder.Property(p => p.Id).HasColumnName("id").ValueGeneratedOnAdd();
 
         builder.ToTable("individuals").HasKey(p => p.Id);
         builder.HasAlternateKey(p => p.PassportSeries);
+        builder.HasAlternateKey(p => p.Phone);
     }
 }

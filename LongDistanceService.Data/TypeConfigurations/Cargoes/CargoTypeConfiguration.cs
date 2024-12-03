@@ -10,7 +10,9 @@ public class CargoTypeConfiguration : IEntityTypeConfiguration<Cargo>
     {
         builder.Property(p => p.Name).HasMaxLength(64).IsRequired().HasColumnName("name");
         builder.Property(p => p.CategoryId).HasColumnName("category_id");
-        builder.Property(p => p.Id).HasColumnName("id");
+        builder.Property(p => p.Id).HasColumnName("id").ValueGeneratedOnAdd();
+        
+        builder.HasAlternateKey(p => p.Name);
 
         builder.ToTable("cargoes").HasKey(p => p.Id);
     }

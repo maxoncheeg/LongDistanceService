@@ -1,6 +1,6 @@
 ﻿using LongDistanceService.Domain.Models.Abstract;
 
-namespace LongDistanceService.Web.Services.Abstract;
+namespace LongDistanceService.Domain.Services.Abstract;
 
 public interface ISecurityService
 {

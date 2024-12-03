@@ -10,10 +10,13 @@ public class VehicleModelTypeConfiguration : IEntityTypeConfiguration<VehicleMod
     {
         builder.Property(p => p.Name).IsRequired().HasMaxLength(32).HasColumnName("name");
         builder.Property(p => p.BrandId).HasColumnName("brand_id");
-        builder.Property(p => p.Id).HasColumnName("id");
-        
+        builder.Property(p => p.Id).HasColumnName("id").ValueGeneratedOnAdd();
+
         builder.ToTable("vehicle_models").HasKey(k => k.Id);
-        
+
+
+        builder.HasAlternateKey(p => new { p.BrandId, p.Name });
+
         builder.HasMany(p => p.Vehicles)
             .WithOne(p => p.Model)
             .HasForeignKey(p => p.ModelId);

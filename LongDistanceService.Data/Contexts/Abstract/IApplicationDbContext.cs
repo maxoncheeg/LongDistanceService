@@ -37,4 +37,6 @@ public interface IApplicationDbContext : IDbContext
     IQueryable<User> Users { get; }
     IQueryable<MenuTab> MenuTabs { get; }
     IQueryable<MenuTabRight> MenuTabRights { get; }
+    IQueryable<Application> Applications { get; }
+    IQueryable<ApplicationMessage> ApplicationMessages { get; }
 }

@@ -6,7 +6,7 @@
 
 <PageTitle>Weather</PageTitle>
 
-<h1>Weather для шоколадного</h1>
+<h1>Weather для шоколадного @Name</h1>
 <p>This component demonstrates showing data.</p>
 
 @if (forecasts == null)
@@ -17,7 +17,7 @@
 }
 else
 {
-    <table style="@style" class="table">
+    <table class="table">
         <thead>
         <tr>
             <th>Date</th>
@@ -53,7 +53,7 @@ else
     [Inject] public IIdentityService IdentityService { get; set; } = null!;
     [Inject] public IScenarioService ScenarioService { get; set; } = null!;
 
-    public string style { get; set; } = "background-color:blue";
+    public string Name { get; set; } = string.Empty;
 
     public class EmptyModel
     {
@@ -65,7 +65,8 @@ else
     {
         // Simulate asynchronous loading to demonstrate streaming rendering
 
-        await ScenarioService.TryAuthenticateUserAsync(returnUrl: NavigationManager.Uri, redirectToLogin: true);
+        var result = await ScenarioService.TryAuthenticateUserAsync(returnUrl: NavigationManager.Uri, redirectToLogin: true);
+        Name = result.User.Login;
 
         await Task.Delay(500);
 

@@ -10,7 +10,7 @@ public class UserTypeConfiguration : IEntityTypeConfiguration<User>
     {
         builder.Property(p => p.Login).HasColumnName("login");
         builder.Property(p => p.Password).HasColumnName("password");
-        builder.Property(p => p.Id).HasColumnName("id");
+        builder.Property(p => p.Id).HasColumnName("id").ValueGeneratedOnAdd();
 
         builder.ToTable("users").HasKey(p => p.Id);
 

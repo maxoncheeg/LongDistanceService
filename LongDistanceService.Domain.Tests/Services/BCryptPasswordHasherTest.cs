@@ -20,7 +20,7 @@ public class BCryptPasswordHasherTest
     public void HashAndVerifyTest(string password)
     {
         var hash = _passwordHasher.Hash(password);
-        
+        Console.WriteLine(hash);
         Assert.IsTrue(_passwordHasher.VerifyHashedPassword(hash, password));
     }
 }

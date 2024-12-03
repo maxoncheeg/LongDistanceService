@@ -1,0 +1,55 @@
+﻿.box{
+    width: 100%;
+    overflow: hidden;
+    text-align: center;
+    display: grid;
+    grid-template-rows: 10vh 70vh 20vh;
+}
+
+.titleBox{
+    grid-row:1;
+    padding: 15px;
+}
+
+.chatBox{
+    grid-row: 2;
+    display: flex;
+    flex-direction: column;
+    margin: 20px;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.01);
+}
+
+.messageRow{
+    width: 100%;
+    display: flex;
+}
+
+.toLeft{
+    justify-content: left;
+}
+
+.toRight{
+    justify-content: right;
+}
+
+.message{
+    width: 40%;
+    padding: 5px;
+    margin: 20px;
+}
+
+.rightBorder{
+    border-radius: 10px 10px 0 10px;
+}
+
+.leftBorder{
+    border-radius: 10px 10px 10px 0;
+}
+
+.buttonBox{
+    display: flex;
+    flex-direction: column;
+    grid-row:3;
+}
+

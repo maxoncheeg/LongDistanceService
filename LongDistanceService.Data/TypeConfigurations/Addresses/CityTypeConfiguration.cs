@@ -9,9 +9,11 @@ public class CityTypeConfiguration : IEntityTypeConfiguration<City>
     public void Configure(EntityTypeBuilder<City> builder)
     {
         builder.Property(p => p.Name).HasMaxLength(32).IsRequired().HasColumnName("name");
-        builder.Property(p => p.Id).HasColumnName("id");
+        builder.Property(p => p.Id).HasColumnName("id").ValueGeneratedOnAdd();
         
         builder.ToTable("cities").HasKey(p => p.Id);
+        
+        builder.HasAlternateKey(p => p.Name);
         
         builder.HasMany(p => p.ReceiveOrders).WithOne(p => p.ReceiveCity).HasForeignKey(p => p.ReceiveCityId);
         builder.HasMany(p => p.SendOrders).WithOne(p => p.SendCity).HasForeignKey(p => p.SendCityId);
