@@ -32,4 +32,21 @@ public static class ServiceRoutes
         
         public const string Sql = ReferenceRoute + "/sql";
     }
+    
+    public static class Application
+    {
+        public const string Route = "application";
+
+        public const string List = Route + "/list";
+        public const string Chat = Route + "/{id}";
+        public const string Create = Route + "/create";
+    }
+    
+    public static class Admin
+    {
+        public const string Route = "admin";
+
+        public const string Excel = Route + "/excel";
+        public const string Word = Route + "/word";
+    }
 }

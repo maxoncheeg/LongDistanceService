@@ -20,10 +20,11 @@ public class LegalTypeConfiguration : IEntityTypeConfiguration<Legal>
         builder.Property(p => p.BankId).HasColumnName("bank_id");
         builder.Property(p => p.StreetId).HasColumnName("street_id");
         builder.Property(p => p.CityId).HasColumnName("city_id");
-        builder.Property(p => p.Id).HasColumnName("id");
+        builder.Property(p => p.Id).HasColumnName("id").ValueGeneratedOnAdd();
 
         builder.ToTable("legals").HasKey(p => p.Id);
         builder.HasAlternateKey(p => p.TIN);
         builder.HasAlternateKey(p => new { p.BankId, p.BankAccount });
+        builder.HasAlternateKey(p => p.Phone);
     }
 }

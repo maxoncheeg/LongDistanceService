@@ -20,4 +20,11 @@ public static class ServicesExtensions
             .AddScoped<IScenarioService, ScenarioService>()
             .AddScoped<IPasswordHasher, BCryptPasswordHasher>();
     }
+
+    public static IServiceCollection AddLdsServices(this IServiceCollection @this)
+    {
+        return @this
+            .AddScoped<IApplicationService, ApplicationService>()
+            .AddScoped<IExcelSqlConverter, ExcelSqlConverter>();
+    }
 }

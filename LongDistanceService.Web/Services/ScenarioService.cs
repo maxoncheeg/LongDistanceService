@@ -1,4 +1,5 @@
-﻿using LongDistanceService.Web.Models.Scenario;
+﻿using LongDistanceService.Domain.Services.Abstract;
+using LongDistanceService.Web.Models.Scenario;
 using LongDistanceService.Web.Models.Scenario.Abstract;
 using LongDistanceService.Web.Routes;
 using LongDistanceService.Web.Services.Abstract;

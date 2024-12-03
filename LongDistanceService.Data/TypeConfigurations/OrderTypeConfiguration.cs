@@ -12,7 +12,7 @@ public class OrderTypeConfiguration : IEntityTypeConfiguration<Order>
         builder.Property(p => p.ReceiveHouseNumber).IsRequired().HasColumnName("receive_house");
         builder.Property(p => p.RouteLength).HasPrecision(9, 2).IsRequired().HasColumnName("route_length");
         builder.Property(p => p.LoadingDate).HasColumnName("loading_date");
-        
+
         builder.Property(p => p.State).HasConversion<int>().HasColumnName("state");
         builder.Property(p => p.SenderType).HasConversion<int>().HasColumnName("receiver_type");
         builder.Property(p => p.ReceiverType).HasConversion<int>().HasColumnName("sender_type");
@@ -24,7 +24,7 @@ public class OrderTypeConfiguration : IEntityTypeConfiguration<Order>
         builder.Property(p => p.ReceiverId).HasColumnName("receiver_id");
         builder.Property(p => p.SenderId).HasColumnName("sender_id");
         builder.Property(p => p.VehicleId).HasColumnName("vehicle_id");
-        builder.Property(p => p.Id).HasColumnName("id");
+        builder.Property(p => p.Id).HasColumnName("id").ValueGeneratedOnAdd();
 
         builder.ToTable("orders", t =>
         {

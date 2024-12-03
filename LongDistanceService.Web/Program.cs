@@ -54,7 +54,7 @@ builder.Services.AddAuthorization();
 
 builder.Services.AddHttpContextAccessor()
     .AddDomainAuthorizationServices()
-    .AddAuthorizationServices();
+    .AddAuthorizationServices().AddLdsServices();
 
 
 #endregion

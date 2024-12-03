@@ -1,11 +1,9 @@
-﻿using LongDistanceService.Domain.CQRS.Queries.Menus;
-using LongDistanceService.Domain.CQRS.Queries.Users;
+﻿using LongDistanceService.Domain.CQRS.Queries.Users;
 using LongDistanceService.Domain.Models.Abstract;
 using LongDistanceService.Domain.Services.Abstract;
-using LongDistanceService.Web.Services.Abstract;
 using MediatR;
 
-namespace LongDistanceService.Web.Services;
+namespace LongDistanceService.Domain.Services;
 
 public class SecurityService(IMediator mediator, IAccessTokenService tokenService) : ISecurityService
 {

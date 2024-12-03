@@ -16,7 +16,7 @@ public class DriverTypeConfiguration : IEntityTypeConfiguration<Driver>
         builder.Property(p => p.BirthYear).HasDefaultValue(2004).IsRequired().HasColumnName("birth_year");
         builder.Property(p => p.Experience).HasDefaultValue(0).IsRequired().HasColumnName("experience");
         builder.Property(p => p.CategoryId).HasColumnName("category_id");
-        builder.Property(p => p.Id).HasColumnName("id");
+        builder.Property(p => p.Id).HasColumnName("id").ValueGeneratedOnAdd();
         
         builder.ToTable("drivers", t =>
         {

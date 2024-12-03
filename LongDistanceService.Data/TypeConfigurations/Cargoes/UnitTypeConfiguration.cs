@@ -10,10 +10,12 @@ public class UnitTypeConfiguration : IEntityTypeConfiguration<Unit>
     {
         // properties
         builder.Property(p => p.Name).HasMaxLength(32).IsRequired().HasColumnName("name");
-        builder.Property(p => p.Id).HasColumnName("id");
+        builder.Property(p => p.Id).HasColumnName("id").ValueGeneratedOnAdd();
 
         //constraints
         builder.ToTable("units").HasKey(p => p.Id);
+        
+        builder.HasAlternateKey(p => p.Name);
 
         builder.HasMany(p => p.CargoCategories).WithOne(p => p.Unit).HasForeignKey(p => p.UnitId);
     }

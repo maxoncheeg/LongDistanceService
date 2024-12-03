@@ -15,7 +15,7 @@ public class VehicleTypeConfiguration : IEntityTypeConfiguration<Vehicle>
         builder.Property(p => p.LicensePlate).HasMaxLength(16).IsRequired().HasColumnName("license_plate");
         builder.Property(p => p.ImagePath).HasColumnName("image_path");
         builder.Property(p => p.ModelId).HasColumnName("model_id");
-        builder.Property(p => p.Id).HasColumnName("id");
+        builder.Property(p => p.Id).HasColumnName("id").ValueGeneratedOnAdd();
         
         // constraints
         builder.HasAlternateKey(p => p.LicensePlate);
