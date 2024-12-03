@@ -24,6 +24,7 @@ public static class ServicesExtensions
     public static IServiceCollection AddLdsServices(this IServiceCollection @this)
     {
         return @this
-            .AddScoped<IApplicationService, ApplicationService>();
+            .AddScoped<IApplicationService, ApplicationService>()
+            .AddScoped<IExcelSqlConverter, ExcelSqlConverter>();
     }
 }

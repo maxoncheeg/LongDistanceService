@@ -15,6 +15,7 @@ public class SqlHandler(ISqlConnection connection) : IRequestHandler<SelectSqlRe
         {
             Message = result.Message,
             Headers = result.Headers,
+            HeaderTypes = result.HeaderTypes,
             Rows = result.Rows
         };
     }
