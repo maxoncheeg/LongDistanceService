@@ -25,6 +25,7 @@ public static class ServicesExtensions
     {
         return @this
             .AddScoped<IApplicationService, ApplicationService>()
-            .AddScoped<IExcelSqlConverter, ExcelSqlConverter>();
+            .AddScoped<IExcelSqlConverter, ExcelSqlConverter>()
+            .AddScoped<IWordSqlConverter, WordSqlConverter>();
     }
 }
