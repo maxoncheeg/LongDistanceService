@@ -49,4 +49,13 @@ public static class ServiceRoutes
         public const string Excel = Route + "/excel";
         public const string Word = Route + "/word";
     }
+    
+    public static class Vehicles
+    {
+        public const string Route = "vehicle";
+
+        public const string List = Route + "/list";
+        public const string Edit = Route + "/edit";
+        public const string TypedEdit = Edit + "/{id}/{type}";
+    }
 }

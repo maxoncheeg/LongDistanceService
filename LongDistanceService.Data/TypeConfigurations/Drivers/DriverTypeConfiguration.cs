@@ -23,6 +23,6 @@ public class DriverTypeConfiguration : IEntityTypeConfiguration<Driver>
             t.HasCheckConstraint("CK_experience", "experience > 0 OR experience = 0");
         }).HasKey(p => p.Id);
 
-        builder.HasAlternateKey(p => p.EmployeeNumber);
+        builder.HasIndex(p => p.EmployeeNumber).IsUnique();
     }
 }

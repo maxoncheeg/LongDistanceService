@@ -5,7 +5,10 @@ using MediatR;
 
 namespace LongDistanceService.Data.Handlers.Commands.Sql;
 
-public class SqlHandler(ISqlConnection connection) : IRequestHandler<SelectSqlRequest, SqlSelectResponse>, IRequestHandler<CommandSqlRequest, SqlCommandResponse>
+public class SqlHandler(ISqlConnection connection) : 
+    IRequestHandler<SelectSqlRequest, SqlSelectResponse>, 
+    IRequestHandler<UpdateReferenceRequest>, 
+    IRequestHandler<CommandSqlRequest, SqlCommandResponse>
 {
     public async Task<SqlSelectResponse> Handle(SelectSqlRequest request, CancellationToken cancellationToken)
     {
@@ -29,5 +32,10 @@ public class SqlHandler(ISqlConnection connection) : IRequestHandler<SelectSqlRe
             Message = result.Message,
             Result = result.Result
         };
+    }
+
+    public async Task Handle(UpdateReferenceRequest request, CancellationToken cancellationToken)
+    {
+        return;
     }
 }

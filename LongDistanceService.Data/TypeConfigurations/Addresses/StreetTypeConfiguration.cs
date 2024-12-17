@@ -13,7 +13,7 @@ public class StreetTypeConfiguration : IEntityTypeConfiguration<Street>
         
         builder.ToTable("streets").HasKey(p => p.Id);
 
-        builder.HasAlternateKey(p => p.Name);
+        builder.HasIndex(p => p.Name).IsUnique();
         
         builder.HasMany(p => p.ReceiveOrders).WithOne(p => p.ReceiveStreet).HasForeignKey(p => p.ReceiveStreetId);
         builder.HasMany(p => p.SendOrders).WithOne(p => p.SendStreet).HasForeignKey(p => p.SendStreetId);

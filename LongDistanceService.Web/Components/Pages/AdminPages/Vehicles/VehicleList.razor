@@ -1,0 +1,87 @@
+﻿@using LongDistanceService.Web.Routes
+@using LongDistanceService.Web.Services.Abstract
+@using LongDistanceService.Domain.Services.Abstract
+@using LongDistanceService.Web.Models.Scenario.Abstract
+@using LongDistanceService.Domain.Models.Abstract
+@using LongDistanceService.Domain.Models.Abstract.Vehicles
+@attribute [Route(ServiceRoutes.Vehicles.List)]
+@rendermode InteractiveServer
+
+<div class="box ">
+    <h2>Список автомобилей</h2>
+    <a class="btn btn-info" href='@($"{ServiceRoutes.Vehicles.Edit}/0/add")'>Добавить автомобиль</a>
+    <div class="magicCenter">
+        <div class="vehicleListBox" style="width: 960px">
+            @foreach (var vehicle in Vehicles)
+            {
+                <div class="vehicleBox">
+                    <div class="vehicleImage">
+                        <img src="@vehicle.ImagePath" alt="Нету фото"/>
+                    </div>
+                    <div class="vehicleInfo">
+                        <p>@vehicle.BrandAndModel</p>
+                        <p>@vehicle.LicensePlate</p>
+                        <div class="buttonBox">
+                            @if (UserRights?.Write ?? false)
+                            {
+                                <a class="btn btn-info" href='@($"{ServiceRoutes.Vehicles.Edit}/{vehicle.Id}/show")'>Подробнее</a>
+                            }
+                            @if (UserRights?.Edit ?? false)
+                            {
+                                <a class="btn btn-info" href='@($"{ServiceRoutes.Vehicles.Edit}/{vehicle.Id}/update")'>Изменить</a>
+                            }
+                            @if (UserRights?.Delete ?? false)
+                            {
+                                <form @formname="deleteVehicle" method="post" @onsubmit="@(() => DeleteCar(vehicle.Id))">
+                                    <button type="submit" class="btn btn-danger">Удалить</button>
+                                    <AntiforgeryToken/>
+                                </form>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+</div>
+
+@code {
+    [Inject] public IScenarioService ScenarioService { get; set; } = null!;
+    [Inject] public ISecurityService SecurityService { get; set; } = null!;
+    [Inject] public IVehicleService VehicleService { get; set; } = null!;
+    [Inject] public NavigationManager NavigationManager { get; set; } = null!;
+
+    public IAuthResult? AuthResult { get; set; } = null;
+    public IUserRights? UserRights { get; set; } = null;
+
+    public IList<IVehicleInfo> Vehicles { get; set; } = [];
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        AuthResult = await ScenarioService.TryAuthenticateUserAsync(ServiceRoutes.Home, tryRefreshToken: true, redirectToLogin: true);
+
+        if (AuthResult == null)
+            NavigationManager.NavigateTo(ServiceRoutes.Home);
+        else
+        {
+            UserRights = await SecurityService.GetUserRightsToPageAsync(AuthResult.User, ServiceRoutes.Vehicles.List);
+
+            if (UserRights == null || !UserRights.Read)
+                NavigationManager.NavigateTo(ServiceRoutes.Home);
+
+            Vehicles = await VehicleService.GetVehiclesAsync();
+
+            await base.OnInitializedAsync();
+        }
+    }
+
+    public async Task DeleteCar(int id)
+    {
+        await VehicleService.DeleteVehicleAsync(id);
+        Vehicles = await VehicleService.GetVehiclesAsync();
+        StateHasChanged();
+    }
+
+}

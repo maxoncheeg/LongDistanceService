@@ -13,7 +13,7 @@ public class BankTypeConfiguration : IEntityTypeConfiguration<Bank>
 
         builder.ToTable("banks").HasKey(p => p.Id);
 
-        builder.HasAlternateKey(p => p.Name);
+        builder.HasIndex(p => p.Name).IsUnique();
 
         builder.HasMany(p => p.Legals).WithOne(p => p.Bank).HasForeignKey(p => p.BankId);
     }

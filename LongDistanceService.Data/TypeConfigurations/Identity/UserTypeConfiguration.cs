@@ -14,6 +14,6 @@ public class UserTypeConfiguration : IEntityTypeConfiguration<User>
 
         builder.ToTable("users").HasKey(p => p.Id);
 
-        builder.HasAlternateKey(p => p.Login);
+        builder.HasIndex(p => p.Login).IsUnique();
     }
 }

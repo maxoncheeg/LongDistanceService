@@ -23,8 +23,8 @@ public class LegalTypeConfiguration : IEntityTypeConfiguration<Legal>
         builder.Property(p => p.Id).HasColumnName("id").ValueGeneratedOnAdd();
 
         builder.ToTable("legals").HasKey(p => p.Id);
-        builder.HasAlternateKey(p => p.TIN);
-        builder.HasAlternateKey(p => new { p.BankId, p.BankAccount });
-        builder.HasAlternateKey(p => p.Phone);
+        builder.HasIndex(p => p.TIN).IsUnique();
+        builder.HasIndex(p => new { p.BankId, p.BankAccount }).IsUnique();
+        builder.HasIndex(p => p.Phone).IsUnique();
     }
 }

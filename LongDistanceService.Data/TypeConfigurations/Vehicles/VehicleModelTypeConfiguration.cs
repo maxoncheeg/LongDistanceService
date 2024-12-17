@@ -14,8 +14,7 @@ public class VehicleModelTypeConfiguration : IEntityTypeConfiguration<VehicleMod
 
         builder.ToTable("vehicle_models").HasKey(k => k.Id);
 
-
-        builder.HasAlternateKey(p => new { p.BrandId, p.Name });
+        builder.HasIndex(p => new { p.BrandId, p.Name }).IsUnique();
 
         builder.HasMany(p => p.Vehicles)
             .WithOne(p => p.Model)

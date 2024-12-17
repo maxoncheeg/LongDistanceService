@@ -18,7 +18,7 @@ public class IndividualTypeConfiguration : IEntityTypeConfiguration<Individual>
         builder.Property(p => p.Id).HasColumnName("id").ValueGeneratedOnAdd();
 
         builder.ToTable("individuals").HasKey(p => p.Id);
-        builder.HasAlternateKey(p => p.PassportSeries);
-        builder.HasAlternateKey(p => p.Phone);
+        builder.HasIndex(p => p.PassportSeries).IsUnique();
+        builder.HasIndex(p => p.Phone).IsUnique();
     }
 }

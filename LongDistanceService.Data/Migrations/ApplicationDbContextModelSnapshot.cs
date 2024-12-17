@@ -39,7 +39,8 @@ namespace LongDistanceService.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasAlternateKey("Name");
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("cities", (string)null);
                 });
@@ -61,7 +62,8 @@ namespace LongDistanceService.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasAlternateKey("Name");
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("streets", (string)null);
                 });
@@ -87,9 +89,10 @@ namespace LongDistanceService.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasAlternateKey("Name");
-
                     b.HasIndex("CategoryId");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("cargoes", (string)null);
                 });
@@ -115,7 +118,8 @@ namespace LongDistanceService.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasAlternateKey("Name");
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.HasIndex("UnitId");
 
@@ -139,7 +143,8 @@ namespace LongDistanceService.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasAlternateKey("Name");
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("units", (string)null);
                 });
@@ -202,9 +207,10 @@ namespace LongDistanceService.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasAlternateKey("EmployeeNumber");
-
                     b.HasIndex("CategoryId");
+
+                    b.HasIndex("EmployeeNumber")
+                        .IsUnique();
 
                     b.ToTable("drivers", null, t =>
                         {
@@ -229,7 +235,8 @@ namespace LongDistanceService.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasAlternateKey("Name");
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("driver_categories", (string)null);
                 });
@@ -338,7 +345,8 @@ namespace LongDistanceService.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasAlternateKey("Name");
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("menu_tabs", (string)null);
                 });
@@ -405,7 +413,8 @@ namespace LongDistanceService.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasAlternateKey("Login");
+                    b.HasIndex("Login")
+                        .IsUnique();
 
                     b.ToTable("users", (string)null);
                 });
@@ -569,7 +578,8 @@ namespace LongDistanceService.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasAlternateKey("Name");
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("banks", (string)null);
                 });
@@ -626,9 +636,11 @@ namespace LongDistanceService.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasAlternateKey("PassportSeries");
+                    b.HasIndex("PassportSeries")
+                        .IsUnique();
 
-                    b.HasAlternateKey("Phone");
+                    b.HasIndex("Phone")
+                        .IsUnique();
 
                     b.ToTable("individuals", (string)null);
                 });
@@ -708,15 +720,18 @@ namespace LongDistanceService.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasAlternateKey("Phone");
-
-                    b.HasAlternateKey("TIN");
-
-                    b.HasAlternateKey("BankId", "BankAccount");
-
                     b.HasIndex("CityId");
 
+                    b.HasIndex("Phone")
+                        .IsUnique();
+
                     b.HasIndex("StreetId");
+
+                    b.HasIndex("TIN")
+                        .IsUnique();
+
+                    b.HasIndex("BankId", "BankAccount")
+                        .IsUnique();
 
                     b.ToTable("legals", (string)null);
                 });
@@ -782,7 +797,8 @@ namespace LongDistanceService.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasAlternateKey("LicensePlate");
+                    b.HasIndex("LicensePlate")
+                        .IsUnique();
 
                     b.HasIndex("ModelId");
 
@@ -809,7 +825,8 @@ namespace LongDistanceService.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasAlternateKey("Name");
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("vehicle_brands", (string)null);
                 });
@@ -835,7 +852,8 @@ namespace LongDistanceService.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasAlternateKey("BrandId", "Name");
+                    b.HasIndex("BrandId", "Name")
+                        .IsUnique();
 
                     b.ToTable("vehicle_models", (string)null);
                 });
