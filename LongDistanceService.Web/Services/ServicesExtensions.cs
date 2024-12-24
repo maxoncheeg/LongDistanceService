@@ -28,6 +28,9 @@ public static class ServicesExtensions
             .AddScoped<IExcelSqlConverter, ExcelSqlConverter>()
             .AddScoped<IWordSqlConverter, WordSqlConverter>()
             .AddScoped<IVehicleService, VehicleService>()
-            .AddScoped<ICargoService, CargoService>();
+            .AddScoped<ICargoService, CargoService>()
+            .AddScoped<IDriverService, DriverService>()
+            .AddScoped<IAddressService, AddressService>()
+            .AddScoped<IBankService, BankService>();
     }
 }

@@ -4,7 +4,7 @@
 @using LongDistanceService.Web.Models.Scenario.Abstract
 @using LongDistanceService.Domain.Models.Abstract
 @using LongDistanceService.Domain.Models.Abstract.Vehicles
-@attribute [Route(ServiceRoutes.Vehicles.List)]
+@attribute [Route(ServiceRoutes.Vehicles.Route)]
 @rendermode InteractiveServer
 
 <div class="box ">
@@ -66,7 +66,7 @@
             NavigationManager.NavigateTo(ServiceRoutes.Home);
         else
         {
-            UserRights = await SecurityService.GetUserRightsToPageAsync(AuthResult.User, ServiceRoutes.Vehicles.List);
+            UserRights = await SecurityService.GetUserRightsToPageAsync(AuthResult.User, ServiceRoutes.Vehicles.Route);
 
             if (UserRights == null || !UserRights.Read)
                 NavigationManager.NavigateTo(ServiceRoutes.Home);

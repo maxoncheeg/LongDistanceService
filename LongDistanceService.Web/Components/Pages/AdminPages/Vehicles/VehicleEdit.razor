@@ -57,7 +57,6 @@
             <DataAnnotationsValidator/>
             <div class="propertiesList">
                 <div class="propertiesColumn">
-
                     <h6 class="c-g">Марка</h6>
                     <select class="form-select" @onchange="UpdateModels" va>
                         @for (int i = 0; i < Brands.Count; i++)
@@ -178,7 +177,7 @@
             NavigationManager.NavigateTo(ServiceRoutes.Home);
         else
         {
-            UserRights = await SecurityService.GetUserRightsToPageAsync(AuthResult.User, ServiceRoutes.Vehicles.List);
+            UserRights = await SecurityService.GetUserRightsToPageAsync(AuthResult.User, ServiceRoutes.Vehicles.Route);
 
             if (Type is not ("show" or "update" or "add"))
                 NavigationManager.NavigateTo(ServiceRoutes.Home);
@@ -229,7 +228,7 @@
         if (result)
         {
             await VehicleService.AddOrUpdateVehicleAsync(VehicleModel);
-            NavigationManager.NavigateTo(ServiceRoutes.Vehicles.List);
+            NavigationManager.NavigateTo(ServiceRoutes.Vehicles.Route);
         }
     }
 

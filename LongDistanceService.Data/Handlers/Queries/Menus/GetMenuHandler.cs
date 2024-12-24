@@ -25,6 +25,7 @@ public class GetMenuHandler(IApplicationDbContext context) : IRequestHandler<Get
             })
             .ToListAsync(cancellationToken);
 
+        menuTabs.Sort((a, b) => a.Order < b.Order ? -1 : 1);
         menuTabs.Sort((l, r) => l.ParentId < r.ParentId ? -1 : 1);
 
         while (menuTabs.Any(m => m.ParentId != 0))
@@ -34,26 +35,50 @@ public class GetMenuHandler(IApplicationDbContext context) : IRequestHandler<Get
             
             for (int i = menuTabs.Count - 1; i >= 0; i--)
             {
+                if (menuTabs[i].Id == 11 || menuTabs[i].ParentId == 11)
+                    Console.WriteLine("text");
                 if (menuTabs[i].Id == currentParentId)
                 {
-                    currentParentId = menuTabs[i].ParentId;
+                    //currentParentId = menuTabs[i].ParentId;
+                    IList<MenuItemResponse>? children = menuTabs[i].Children?.Select(r => new MenuItemResponse()
+                    {
+                        Id = r.Id, ParentId = menuTabs[i].Id, Children = r.Children, Dll = r.Dll, Name = r.Name,
+                        Route = r.Route, Order = r.Order
+                    }).ToList();
+                    
+                    if (children != null)
+                        list = [..list.Concat(children)];
+
                     list.Sort((l, r) => l.Order < r.Order ? -1 : 1);
                     menuTabs[i].Children = [..list];
                     list.Clear();
-                    
-                    if (currentParentId == 0) break;
+
+      
+                    break;
                 }
                 else if (menuTabs[i].ParentId != currentParentId)
                     continue;
 
-                if(currentParentId != 0)
+                if (currentParentId != 0)
                 {
                     list.Add(menuTabs[i]);
                     menuTabs.RemoveAt(i);
                 }
             }
         }
-        
+
+
         return menuTabs;
     }
+
+    // public List<MenuItemResponse> SortByOrder(List<MenuItemResponse> menus)
+    // {
+    //     menus.Sort((l, r) => l.Order < r.Order ? -1 : 1);
+    //
+    //     foreach (var menu in menus)
+    //     {
+    //         if (menu.Children != null)
+    //             menu.Children = SortByOrder([..menu.Children]);
+    //     }
+    // }
 }

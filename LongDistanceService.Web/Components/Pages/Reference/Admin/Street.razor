@@ -1,0 +1,195 @@
+﻿@using LongDistanceService.Domain.Models.Abstract
+@using LongDistanceService.Domain.Models.Abstract.Addresses
+@using LongDistanceService.Domain.Services.Abstract
+@using LongDistanceService.Web.Models.Addresses
+@using LongDistanceService.Web.Models.Scenario.Abstract
+@using LongDistanceService.Web.Routes
+@using LongDistanceService.Web.Services.Abstract
+
+@attribute [Route(ServiceRoutes.Reference.Street)]
+@rendermode InteractiveServer
+
+<style>
+    .refBox {
+        height: 100vh;
+        text-align: center;
+        padding: 20px;
+    }
+
+    .refList {
+        width: 80%;
+        margin: auto;
+        height: 45%;
+        overflow-y: auto;
+    }
+</style>
+
+<div class="refBox justify-content-center">
+    <h3>УЛИЦЫ</h3>
+    <div class="refList">
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Название</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var street in Streets)
+            {
+                <tr @onclick="@(() => SelectStreet(street))">
+                    <th scope="row">@street.Id</th>
+                    <td>@street.Name</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+
+    @if (UserRights is { Write: true })
+    {
+        <button class="btn btn-lg btn-info m-2 w-75" @onclick="AddStreet"> Новая улица</button>
+    }
+
+    @if (UserRights is { Edit: true } && SelectedStreet != null || UserRights is { Write: true } && SelectedStreet == null && IsAdd)
+    {
+        <div class="justify-content-center w-75 m-auto">
+            <EditForm Model="Model" method="post" FormName="streetEdit" OnValidSubmit="EditStreet">
+                <DataAnnotationsValidator/>
+                <h6 class="c-g"> Название </h6>
+                <InputText class="form-control w-25 m-auto"
+                           @bind-Value="@Model.Name"> @Model.Name </InputText>
+                <ValidationMessage For="() => Model.Name" class="text-danger"/>
+                <br>
+                <button type="submit"
+                        class="btn btn-dark btn-lg">@(SelectedStreet == null ? "Добавить" : "Редактировать") </button>
+            </EditForm>
+            @if (UserRights is { Delete: true } && SelectedStreet != null)
+            {
+                <button type="submit"
+                        class="btn btn-danger btn-lg m-1" @onclick="DeleteStreet"> Удалить
+                </button>
+            }
+
+        </div>
+    }
+</div>
+
+@code {
+    [Inject] public IScenarioService ScenarioService { get; set; } = null!;
+    [Inject] public ISecurityService SecurityService { get; set; } = null!;
+    [Inject] public IAddressService AddressService { get; set; } = null!;
+    [Inject] public NavigationManager NavigationManager { get; set; } = null!;
+    [Inject] public IJSRuntime JsRuntime { get; set; } = null!;
+
+    public IAuthResult? AuthResult { get; set; }
+    public IUserRights? UserRights { get; set; }
+
+    public IList<IStreet> Streets { get; set; } = [];
+    public IStreet? SelectedStreet { get; set; }
+    public StreetModel Model { get; set; } = new();
+
+    public bool IsAdd { get; set; }
+
+    public string Route = ServiceRoutes.Reference.Street;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        AuthResult = await ScenarioService.TryAuthenticateUserAsync(tryRefreshToken: true, redirectToLogin: true);
+
+        if (AuthResult == null)
+            NavigationManager.NavigateTo(ServiceRoutes.Home);
+        else
+        {
+            UserRights = await SecurityService.GetUserRightsToPageAsync(AuthResult.User, Route);
+
+            if (UserRights == null || !UserRights.Read)
+            {
+                NavigationManager.NavigateTo(ServiceRoutes.Home);
+                return;
+            }
+
+            Streets = await AddressService.GetStreetsAsync();
+
+            await base.OnInitializedAsync();
+        }
+    }
+
+    public void SelectStreet(IStreet street)
+    {
+        SelectedStreet = street;
+        Model = new()
+        {
+            Id = SelectedStreet.Id,
+            Name = SelectedStreet.Name
+        };
+        StateHasChanged();
+    }
+
+    public void AddStreet()
+    {
+        IsAdd = true;
+        SelectedStreet = null;
+        Model = new();
+        StateHasChanged();
+    }
+
+    private async Task EditStreet()
+    {
+        var auth = await ScenarioService.TryAuthenticateUserAsync(tryRefreshToken: true, redirectToLogin: true);
+        if (auth == null)
+        {
+            NavigationManager.NavigateTo(ServiceRoutes.Home);
+            return;
+        }
+
+        var rights = await SecurityService.GetUserRightsToPageAsync(auth.User, Route);
+        if (rights is { Edit: false } && SelectedStreet != null || rights is { Write: false } && SelectedStreet == null)
+        {
+            NavigationManager.NavigateTo(ServiceRoutes.Home);
+            return;
+        }
+
+        bool result = await JsRuntime.InvokeAsync<bool>("confirm", "Вы уверены?");
+        if (result)
+        {
+            var isEdited = await AddressService.AddOrUpdateStreetAsync(Model);
+            if (!isEdited)
+                await JsRuntime.InvokeAsync<object>("alert", "Ошибка при изменении");
+
+            NavigationManager.NavigateTo(Route, true);
+        }
+    }
+
+    public async Task DeleteStreet()
+    {
+        if (SelectedStreet != null)
+        {
+            var auth = await ScenarioService.TryAuthenticateUserAsync(tryRefreshToken: true, redirectToLogin: true);
+            if (auth == null)
+            {
+                NavigationManager.NavigateTo(ServiceRoutes.Home);
+                return;
+            }
+
+            var rights = await SecurityService.GetUserRightsToPageAsync(auth.User, Route);
+            if (rights is { Delete: false })
+            {
+                NavigationManager.NavigateTo(ServiceRoutes.Home);
+                return;
+            }
+
+            bool result = await JsRuntime.InvokeAsync<bool>("confirm", "Вы уверены?");
+            if (result)
+            {
+                var isDeleted = await AddressService.DeleteStreetAsync(SelectedStreet.Id);
+                if (!isDeleted)
+                    await JsRuntime.InvokeAsync<object>("alert", "Ошибка при удалении");
+
+                NavigationManager.NavigateTo(Route, true);
+            }
+        }
+    }
+
+}

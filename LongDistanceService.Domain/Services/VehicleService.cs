@@ -9,7 +9,8 @@ namespace LongDistanceService.Domain.Services;
 
 public class VehicleService(IMediator mediator) : IVehicleService
 {
-    public async Task<IList<IVehicleInfo>> GetVehiclesAsync(int take = 30, int skip = 0, VehicleSearchOptions? options = null)
+    public async Task<IList<IVehicleInfo>> GetVehiclesAsync(int take = 30, int skip = 0,
+        VehicleSearchOptions? options = null)
     {
         return [..await mediator.Send(new GetVehiclesInfoRequest() { Skip = skip, Take = take })];
     }
@@ -42,5 +43,20 @@ public class VehicleService(IMediator mediator) : IVehicleService
     public async Task DeleteVehicleAsync(int id)
     {
         await mediator.Send(new DeleteVehicleRequest(id));
+    }
+
+    public async Task<IList<IBrand>> GetBrandsAsync()
+    {
+        return [..await mediator.Send(new GetBrandsRequest())];
+    }
+
+    public async Task<bool> AddOrUpdateBrandAsync(IBrand brand)
+    {
+        return await mediator.Send(new EditBrandRequest() { Id = brand.Id, Name = brand.Name });
+    }
+
+    public async Task<bool> DeleteBrandAsync(int id)
+    {
+        return await mediator.Send(new DeleteBrandRequest(id));
     }
 }

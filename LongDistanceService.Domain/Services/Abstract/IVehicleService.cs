@@ -11,4 +11,7 @@ public interface IVehicleService
     public Task<IVehicle?> GetVehicleAsync(int id);
     public Task AddOrUpdateVehicleAsync(IEditVehicle vehicle);
     public Task DeleteVehicleAsync(int id);
+    public Task<IList<IBrand>> GetBrandsAsync();
+    public Task<bool> AddOrUpdateBrandAsync(IBrand brand);
+    public Task<bool> DeleteBrandAsync(int id);
 }
