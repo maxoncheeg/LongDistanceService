@@ -11,8 +11,12 @@ public class GetMenuHandler(IApplicationDbContext context) : IRequestHandler<Get
 {
     public async Task<IList<MenuItemResponse>> Handle(GetMenuRequest request, CancellationToken cancellationToken)
     {
+        var role = await context.Users.Include(p => p.Role)
+            .SingleOrDefaultAsync(r => r.Id == request.UserId, cancellationToken);
+        if (role == null) return Array.Empty<MenuItemResponse>();
+
         var menuTabs = await context.MenuTabRights
-            .Where(r => r.UserId == request.UserId)
+            .Where(r => r.RoleId == role.RoleId)
             .Include(p => p.MenuTab)
             .Select(r => new MenuItemResponse()
             {
@@ -32,7 +36,7 @@ public class GetMenuHandler(IApplicationDbContext context) : IRequestHandler<Get
         {
             List<MenuItemResponse> list = new();
             int currentParentId = menuTabs.Last().ParentId;
-            
+
             for (int i = menuTabs.Count - 1; i >= 0; i--)
             {
                 if (menuTabs[i].Id == 11 || menuTabs[i].ParentId == 11)
@@ -45,7 +49,7 @@ public class GetMenuHandler(IApplicationDbContext context) : IRequestHandler<Get
                         Id = r.Id, ParentId = menuTabs[i].Id, Children = r.Children, Dll = r.Dll, Name = r.Name,
                         Route = r.Route, Order = r.Order
                     }).ToList();
-                    
+
                     if (children != null)
                         list = [..list.Concat(children)];
 
@@ -53,7 +57,7 @@ public class GetMenuHandler(IApplicationDbContext context) : IRequestHandler<Get
                     menuTabs[i].Children = [..list];
                     list.Clear();
 
-      
+
                     break;
                 }
                 else if (menuTabs[i].ParentId != currentParentId)

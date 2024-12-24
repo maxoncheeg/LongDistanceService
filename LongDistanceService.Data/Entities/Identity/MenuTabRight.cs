@@ -2,7 +2,7 @@
 
 public class MenuTabRight
 {
-    public int UserId { get; set; }
+    public int RoleId { get; set; }
     public int MenuTabId { get; set; }
     public bool R { get; set; }
     public bool W { get; set; }
@@ -10,5 +10,5 @@ public class MenuTabRight
     public bool D { get; set; }
 
     public MenuTab MenuTab { get; set; } = null!;
-    public User User { get; set; } = null!;
+    public Role Role { get; set; } = null!;
 }
