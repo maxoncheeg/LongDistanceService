@@ -14,6 +14,7 @@ public class VehicleTypeConfiguration : IEntityTypeConfiguration<Vehicle>
         builder.Property(p => p.OverhaulYear).HasDefaultValue(1970).IsRequired().HasColumnName("overhaul_year");
         builder.Property(p => p.LicensePlate).HasMaxLength(16).IsRequired().HasColumnName("license_plate");
         builder.Property(p => p.ImagePath).HasColumnName("image_path");
+        builder.Property(p => p.LoadCapacity).HasColumnName("load_capacity").HasDefaultValue(4);
         builder.Property(p => p.ModelId).HasColumnName("model_id");
         builder.Property(p => p.Id).HasColumnName("id").ValueGeneratedOnAdd();
 

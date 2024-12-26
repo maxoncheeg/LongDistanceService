@@ -40,6 +40,7 @@ public class GetVehicleHandler(IApplicationDbContext context)
             Year = v.Year,
             OverhaulYear = v.OverhaulYear,
             ImagePath = v.ImagePath,
+            LoadCapacity = v.LoadCapacity,
             Model = new ModelResponse()
             {
                 Id = v.Model.Id, Name = v.Model.Name,

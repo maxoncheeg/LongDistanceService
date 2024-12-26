@@ -31,6 +31,7 @@ public static class ServicesExtensions
             .AddScoped<ICargoService, CargoService>()
             .AddScoped<IDriverService, DriverService>()
             .AddScoped<IAddressService, AddressService>()
-            .AddScoped<IBankService, BankService>();
+            .AddScoped<IBankService, BankService>()
+            .AddScoped<IPersonalService, PersonalService>();
     }
 }

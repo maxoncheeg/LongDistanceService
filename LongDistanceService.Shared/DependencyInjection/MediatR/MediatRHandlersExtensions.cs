@@ -48,7 +48,7 @@ public static class MediatRHandlersExtensions
 {
     public static IServiceCollection AddMediatRHandlers(this IServiceCollection @this)
     {
-        // todo: навести порядок, упорядочивание W
+        // todo: навести порядок, сделать W  упорядочивание
         #region Commands
 
         @this.AddTransient<IRequestHandler<SelectSqlRequest, SqlSelectResponse>,
@@ -83,6 +83,10 @@ public static class MediatRHandlersExtensions
             .AddTransient<IRequestHandler<EditCargoCategoryRequest, bool>, CargoCategoryHandler>()
             .AddTransient<IRequestHandler<DeleteCargoRequest, bool>, CargoHandler>()
             .AddTransient<IRequestHandler<EditCargoRequest, bool>, CargoHandler>()
+            .AddTransient<IRequestHandler<DeleteLegalRequest, bool>, PersonalHandler>()
+            .AddTransient<IRequestHandler<EditLegalRequest, bool>, PersonalHandler>()
+            .AddTransient<IRequestHandler<DeleteIndividualRequest, bool>, PersonalHandler>()
+            .AddTransient<IRequestHandler<EditIndividualRequest, bool>, PersonalHandler>()
             .AddTransient<IRequestHandler<EditBankRequest, bool>, BankHandler>()
             .AddTransient<IRequestHandler<DeleteBankRequest, bool>, BankHandler>();
 
@@ -115,6 +119,8 @@ public static class MediatRHandlersExtensions
                 GetDriverHandler>()
             .AddTransient<IRequestHandler<GetDriverRequest, DriverResponse?>,
                 GetDriverHandler>()
+            .AddTransient<IRequestHandler<GetLegalsRequest, IList<LegalResponse>>, GetPersonalsHandler>()
+            .AddTransient<IRequestHandler<GetIndividualsRequest, IList<IndividualResponse>>, GetPersonalsHandler>()
             .AddTransient<IRequestHandler<GetCitiesRequest, IList<CityResponse>>, GetAddressHandler>()
             .AddTransient<IRequestHandler<GetStreetsRequest, IList<StreetResponse>>, GetAddressHandler>()
             .AddTransient<IRequestHandler<GetBrandsRequest, IList<BrandResponse>>, GetBrandsHandler>()

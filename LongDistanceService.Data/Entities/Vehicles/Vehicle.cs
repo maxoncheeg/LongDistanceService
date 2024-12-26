@@ -10,6 +10,7 @@ public class Vehicle : IEntity
     public int Year { get; set; }
     public int OverhaulYear { get; set; }
     public string LicensePlate { get; set; } = String.Empty;
+    public int LoadCapacity { get; set; }
     public decimal Kilometerage { get; set; }
     public string? ImagePath { get; set; }
     public IList<VehicleCargoCategory> VehicleCargoCategories { get; set; } = new List<VehicleCargoCategory>();

@@ -17,6 +17,6 @@ public class Legal : AbstractPersonalEntity
     public string Phone { get; set; }  = String.Empty;
     public string TIN { get; set; }  = String.Empty;
     public string BankAccount { get; set; }  = String.Empty;
-    public int HouseNumber { get; set; }
-    public int OfficeNumber { get; set; }
+    public string HouseNumber { get; set; }
+    public string OfficeNumber { get; set; }
 }
