@@ -11,6 +11,7 @@ public class VehicleResponse : IVehicle
     public int OverhaulYear { get; set; }
     public string LicensePlate { get; set; } = string.Empty;
     public decimal Kilometerage { get; set; }
+    public int LoadCapacity { get; set; }
     public string? ImagePath { get; set; }
     public IList<ICargoCategory> CargoCategories { get; set; } = [];
 }

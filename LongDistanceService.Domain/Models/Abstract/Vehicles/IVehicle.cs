@@ -10,6 +10,7 @@ public interface IVehicle
     public int OverhaulYear { get; set; }
     public string LicensePlate { get; set; }
     public decimal Kilometerage { get; set; }
+    public int LoadCapacity { get; set; }
     public string? ImagePath { get; set; }
     public IList<ICargoCategory> CargoCategories { get; set; }
 }

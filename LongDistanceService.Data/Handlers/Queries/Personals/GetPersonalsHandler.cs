@@ -34,34 +34,39 @@ public class GetPersonalsHandler(IApplicationDbContext context)
 
     public async Task<IList<LegalResponse>> Handle(GetLegalsRequest request, CancellationToken cancellationToken)
     {
-        var legals = await context.Legals.Select(l => new LegalResponse()
-            {
-                Id = l.Id,
-                Name = l.Name,
-                Surname = l.Surname,
-                Patronymic = l.Patronymic,
-                Phone = l.Phone,
-                Account = l.BankAccount,
-                TIN = l.TIN,
-                HouseNumber = l.HouseNumber,
-                OfficeNumber = l.OfficeNumber,
-                CompanyName = l.CompanyName,
-                Bank = new BankResponse()
+        var legals = await context.Legals
+            .Include(l => l.Bank)
+            .Include(l => l.Street)
+            .Include(l => l.City)
+            .Select(l =>
+                new LegalResponse()
                 {
-                    Id = l.BankId,
-                    Name = l.Bank.Name
-                },
-                City = new CityResponse()
-                {
-                    Id = l.CityId,
-                    Name = l.City.Name
-                },
-                Street = new StreetResponse()
-                {
-                    Id = l.StreetId,
-                    Name = l.Street.Name
-                }
-            })
+                    Id = l.Id,
+                    Name = l.Name,
+                    Surname = l.Surname,
+                    Patronymic = l.Patronymic,
+                    Phone = l.Phone,
+                    Account = l.BankAccount,
+                    TIN = l.TIN,
+                    HouseNumber = l.HouseNumber,
+                    OfficeNumber = l.OfficeNumber,
+                    CompanyName = l.CompanyName,
+                    Bank = new BankResponse()
+                    {
+                        Id = l.BankId,
+                        Name = l.Bank.Name
+                    },
+                    City = new CityResponse()
+                    {
+                        Id = l.CityId,
+                        Name = l.City.Name
+                    },
+                    Street = new StreetResponse()
+                    {
+                        Id = l.StreetId,
+                        Name = l.Street.Name
+                    }
+                })
             .Skip(request.Skip)
             .Take(request.Take)
             .ToListAsync(cancellationToken);

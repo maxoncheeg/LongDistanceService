@@ -51,6 +51,14 @@ public static class ServiceRoutes
         public const string Create = Route + "/create";
     }
     
+    public static class Clients
+    {
+        public const string Route = "clients";
+
+        public const string Legal = Route + "/legals";
+        public const string Individual = Route + "/individuals";
+    }
+    
     public static class Admin
     {
         public const string Route = "admin";
