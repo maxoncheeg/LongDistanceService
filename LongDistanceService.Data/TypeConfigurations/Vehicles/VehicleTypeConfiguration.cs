@@ -27,6 +27,6 @@ public class VehicleTypeConfiguration : IEntityTypeConfiguration<Vehicle>
             })
             .HasKey(p => p.Id);
 
-        builder.HasMany(p => p.Orders).WithOne(p => p.Vehicle).HasForeignKey(p => p.VehicleId);
+        builder.HasMany(p => p.Orders).WithOne(p => p.Vehicle).HasForeignKey(p => p.VehicleId).OnDelete(DeleteBehavior.NoAction);
     }
 }

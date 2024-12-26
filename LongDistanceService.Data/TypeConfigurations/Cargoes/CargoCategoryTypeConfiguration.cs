@@ -18,6 +18,6 @@ public class CargoCategoryTypeConfiguration : IEntityTypeConfiguration<CargoCate
         
         builder.HasMany(p => p.Cargoes)
             .WithOne(p => p.Category)
-            .HasForeignKey(p => p.CategoryId);
+            .HasForeignKey(p => p.CategoryId).OnDelete(DeleteBehavior.NoAction);
     }
 }

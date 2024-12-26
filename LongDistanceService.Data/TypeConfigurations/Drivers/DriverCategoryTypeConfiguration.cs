@@ -17,6 +17,6 @@ public class DriverCategoryTypeConfiguration : IEntityTypeConfiguration<DriverCa
         
         builder.HasMany(p => p.Drivers)
             .WithOne(p => p.Category)
-            .HasForeignKey(p => p.CategoryId);
+            .HasForeignKey(p => p.CategoryId).OnDelete(DeleteBehavior.NoAction);
     }
 }

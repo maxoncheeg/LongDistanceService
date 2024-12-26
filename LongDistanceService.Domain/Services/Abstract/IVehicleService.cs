@@ -14,4 +14,6 @@ public interface IVehicleService
     public Task<IList<IBrand>> GetBrandsAsync();
     public Task<bool> AddOrUpdateBrandAsync(IBrand brand);
     public Task<bool> DeleteBrandAsync(int id);
+    public Task<bool> AddOrUpdateModelAsync(IEditModel model);
+    public Task<bool> DeleteModelAsync(int id);
 }

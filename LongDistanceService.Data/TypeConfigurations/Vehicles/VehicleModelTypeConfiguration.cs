@@ -18,6 +18,6 @@ public class VehicleModelTypeConfiguration : IEntityTypeConfiguration<VehicleMod
 
         builder.HasMany(p => p.Vehicles)
             .WithOne(p => p.Model)
-            .HasForeignKey(p => p.ModelId);
+            .HasForeignKey(p => p.ModelId).OnDelete(DeleteBehavior.NoAction);
     }
 }

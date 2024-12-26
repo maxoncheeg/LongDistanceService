@@ -17,7 +17,7 @@ public class UserTypeConfiguration : IEntityTypeConfiguration<User>
 
         builder.ToTable("users").HasKey(p => p.Id);
         
-        builder.HasOne(p => p.Role).WithMany(p => p.Users).HasForeignKey(p => p.RoleId);
+        builder.HasOne(p => p.Role).WithMany(p => p.Users).HasForeignKey(p => p.RoleId).OnDelete(DeleteBehavior.NoAction);
 
         builder.HasIndex(p => p.Login).IsUnique();
     }

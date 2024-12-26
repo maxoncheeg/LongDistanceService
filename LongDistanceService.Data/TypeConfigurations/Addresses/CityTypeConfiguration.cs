@@ -15,8 +15,8 @@ public class CityTypeConfiguration : IEntityTypeConfiguration<City>
         
         builder.HasIndex(p => p.Name).IsUnique();
         
-        builder.HasMany(p => p.ReceiveOrders).WithOne(p => p.ReceiveCity).HasForeignKey(p => p.ReceiveCityId);
-        builder.HasMany(p => p.SendOrders).WithOne(p => p.SendCity).HasForeignKey(p => p.SendCityId);
-        builder.HasMany(p => p.Legals).WithOne(p => p.City).HasForeignKey(p => p.CityId);
+        builder.HasMany(p => p.ReceiveOrders).WithOne(p => p.ReceiveCity).HasForeignKey(p => p.ReceiveCityId).OnDelete(DeleteBehavior.NoAction);
+        builder.HasMany(p => p.SendOrders).WithOne(p => p.SendCity).HasForeignKey(p => p.SendCityId).OnDelete(DeleteBehavior.NoAction);
+        builder.HasMany(p => p.Legals).WithOne(p => p.City).HasForeignKey(p => p.CityId).OnDelete(DeleteBehavior.NoAction);
     }
 }

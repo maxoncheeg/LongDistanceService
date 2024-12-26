@@ -13,14 +13,19 @@ public class CargoService(IMediator mediator) : ICargoService
         return [..await mediator.Send(new GetCargoCategoriesRequest())];
     }
 
-    public Task<bool> AddOrUpdateCargoCategoryAsync(ICargoCategory category)
+    public async Task<bool> AddOrUpdateCargoCategoryAsync(IEditCargoCategory category)
     {
-        throw new NotImplementedException();
+        return await mediator.Send(new EditCargoCategoryRequest()
+        {
+            Id = category.Id,
+            Name = category.Name,
+            UnitId = category.UnitId
+        });
     }
 
-    public Task<bool> DeleteCargoCategoryAsync(int id)
+    public async Task<bool> DeleteCargoCategoryAsync(int id)
     {
-        throw new NotImplementedException();
+        return await mediator.Send(new DeleteCargoCategoryRequest(id));
     }
 
     public async Task<IList<IUnit>> GetUnitsAsync()
@@ -38,18 +43,23 @@ public class CargoService(IMediator mediator) : ICargoService
         return await mediator.Send(new DeleteUnitRequest { Id = id });
     }
 
-    public Task<IList<ICargo>> GetCargoesAsync()
+    public async Task<IList<ICargo>> GetCargoesAsync()
     {
-        throw new NotImplementedException();
+        return [..await mediator.Send(new GetCargoesRequest())];
     }
 
-    public Task<bool> AddOrUpdateCargoAsync(IUnit category)
+    public async Task<bool> AddOrUpdateCargoAsync(IEditCargo category)
     {
-        throw new NotImplementedException();
+        return await mediator.Send(new EditCargoRequest()
+        {
+            Id = category.Id,
+            Name = category.Name,
+            CategoryId = category.CategoryId
+        });
     }
 
-    public Task<bool> DeleteCargoAsync(int id)
+    public async Task<bool> DeleteCargoAsync(int id)
     {
-        throw new NotImplementedException();
+        return await mediator.Send(new DeleteCargoRequest(id));
     }
 }

@@ -36,6 +36,7 @@ public static class ServiceRoutes
         public const string VehicleModels = ReferenceRoute + "/vehicle_models";
         public const string Unit = ReferenceRoute + "/units";
         public const string CargoCategory = ReferenceRoute + "/cargo_categories";
+        public const string Cargo = ReferenceRoute + "/cargoes";
         public const string DriverCategory = ReferenceRoute + "/driver_categories";
         public const string Street = ReferenceRoute + "/streets";
         public const string City = ReferenceRoute + "/cities";

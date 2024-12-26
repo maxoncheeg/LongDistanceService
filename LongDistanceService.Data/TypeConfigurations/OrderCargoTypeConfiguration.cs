@@ -23,8 +23,8 @@ public class OrderCargoTypeConfiguration : IEntityTypeConfiguration<OrderCargo>
         }).HasKey(k => new { k.CargoId, k.OrderId });
 
         builder.HasOne(p => p.Cargo)
-            .WithMany(p => p.OrderCargoes).HasForeignKey(p => p.CargoId);
+            .WithMany(p => p.OrderCargoes).HasForeignKey(p => p.CargoId).OnDelete(DeleteBehavior.NoAction);
         builder.HasOne(p => p.Order)
-            .WithMany(p => p.OrderCargoes).HasForeignKey(p => p.OrderId);
+            .WithMany(p => p.OrderCargoes).HasForeignKey(p => p.OrderId).OnDelete(DeleteBehavior.NoAction);
     }
 }

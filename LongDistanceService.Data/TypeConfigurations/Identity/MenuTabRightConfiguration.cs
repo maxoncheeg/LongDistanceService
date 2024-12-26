@@ -17,7 +17,7 @@ public class MenuTabRightConfiguration : IEntityTypeConfiguration<MenuTabRight>
 
         builder.ToTable("menu_tab_rights").HasKey(p => new { p.RoleId, p.MenuTabId });
 
-        builder.HasOne(p => p.MenuTab).WithMany(p => p.Rights).HasForeignKey(p => p.MenuTabId);
-        builder.HasOne(p => p.Role).WithMany(p => p.MenuTabRights).HasForeignKey(p => p.RoleId);
+        builder.HasOne(p => p.MenuTab).WithMany(p => p.Rights).HasForeignKey(p => p.MenuTabId).OnDelete(DeleteBehavior.NoAction);
+        builder.HasOne(p => p.Role).WithMany(p => p.MenuTabRights).HasForeignKey(p => p.RoleId).OnDelete(DeleteBehavior.NoAction);
     }
 }

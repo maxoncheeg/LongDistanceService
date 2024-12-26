@@ -1,0 +1,218 @@
+﻿@using LongDistanceService.Domain.Models.Abstract
+@using LongDistanceService.Domain.Models.Abstract.Personals
+@using LongDistanceService.Domain.Models.Abstract.Vehicles
+@using LongDistanceService.Domain.Services.Abstract
+@using LongDistanceService.Web.Models.Scenario.Abstract
+@using LongDistanceService.Web.Models.Vehicles
+@using LongDistanceService.Web.Routes
+@using LongDistanceService.Web.Services.Abstract
+
+@attribute [Route(ServiceRoutes.Reference.VehicleModels)]
+@rendermode InteractiveServer
+
+<style>
+    .refBox {
+        height: 100vh;
+        text-align: center;
+        padding: 20px;
+    }
+
+    .refList {
+        width: 80%;
+        margin: auto;
+        height: 45%;
+        overflow-y: auto;
+    }
+</style>
+
+<div class="refBox justify-content-center">
+    <h3>МОДЕЛИ МАШИН</h3>
+    <div class="refList">
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Марка</th>
+                <th scope="col">Название</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var model in Models)
+            {
+                <tr @onclick="@(() => SelectModel(model))">
+                    <th scope="row">@model.Id</th>
+                    <td>@model.Brand.Name</td>
+                    <td>@model.Name</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+
+    @if (UserRights is { Write: true })
+    {
+        <button class="btn btn-lg btn-info m-2 w-75" @onclick="AddModel"> Новая модель</button>
+    }
+
+    @if (UserRights is { Edit: true } && SelectedModel != null || UserRights is { Write: true } && SelectedModel == null && IsAdd)
+    {
+        <div class="justify-content-center w-75 m-auto">
+            <EditForm Model="Model" method="post" FormName="vehicleModelEdit" OnValidSubmit="EditModel">
+                <DataAnnotationsValidator/>
+                <h6 class="c-g"> Название </h6>
+                <InputText class="form-control w-25 m-auto"
+                           @bind-Value="@Model.Name"> @Model.Name </InputText>
+                <ValidationMessage For="() => Model.Name" class="text-danger"/>
+                <br>
+                <h6 class="c-g">Марка</h6>
+                <InputSelect class="form-select w-25 m-auto" @bind-Value="Model.BrandId">
+                    @for (int i = 0; i < Brands.Count; i++)
+                    {
+                        @if (SelectedModel != null && Brands[i].Id == Model.BrandId || SelectedModel == null && i == 0)
+                        {
+                            <option selected="selected" value="@Brands[i].Id">@Brands[i].Name</option>
+                        }
+                        else
+                        {
+                            <option value="@Brands[i].Id">@Brands[i].Name</option>
+                        }
+                    }
+                </InputSelect>
+                <br>
+                <button type="submit"
+                        class="btn btn-dark btn-lg">@(SelectedModel == null ? "Добавить" : "Редактировать") </button>
+            </EditForm>
+            @if (UserRights is { Delete: true } && SelectedModel != null)
+            {
+                <button type="submit"
+                        class="btn btn-danger btn-lg m-1" @onclick="DeleteModel"> Удалить
+                </button>
+            }
+
+        </div>
+    }
+</div>
+
+@code {
+    [Inject] public IScenarioService ScenarioService { get; set; } = null!;
+    [Inject] public ISecurityService SecurityService { get; set; } = null!;
+    [Inject] public IVehicleService VehicleService { get; set; } = null!;
+    [Inject] public NavigationManager NavigationManager { get; set; } = null!;
+    [Inject] public IJSRuntime JsRuntime { get; set; } = null!;
+
+    public IAuthResult? AuthResult { get; set; }
+    public IUserRights? UserRights { get; set; }
+
+    public IList<IModel> Models { get; set; } = [];
+    public IList<IBrand> Brands { get; set; } = [];
+    public IModel? SelectedModel { get; set; }
+    public VehicleModelModel Model { get; set; } = new();
+
+    public bool IsAdd { get; set; }
+
+    public string Route = ServiceRoutes.Reference.VehicleModels;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        AuthResult = await ScenarioService.TryAuthenticateUserAsync(tryRefreshToken: true, redirectToLogin: true);
+
+        if (AuthResult == null)
+            NavigationManager.NavigateTo(ServiceRoutes.Home);
+        else
+        {
+            UserRights = await SecurityService.GetUserRightsToPageAsync(AuthResult.User, Route);
+
+            if (UserRights == null || !UserRights.Read)
+            {
+                NavigationManager.NavigateTo(ServiceRoutes.Home);
+                return;
+            }
+
+            Brands = await VehicleService.GetBrandsAsync();
+            Models = await VehicleService.GetModelsAsync();
+
+            await base.OnInitializedAsync();
+        }
+    }
+
+    public void SelectModel(IModel model)
+    {
+        SelectedModel = model;
+        Model = new()
+        {
+            Id = SelectedModel.Id,
+            Name = SelectedModel.Name,
+            BrandId = model.Brand.Id
+        };
+        StateHasChanged();
+    }
+
+    public void AddModel()
+    {
+        IsAdd = true;
+        SelectedModel = null;
+        Model = new()
+        {
+            BrandId = 1
+        };
+        StateHasChanged();
+    }
+
+    private async Task EditModel()
+    {
+        var auth = await ScenarioService.TryAuthenticateUserAsync(tryRefreshToken: true, redirectToLogin: true);
+        if (auth == null)
+        {
+            NavigationManager.NavigateTo(ServiceRoutes.Home);
+            return;
+        }
+
+        var rights = await SecurityService.GetUserRightsToPageAsync(auth.User, Route);
+        if (rights is { Edit: false } && SelectedModel != null || rights is { Write: false } && SelectedModel == null)
+        {
+            NavigationManager.NavigateTo(ServiceRoutes.Home);
+            return;
+        }
+
+        bool result = await JsRuntime.InvokeAsync<bool>("confirm", "Вы уверены?");
+        if (result)
+        {
+            var isEdited = await VehicleService.AddOrUpdateModelAsync(Model);
+            if (!isEdited)
+                await JsRuntime.InvokeAsync<object>("alert", "Ошибка при изменении");
+
+            NavigationManager.NavigateTo(Route, true);
+        }
+    }
+
+    public async Task DeleteModel()
+    {
+        if (SelectedModel != null)
+        {
+            var auth = await ScenarioService.TryAuthenticateUserAsync(tryRefreshToken: true, redirectToLogin: true);
+            if (auth == null)
+            {
+                NavigationManager.NavigateTo(ServiceRoutes.Home);
+                return;
+            }
+
+            var rights = await SecurityService.GetUserRightsToPageAsync(auth.User, Route);
+            if (rights is { Delete: false })
+            {
+                NavigationManager.NavigateTo(ServiceRoutes.Home);
+                return;
+            }
+
+            bool result = await JsRuntime.InvokeAsync<bool>("confirm", "Вы уверены?");
+            if (result)
+            {
+                var isDeleted = await VehicleService.DeleteModelAsync(SelectedModel.Id);
+                if (!isDeleted)
+                    await JsRuntime.InvokeAsync<object>("alert", "Ошибка при удалении");
+
+                NavigationManager.NavigateTo(Route, true);
+            }
+        }
+    }
+
+}

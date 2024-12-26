@@ -59,4 +59,14 @@ public class VehicleService(IMediator mediator) : IVehicleService
     {
         return await mediator.Send(new DeleteBrandRequest(id));
     }
+
+    public async Task<bool> AddOrUpdateModelAsync(IEditModel model)
+    {
+        return await mediator.Send(new EditModelRequest() { Id = model.Id, Name = model.Name, BrandId = model.BrandId});
+    }
+
+    public async Task<bool> DeleteModelAsync(int id)
+    {
+        return await mediator.Send(new DeleteModelRequest(id));
+    }
 }
