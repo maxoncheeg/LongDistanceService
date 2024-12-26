@@ -39,7 +39,8 @@ namespace LongDistanceService.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasAlternateKey("Name");
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("cities", (string)null);
                 });
@@ -61,7 +62,8 @@ namespace LongDistanceService.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasAlternateKey("Name");
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("streets", (string)null);
                 });
@@ -87,9 +89,10 @@ namespace LongDistanceService.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasAlternateKey("Name");
-
                     b.HasIndex("CategoryId");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("cargoes", (string)null);
                 });
@@ -115,7 +118,8 @@ namespace LongDistanceService.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasAlternateKey("Name");
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.HasIndex("UnitId");
 
@@ -139,7 +143,8 @@ namespace LongDistanceService.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasAlternateKey("Name");
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("units", (string)null);
                 });
@@ -202,9 +207,10 @@ namespace LongDistanceService.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasAlternateKey("EmployeeNumber");
-
                     b.HasIndex("CategoryId");
+
+                    b.HasIndex("EmployeeNumber")
+                        .IsUnique();
 
                     b.ToTable("drivers", null, t =>
                         {
@@ -229,7 +235,8 @@ namespace LongDistanceService.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasAlternateKey("Name");
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("driver_categories", (string)null);
                 });
@@ -338,18 +345,20 @@ namespace LongDistanceService.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasAlternateKey("Name");
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("menu_tabs", (string)null);
                 });
 
             modelBuilder.Entity("LongDistanceService.Data.Entities.Identity.MenuTabRight", b =>
                 {
-                    b.Property<int>("UserId")
+                    b.Property<int>("RoleId")
                         .HasColumnType("integer")
-                        .HasColumnName("user_id");
+                        .HasColumnName("role_id");
 
                     b.Property<int>("MenuTabId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasColumnName("tab_id");
 
@@ -377,11 +386,34 @@ namespace LongDistanceService.Data.Migrations
                         .HasDefaultValue(false)
                         .HasColumnName("w");
 
-                    b.HasKey("UserId", "MenuTabId");
+                    b.HasKey("RoleId", "MenuTabId");
 
                     b.HasIndex("MenuTabId");
 
                     b.ToTable("menu_tab_rights", (string)null);
+                });
+
+            modelBuilder.Entity("LongDistanceService.Data.Entities.Identity.Role", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("name");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("roles", (string)null);
                 });
 
             modelBuilder.Entity("LongDistanceService.Data.Entities.Identity.User", b =>
@@ -398,14 +430,33 @@ namespace LongDistanceService.Data.Migrations
                         .HasColumnType("text")
                         .HasColumnName("login");
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("name");
+
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("password");
 
+                    b.Property<int>("RoleId")
+                        .HasColumnType("integer")
+                        .HasColumnName("role_id");
+
+                    b.Property<string>("Surname")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("surname");
+
                     b.HasKey("Id");
 
-                    b.HasAlternateKey("Login");
+                    b.HasIndex("Login")
+                        .IsUnique();
+
+                    b.HasIndex("RoleId");
 
                     b.ToTable("users", (string)null);
                 });
@@ -569,7 +620,8 @@ namespace LongDistanceService.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasAlternateKey("Name");
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("banks", (string)null);
                 });
@@ -626,9 +678,11 @@ namespace LongDistanceService.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasAlternateKey("PassportSeries");
+                    b.HasIndex("PassportSeries")
+                        .IsUnique();
 
-                    b.HasAlternateKey("Phone");
+                    b.HasIndex("Phone")
+                        .IsUnique();
 
                     b.ToTable("individuals", (string)null);
                 });
@@ -708,15 +762,18 @@ namespace LongDistanceService.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasAlternateKey("Phone");
-
-                    b.HasAlternateKey("TIN");
-
-                    b.HasAlternateKey("BankId", "BankAccount");
-
                     b.HasIndex("CityId");
 
+                    b.HasIndex("Phone")
+                        .IsUnique();
+
                     b.HasIndex("StreetId");
+
+                    b.HasIndex("TIN")
+                        .IsUnique();
+
+                    b.HasIndex("BankId", "BankAccount")
+                        .IsUnique();
 
                     b.ToTable("legals", (string)null);
                 });
@@ -782,7 +839,8 @@ namespace LongDistanceService.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasAlternateKey("LicensePlate");
+                    b.HasIndex("LicensePlate")
+                        .IsUnique();
 
                     b.HasIndex("ModelId");
 
@@ -809,7 +867,8 @@ namespace LongDistanceService.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasAlternateKey("Name");
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("vehicle_brands", (string)null);
                 });
@@ -835,7 +894,8 @@ namespace LongDistanceService.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasAlternateKey("BrandId", "Name");
+                    b.HasIndex("BrandId", "Name")
+                        .IsUnique();
 
                     b.ToTable("vehicle_models", (string)null);
                 });
@@ -845,7 +905,7 @@ namespace LongDistanceService.Data.Migrations
                     b.HasOne("LongDistanceService.Data.Entities.Cargoes.CargoCategory", "Category")
                         .WithMany("Cargoes")
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Category");
@@ -856,7 +916,7 @@ namespace LongDistanceService.Data.Migrations
                     b.HasOne("LongDistanceService.Data.Entities.Cargoes.Unit", "Unit")
                         .WithMany("CargoCategories")
                         .HasForeignKey("UnitId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Unit");
@@ -867,7 +927,7 @@ namespace LongDistanceService.Data.Migrations
                     b.HasOne("LongDistanceService.Data.Entities.Drivers.DriverCategory", "Category")
                         .WithMany("Drivers")
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Category");
@@ -878,7 +938,7 @@ namespace LongDistanceService.Data.Migrations
                     b.HasOne("LongDistanceService.Data.Entities.Identity.User", "User")
                         .WithMany("Applications")
                         .HasForeignKey("CreatorId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("User");
@@ -889,13 +949,13 @@ namespace LongDistanceService.Data.Migrations
                     b.HasOne("LongDistanceService.Data.Entities.Identity.Application", "Application")
                         .WithMany("Messages")
                         .HasForeignKey("ApplicationId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("LongDistanceService.Data.Entities.Identity.User", "User")
                         .WithMany("ApplicationMessages")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Application");
@@ -908,18 +968,29 @@ namespace LongDistanceService.Data.Migrations
                     b.HasOne("LongDistanceService.Data.Entities.Identity.MenuTab", "MenuTab")
                         .WithMany("Rights")
                         .HasForeignKey("MenuTabId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("LongDistanceService.Data.Entities.Identity.User", "User")
-                        .WithMany("Rights")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                    b.HasOne("LongDistanceService.Data.Entities.Identity.Role", "Role")
+                        .WithMany("MenuTabRights")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("MenuTab");
 
-                    b.Navigation("User");
+                    b.Navigation("Role");
+                });
+
+            modelBuilder.Entity("LongDistanceService.Data.Entities.Identity.User", b =>
+                {
+                    b.HasOne("LongDistanceService.Data.Entities.Identity.Role", "Role")
+                        .WithMany("Users")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Role");
                 });
 
             modelBuilder.Entity("LongDistanceService.Data.Entities.Order", b =>
@@ -927,31 +998,31 @@ namespace LongDistanceService.Data.Migrations
                     b.HasOne("LongDistanceService.Data.Entities.Addresses.City", "ReceiveCity")
                         .WithMany("ReceiveOrders")
                         .HasForeignKey("ReceiveCityId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("LongDistanceService.Data.Entities.Addresses.Street", "ReceiveStreet")
                         .WithMany("ReceiveOrders")
                         .HasForeignKey("ReceiveStreetId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("LongDistanceService.Data.Entities.Addresses.City", "SendCity")
                         .WithMany("SendOrders")
                         .HasForeignKey("SendCityId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("LongDistanceService.Data.Entities.Addresses.Street", "SendStreet")
                         .WithMany("SendOrders")
                         .HasForeignKey("SendStreetId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("LongDistanceService.Data.Entities.Vehicles.Vehicle", "Vehicle")
                         .WithMany("Orders")
                         .HasForeignKey("VehicleId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("ReceiveCity");
@@ -970,13 +1041,13 @@ namespace LongDistanceService.Data.Migrations
                     b.HasOne("LongDistanceService.Data.Entities.Cargoes.Cargo", "Cargo")
                         .WithMany("OrderCargoes")
                         .HasForeignKey("CargoId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("LongDistanceService.Data.Entities.Order", "Order")
                         .WithMany("OrderCargoes")
                         .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Cargo");
@@ -989,13 +1060,13 @@ namespace LongDistanceService.Data.Migrations
                     b.HasOne("LongDistanceService.Data.Entities.Drivers.Driver", "Driver")
                         .WithMany("OrderDrivers")
                         .HasForeignKey("DriverId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("LongDistanceService.Data.Entities.Order", "Order")
                         .WithMany("OrderDrivers")
                         .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Driver");
@@ -1008,19 +1079,19 @@ namespace LongDistanceService.Data.Migrations
                     b.HasOne("LongDistanceService.Data.Entities.Personals.Bank", "Bank")
                         .WithMany("Legals")
                         .HasForeignKey("BankId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("LongDistanceService.Data.Entities.Addresses.City", "City")
                         .WithMany("Legals")
                         .HasForeignKey("CityId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("LongDistanceService.Data.Entities.Addresses.Street", "Street")
                         .WithMany("Legals")
                         .HasForeignKey("StreetId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Bank");
@@ -1035,13 +1106,13 @@ namespace LongDistanceService.Data.Migrations
                     b.HasOne("LongDistanceService.Data.Entities.Cargoes.CargoCategory", "Category")
                         .WithMany("VehicleCargoCategories")
                         .HasForeignKey("CargoCategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("LongDistanceService.Data.Entities.Vehicles.Vehicle", "Vehicle")
                         .WithMany("VehicleCargoCategories")
                         .HasForeignKey("VehicleId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Category");
@@ -1054,7 +1125,7 @@ namespace LongDistanceService.Data.Migrations
                     b.HasOne("LongDistanceService.Data.Entities.Vehicles.VehicleModel", "Model")
                         .WithMany("Vehicles")
                         .HasForeignKey("ModelId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Model");
@@ -1065,7 +1136,7 @@ namespace LongDistanceService.Data.Migrations
                     b.HasOne("LongDistanceService.Data.Entities.Vehicles.VehicleBrand", "Brand")
                         .WithMany("Models")
                         .HasForeignKey("BrandId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Brand");
@@ -1126,13 +1197,18 @@ namespace LongDistanceService.Data.Migrations
                     b.Navigation("Rights");
                 });
 
+            modelBuilder.Entity("LongDistanceService.Data.Entities.Identity.Role", b =>
+                {
+                    b.Navigation("MenuTabRights");
+
+                    b.Navigation("Users");
+                });
+
             modelBuilder.Entity("LongDistanceService.Data.Entities.Identity.User", b =>
                 {
                     b.Navigation("ApplicationMessages");
 
                     b.Navigation("Applications");
-
-                    b.Navigation("Rights");
                 });
 
             modelBuilder.Entity("LongDistanceService.Data.Entities.Order", b =>

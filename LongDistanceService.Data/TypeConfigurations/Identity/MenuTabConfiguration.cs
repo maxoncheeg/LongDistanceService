@@ -18,6 +18,6 @@ public class MenuTabConfiguration : IEntityTypeConfiguration<MenuTab>
 
         builder.ToTable("menu_tabs").HasKey(p => p.Id);
         
-        builder.HasAlternateKey(p => p.Name);
+        builder.HasIndex(p => p.Name).IsUnique();
     }
 }

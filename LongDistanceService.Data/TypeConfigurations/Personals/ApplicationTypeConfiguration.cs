@@ -17,8 +17,8 @@ public class ApplicationTypeConfiguration : IEntityTypeConfiguration<Application
         builder.ToTable("applications").HasKey(p => p.Id);
 
         builder.HasMany(p => p.Messages).WithOne(p => p.Application)
-            .HasForeignKey(p => p.ApplicationId);
+            .HasForeignKey(p => p.ApplicationId).OnDelete(DeleteBehavior.NoAction);
         builder.HasOne(p => p.User).WithMany(p => p.Applications)
-            .HasForeignKey(p => p.CreatorId);
+            .HasForeignKey(p => p.CreatorId).OnDelete(DeleteBehavior.NoAction);
     }
 }

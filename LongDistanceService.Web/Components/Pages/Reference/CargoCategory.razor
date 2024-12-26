@@ -1,0 +1,217 @@
+﻿@using LongDistanceService.Domain.Models.Abstract
+@using LongDistanceService.Domain.Models.Abstract.Cargoes
+@using LongDistanceService.Domain.Services.Abstract
+@using LongDistanceService.Web.Models.Cargoes
+@using LongDistanceService.Web.Models.Scenario.Abstract
+@using LongDistanceService.Web.Routes
+@using LongDistanceService.Web.Services.Abstract
+
+@attribute [Route(ServiceRoutes.Reference.CargoCategory)]
+@rendermode InteractiveServer
+
+<style>
+    .refBox {
+        height: 100vh;
+        text-align: center;
+        padding: 20px;
+    }
+
+    .refList {
+        width: 80%;
+        margin: auto;
+        height: 45%;
+        overflow-y: auto;
+    }
+</style>
+
+<div class="refBox justify-content-center">
+    <h3>КАТЕГОРИИ ГРУЗОВ</h3>
+    <div class="refList">
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Ед. измерения</th>
+                <th scope="col">Название</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var category in Categories)
+            {
+                <tr @onclick="@(() => SelectCategory(category))">
+                    <th scope="row">@category.Id</th>
+                    <td>@category.Unit.Name</td>
+                    <td>@category.Name</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+
+    @if (UserRights is { Write: true })
+    {
+        <button class="btn btn-lg btn-info m-2 w-75" @onclick="AddCategory"> Новая категория</button>
+    }
+
+    @if (UserRights is { Edit: true } && SelectedCategory != null || UserRights is { Write: true } && SelectedCategory == null && IsAdd)
+    {
+        <div class="justify-content-center w-75 m-auto">
+            <EditForm Model="Model" method="post" FormName="cargoCategoryEdit" OnValidSubmit="EditCategory">
+                <DataAnnotationsValidator/>
+                <h6 class="c-g"> Название </h6>
+                <InputText class="form-control w-25 m-auto"
+                           @bind-Value="@Model.Name"> @Model.Name </InputText>
+                <ValidationMessage For="() => Model.Name" class="text-danger"/>
+                <br>
+                <h6 class="c-g">Марка</h6>
+                <InputSelect class="form-select w-25 m-auto" @bind-Value="Model.UnitId">
+                    @for (int i = 0; i < Units.Count; i++)
+                    {
+                        @if (SelectedCategory != null && Units[i].Id == Model.UnitId || SelectedCategory == null && i == 0)
+                        {
+                            <option selected="selected" value="@Units[i].Id">@Units[i].Name</option>
+                        }
+                        else
+                        {
+                            <option value="@Units[i].Id">@Units[i].Name</option>
+                        }
+                    }
+                </InputSelect>
+                <br>
+                <button type="submit"
+                        class="btn btn-dark btn-lg">@(SelectedCategory == null ? "Добавить" : "Редактировать") </button>
+            </EditForm>
+            @if (UserRights is { Delete: true } && SelectedCategory != null)
+            {
+                <button type="submit"
+                        class="btn btn-danger btn-lg m-1" @onclick="DeleteCategory"> Удалить
+                </button>
+            }
+
+        </div>
+    }
+</div>
+
+@code {
+    [Inject] public IScenarioService ScenarioService { get; set; } = null!;
+    [Inject] public ISecurityService SecurityService { get; set; } = null!;
+    [Inject] public ICargoService CargoService { get; set; } = null!;
+    [Inject] public NavigationManager NavigationManager { get; set; } = null!;
+    [Inject] public IJSRuntime JsRuntime { get; set; } = null!;
+
+    public IAuthResult? AuthResult { get; set; }
+    public IUserRights? UserRights { get; set; }
+
+    public IList<ICargoCategory> Categories { get; set; } = [];
+    public IList<IUnit> Units { get; set; } = [];
+    public ICargoCategory? SelectedCategory { get; set; }
+    public CargoCategoryModel Model { get; set; } = new();
+
+    public bool IsAdd { get; set; }
+
+    public string Route = ServiceRoutes.Reference.CargoCategory;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        AuthResult = await ScenarioService.TryAuthenticateUserAsync(tryRefreshToken: true, redirectToLogin: true);
+
+        if (AuthResult == null)
+            NavigationManager.NavigateTo(ServiceRoutes.Home);
+        else
+        {
+            UserRights = await SecurityService.GetUserRightsToPageAsync(AuthResult.User, Route);
+
+            if (UserRights == null || !UserRights.Read)
+            {
+                NavigationManager.NavigateTo(ServiceRoutes.Home);
+                return;
+            }
+
+            Units = await CargoService.GetUnitsAsync();
+            Categories = await CargoService.GetCargoCategoriesAsync();
+
+            await base.OnInitializedAsync();
+        }
+    }
+
+    public void SelectCategory(ICargoCategory category)
+    {
+        SelectedCategory = category;
+        Model = new()
+        {
+            Id = SelectedCategory.Id,
+            Name = SelectedCategory.Name,
+            UnitId = category.Unit.Id
+        };
+        StateHasChanged();
+    }
+
+    public void AddCategory()
+    {
+        IsAdd = true;
+        SelectedCategory = null;
+        Model = new()
+        {
+            UnitId = 1
+        };
+        StateHasChanged();
+    }
+
+    private async Task EditCategory()
+    {
+        var auth = await ScenarioService.TryAuthenticateUserAsync(tryRefreshToken: true, redirectToLogin: true);
+        if (auth == null)
+        {
+            NavigationManager.NavigateTo(ServiceRoutes.Home);
+            return;
+        }
+
+        var rights = await SecurityService.GetUserRightsToPageAsync(auth.User, Route);
+        if (rights is { Edit: false } && SelectedCategory != null || rights is { Write: false } && SelectedCategory == null)
+        {
+            NavigationManager.NavigateTo(ServiceRoutes.Home);
+            return;
+        }
+
+        bool result = await JsRuntime.InvokeAsync<bool>("confirm", "Вы уверены?");
+        if (result)
+        {
+            var isEdited = await CargoService.AddOrUpdateCargoCategoryAsync(Model);
+            if (!isEdited)
+                await JsRuntime.InvokeAsync<object>("alert", "Ошибка при изменении");
+
+            NavigationManager.NavigateTo(Route, true);
+        }
+    }
+
+    public async Task DeleteCategory()
+    {
+        if (SelectedCategory != null)
+        {
+            var auth = await ScenarioService.TryAuthenticateUserAsync(tryRefreshToken: true, redirectToLogin: true);
+            if (auth == null)
+            {
+                NavigationManager.NavigateTo(ServiceRoutes.Home);
+                return;
+            }
+
+            var rights = await SecurityService.GetUserRightsToPageAsync(auth.User, Route);
+            if (rights is { Delete: false })
+            {
+                NavigationManager.NavigateTo(ServiceRoutes.Home);
+                return;
+            }
+
+            bool result = await JsRuntime.InvokeAsync<bool>("confirm", "Вы уверены?");
+            if (result)
+            {
+                var isDeleted = await CargoService.DeleteCargoCategoryAsync(SelectedCategory.Id);
+                if (!isDeleted)
+                    await JsRuntime.InvokeAsync<object>("alert", "Ошибка при удалении");
+
+                NavigationManager.NavigateTo(Route, true);
+            }
+        }
+    }
+
+}

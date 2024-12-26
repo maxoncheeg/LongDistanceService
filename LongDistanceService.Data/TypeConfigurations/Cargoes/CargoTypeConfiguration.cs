@@ -12,7 +12,7 @@ public class CargoTypeConfiguration : IEntityTypeConfiguration<Cargo>
         builder.Property(p => p.CategoryId).HasColumnName("category_id");
         builder.Property(p => p.Id).HasColumnName("id").ValueGeneratedOnAdd();
         
-        builder.HasAlternateKey(p => p.Name);
+        builder.HasIndex(p => p.Name).IsUnique();
 
         builder.ToTable("cargoes").HasKey(p => p.Id);
     }

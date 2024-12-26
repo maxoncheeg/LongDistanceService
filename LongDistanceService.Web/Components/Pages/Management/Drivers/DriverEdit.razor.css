@@ -1,0 +1,33 @@
+﻿.box{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+    height: 100vh;
+}
+
+.driverBox{
+    width: 45%;
+    height: 100%;
+    margin: 10px;
+    overflow-y: auto;
+}
+
+.driverList{
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.experience{
+    color: white;
+}
+
+.inWork{
+    background-color: red;
+}
+
+.free{
+    background-color: #38A3A4;
+}

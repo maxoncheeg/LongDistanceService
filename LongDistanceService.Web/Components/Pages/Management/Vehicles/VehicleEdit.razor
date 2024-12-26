@@ -1,0 +1,262 @@
+﻿@using LongDistanceService.Web.Routes
+@using LongDistanceService.Domain.Services.Abstract
+@using LongDistanceService.Domain.Models.Abstract.Vehicles
+@using LongDistanceService.Web.Services.Abstract
+@using LongDistanceService.Domain.Models.Abstract
+@using LongDistanceService.Domain.Models.Abstract.Cargoes
+@using LongDistanceService.Web.Models.Scenario.Abstract
+@using LongDistanceService.Web.Models.Vehicles
+@attribute [Route(ServiceRoutes.Vehicles.TypedEdit)]
+@rendermode InteractiveServer
+
+
+<div class="box">
+    @if (Type == "show" && Vehicle != null)
+    {
+        <h2>Автомобиль №@Vehicle.Id</h2>
+
+        <div class="propertiesList">
+            <div class="propertiesColumn">
+                <h6 class="c-g">Марка</h6>
+                <h4>@Vehicle.Model.Brand.Name</h4>
+
+                <h6 class="c-g">Модель</h6>
+                <h4>@Vehicle.Model.Name</h4>
+
+                <h6 class="c-g">Номерной знак</h6>
+                <h4>@Vehicle.LicensePlate</h4>
+
+                <h6 class="c-g">Год выпуска</h6>
+                <h4>@Vehicle.Year</h4>
+
+                <h6 class="c-g">Год обслуживания</h6>
+                <h4>@Vehicle.OverhaulYear</h4>
+
+                <h6 class="c-g">Пробег</h6>
+                <h4>@Vehicle.Kilometerage км</h4>
+            </div>
+
+            <div class="propertiesColumn">
+                <h6 class="c-g">Фотография</h6>
+                <div class="vehicleImage">
+                    <img src="@Vehicle.ImagePath" alt="Нету фото"/>
+                </div>
+                <br>
+
+                <h6 class="c-g">Перевозимые виды грузов</h6>
+                @foreach (var category in Vehicle.CargoCategories)
+                {
+                    <h4>@category.Name</h4>
+                }
+            </div>
+        </div>
+    }
+    @if (Type is "update" or "add")
+    {
+        <EditForm Model="VehicleModel" FormName="editVehicle" method="post" OnValidSubmit="UpdateVehicle">
+            <DataAnnotationsValidator/>
+            <div class="propertiesList">
+                <div class="propertiesColumn">
+                    <h6 class="c-g">Марка</h6>
+                    <select class="form-select" @onchange="UpdateModels" va>
+                        @for (int i = 0; i < Brands.Count; i++)
+                        {
+                            @if (Vehicle != null && Brands[i].Id == Vehicle.Model.Brand.Id || Vehicle == null && i == 0)
+                            {
+                                <option selected="selected" value="@Brands[i].Id">@Brands[i].Name</option>
+                            }
+                            else
+                            {
+                                <option value="@Brands[i].Id">@Brands[i].Name</option>
+                            }
+                        }
+                    </select>
+                    <br>
+                    <h6 class="c-g">Модель</h6>
+                    <InputSelect class="form-select" @bind-Value="VehicleModel.ModelId" @onchange="ChooseModel">
+                        @for (int i = 0; i < BrandModels.Count; i++)
+                        {
+                            @if (Vehicle != null && BrandModels[i].Id == Vehicle.Model.Id || Vehicle == null && i == 0)
+                            {
+                                <option selected="selected" value="@BrandModels[i].Id">@BrandModels[i].Name</option>
+                            }
+                            else
+                            {
+                                <option value="@BrandModels[i].Id">@BrandModels[i].Name</option>
+                            }
+                        }
+                    </InputSelect>
+                    <br>
+
+                    <h6 class="c-g">Номерной знак</h6>
+                    <InputText class="form-control"
+                               @bind-Value="@VehicleModel.LicensePlate">@VehicleModel.LicensePlate</InputText>
+                    <br>
+
+                    <h6 class="c-g">Год выпуска</h6>
+                    <InputNumber class="form-control" TValue="int"
+                                 @bind-Value="@VehicleModel.Year">@VehicleModel.Year</InputNumber>
+                    <br>
+
+                    <h6 class="c-g">Год обслуживания</h6>
+                    <InputNumber class="form-control" TValue="int"
+                                 @bind-Value="@VehicleModel.OverhaulYear">@VehicleModel.OverhaulYear</InputNumber>
+                    <br>
+
+                    <h6 class="c-g">Пробег</h6>
+                    <InputNumber class="form-control" TValue="decimal"
+                                 @bind-Value="@VehicleModel.Kilometerage">@VehicleModel.Kilometerage</InputNumber>
+                    <br>
+
+                    <ValidationSummary></ValidationSummary>
+                </div>
+
+                <div class="propertiesColumn">
+                    <h6 class="c-g">Фотография</h6>
+                    <div class="vehicleImage">
+                        <img src="@VehicleModel.ImagePath" alt="Нету фото"/>
+                    </div>
+                    <br>
+
+                    <h6 class="c-g">Ссылка на фото</h6>
+                    <InputText class="form-control" @bind-Value="@VehicleModel.ImagePath"
+                               @onchange="ImageChange"></InputText>
+                    <br>
+
+                    <h6 class="c-g">Перевозимые виды грузов</h6>
+                    <div class="form_label">
+                        <div class="multiselect_block">
+                            <label for="select-1" class="field_multiselect">Откройте для редактирования</label>
+                            <input id="checkbox-1" class="multiselect_checkbox" type="checkbox">
+                            <label for="checkbox-1" class="multiselect_label"></label>
+                            <select id="select-1" class="field_select" @bind="VehicleModel.CargoCategoryIds" multiple>
+                                @foreach (var category in CargoCategories)
+                                {
+                                    <option value="@category.Id">@category.Name</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="submit"
+                            class="btn btn-dark btn-lg">@(Type == "update" ? "Редактировать" : "Добавить")</button>
+                </div>
+            </div>
+        </EditForm>
+    }
+</div>
+
+
+@code {
+    [Parameter] public string Id { get; set; } = string.Empty;
+    [Parameter] public string Type { get; set; } = string.Empty; // update add show
+
+    [Inject] public IScenarioService ScenarioService { get; set; } = null!;
+    [Inject] public IJSRuntime JsRuntime { get; set; } = null!;
+    [Inject] public ISecurityService SecurityService { get; set; } = null!;
+    [Inject] public IVehicleService VehicleService { get; set; } = null!;
+    [Inject] public ICargoService CargoService { get; set; } = null!;
+    [Inject] public NavigationManager NavigationManager { get; set; } = null!;
+
+    public IAuthResult? AuthResult { get; set; }
+    public IUserRights? UserRights { get; set; }
+
+    public IVehicle? Vehicle { get; set; }
+    public IList<IModel> Models { get; set; } = [];
+    public IList<IBrand> Brands { get; set; } = [];
+    public IList<IModel> BrandModels { get; set; } = [];
+    public IList<ICargoCategory> CargoCategories { get; set; } = [];
+
+    [SupplyParameterFromForm] public VehicleModel VehicleModel { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        AuthResult = await ScenarioService.TryAuthenticateUserAsync(tryRefreshToken: true, redirectToLogin: true);
+
+        if (AuthResult == null)
+            NavigationManager.NavigateTo(ServiceRoutes.Home);
+        else
+        {
+            UserRights = await SecurityService.GetUserRightsToPageAsync(AuthResult.User, ServiceRoutes.Vehicles.Route);
+
+            if (Type is not ("show" or "update" or "add"))
+                NavigationManager.NavigateTo(ServiceRoutes.Home);
+            else if (UserRights is not { Read: true })
+                NavigationManager.NavigateTo(ServiceRoutes.Home);
+            else if (UserRights is not { Edit: true } && Type == "update")
+                NavigationManager.NavigateTo(ServiceRoutes.Home);
+            else if (UserRights is not { Write: true } && Type == "add")
+                NavigationManager.NavigateTo(ServiceRoutes.Home);
+
+            if (int.TryParse(Id, out var id))
+            {
+                Vehicle = await VehicleService.GetVehicleAsync(id);
+            }
+            
+            Models = await VehicleService.GetModelsAsync();
+            CargoCategories = await CargoService.GetCargoCategoriesAsync();
+            Brands = Models.Select(m => m.Brand).DistinctBy(b => b.Name).ToList();
+
+            BrandModels = Vehicle != null
+                ? Models.Where(m => m.Brand.Id == Vehicle.Model.Brand.Id).ToList()
+                : Models.Where(m => m.Brand.Id == Brands.First().Id).ToList();
+
+            if (Type == "update" && Vehicle != null)
+            {
+                VehicleModel.ModelId = Vehicle.Model.Id;
+                VehicleModel.OverhaulYear = Vehicle.OverhaulYear;
+                VehicleModel.Year = Vehicle.Year;
+                VehicleModel.Kilometerage = Vehicle.Kilometerage;
+                VehicleModel.ImagePath = Vehicle.ImagePath;
+                VehicleModel.LicensePlate = Vehicle.LicensePlate;
+                VehicleModel.CargoCategoryIds = Vehicle.CargoCategories.Select(c => c.Id).ToArray();
+                VehicleModel.Id = Vehicle.Id;
+            }
+            else if (Type == "add")
+            {
+                VehicleModel.ModelId = BrandModels.First().Id;
+            }
+
+            StateHasChanged();
+            await base.OnInitializedAsync();
+        }
+    }
+
+    public async Task UpdateVehicle()
+    {
+        bool result = await JsRuntime.InvokeAsync<bool>("confirm", "Вы уверены?");
+        if (result)
+        {
+            await VehicleService.AddOrUpdateVehicleAsync(VehicleModel);
+            NavigationManager.NavigateTo(ServiceRoutes.Vehicles.Route);
+        }
+    }
+
+    public void UpdateModels(ChangeEventArgs args)
+    {
+        if (int.TryParse(args.Value?.ToString(), out var id))
+        {
+            BrandModels = Models.Where(m => m.Brand.Id == id).ToList();
+
+            if (Vehicle != null && Vehicle.Model.Brand.Id == id)
+                VehicleModel.ModelId = Vehicle.Model.Id;
+            else
+                VehicleModel.ModelId = BrandModels.First().Id;
+            StateHasChanged();
+        }
+    }
+
+    public void ChooseModel(ChangeEventArgs args)
+    {
+        if (int.TryParse(args.Value?.ToString(), out var id))
+        {
+            VehicleModel.ModelId = id;
+        }
+    }
+
+    public void ImageChange(ChangeEventArgs args)
+    {
+        StateHasChanged();
+    }
+
+}

@@ -14,10 +14,10 @@ public class CargoCategoryTypeConfiguration : IEntityTypeConfiguration<CargoCate
         
         builder.ToTable("cargo_categories").HasKey(p => p.Id);
         
-        builder.HasAlternateKey(p => p.Name);
+        builder.HasIndex(p => p.Name).IsUnique();
         
         builder.HasMany(p => p.Cargoes)
             .WithOne(p => p.Category)
-            .HasForeignKey(p => p.CategoryId);
+            .HasForeignKey(p => p.CategoryId).OnDelete(DeleteBehavior.NoAction);
     }
 }

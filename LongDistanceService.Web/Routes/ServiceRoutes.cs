@@ -31,6 +31,15 @@ public static class ServiceRoutes
         public const string Generic = ReferenceRoute + "/{type}";
         
         public const string Sql = ReferenceRoute + "/sql";
+        public const string Bank = ReferenceRoute + "/banks";
+        public const string VehicleBrands = ReferenceRoute + "/vehicle_brands";
+        public const string VehicleModels = ReferenceRoute + "/vehicle_models";
+        public const string Unit = ReferenceRoute + "/units";
+        public const string CargoCategory = ReferenceRoute + "/cargo_categories";
+        public const string Cargo = ReferenceRoute + "/cargoes";
+        public const string DriverCategory = ReferenceRoute + "/driver_categories";
+        public const string Street = ReferenceRoute + "/streets";
+        public const string City = ReferenceRoute + "/cities";
     }
     
     public static class Application
@@ -48,5 +57,18 @@ public static class ServiceRoutes
 
         public const string Excel = Route + "/excel";
         public const string Word = Route + "/word";
+    }
+    
+    public static class Vehicles
+    {
+        public const string Route = "vehicle";
+        
+        public const string Edit = Route + "/edit";
+        public const string TypedEdit = Edit + "/{id}/{type}";
+    }
+
+    public static class Drivers
+    {
+        public const string Route = "driver";
     }
 }

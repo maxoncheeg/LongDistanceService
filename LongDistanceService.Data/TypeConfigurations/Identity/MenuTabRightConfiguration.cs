@@ -12,12 +12,12 @@ public class MenuTabRightConfiguration : IEntityTypeConfiguration<MenuTabRight>
         builder.Property(p => p.W).HasColumnName("w").HasDefaultValue(false);
         builder.Property(p => p.E).HasColumnName("e").HasDefaultValue(false);
         builder.Property(p => p.D).HasColumnName("d").HasDefaultValue(false);
-        builder.Property(p => p.MenuTabId).HasColumnName("tab_id");
-        builder.Property(p => p.UserId).HasColumnName("user_id");
+        builder.Property(p => p.MenuTabId).HasColumnName("tab_id").ValueGeneratedOnAdd();
+        builder.Property(p => p.RoleId).HasColumnName("role_id");
 
-        builder.ToTable("menu_tab_rights").HasKey(p => new { p.UserId, p.MenuTabId });
+        builder.ToTable("menu_tab_rights").HasKey(p => new { p.RoleId, p.MenuTabId });
 
-        builder.HasOne(p => p.MenuTab).WithMany(p => p.Rights).HasForeignKey(p => p.MenuTabId);
-        builder.HasOne(p => p.User).WithMany(p => p.Rights).HasForeignKey(p => p.UserId);
+        builder.HasOne(p => p.MenuTab).WithMany(p => p.Rights).HasForeignKey(p => p.MenuTabId).OnDelete(DeleteBehavior.NoAction);
+        builder.HasOne(p => p.Role).WithMany(p => p.MenuTabRights).HasForeignKey(p => p.RoleId).OnDelete(DeleteBehavior.NoAction);
     }
 }

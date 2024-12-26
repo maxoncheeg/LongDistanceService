@@ -19,8 +19,8 @@ public class ApplicationMessageTypeConfiguration : IEntityTypeConfiguration<Appl
         builder.ToTable("application_messages").HasKey(p => p.Id);
 
         builder.HasOne(p => p.User).WithMany(p => p.ApplicationMessages)
-            .HasForeignKey(p => p.UserId);
+            .HasForeignKey(p => p.UserId).OnDelete(DeleteBehavior.NoAction);
         builder.HasOne(p => p.Application).WithMany(p => p.Messages)
-            .HasForeignKey(p => p.ApplicationId);
+            .HasForeignKey(p => p.ApplicationId).OnDelete(DeleteBehavior.NoAction);
     }
 }

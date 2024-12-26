@@ -15,8 +15,8 @@ public class UnitTypeConfiguration : IEntityTypeConfiguration<Unit>
         //constraints
         builder.ToTable("units").HasKey(p => p.Id);
         
-        builder.HasAlternateKey(p => p.Name);
+        builder.HasIndex(p => p.Name).IsUnique();
 
-        builder.HasMany(p => p.CargoCategories).WithOne(p => p.Unit).HasForeignKey(p => p.UnitId);
+        builder.HasMany(p => p.CargoCategories).WithOne(p => p.Unit).HasForeignKey(p => p.UnitId).OnDelete(DeleteBehavior.NoAction);
     }
 }

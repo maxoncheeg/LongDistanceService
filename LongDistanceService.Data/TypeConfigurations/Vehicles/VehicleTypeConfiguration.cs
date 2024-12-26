@@ -16,9 +16,9 @@ public class VehicleTypeConfiguration : IEntityTypeConfiguration<Vehicle>
         builder.Property(p => p.ImagePath).HasColumnName("image_path");
         builder.Property(p => p.ModelId).HasColumnName("model_id");
         builder.Property(p => p.Id).HasColumnName("id").ValueGeneratedOnAdd();
-        
+
+        builder.HasIndex(p => p.LicensePlate).IsUnique();
         // constraints
-        builder.HasAlternateKey(p => p.LicensePlate);
         
         builder.ToTable("vehicles", 
             t =>
@@ -27,6 +27,6 @@ public class VehicleTypeConfiguration : IEntityTypeConfiguration<Vehicle>
             })
             .HasKey(p => p.Id);
 
-        builder.HasMany(p => p.Orders).WithOne(p => p.Vehicle).HasForeignKey(p => p.VehicleId);
+        builder.HasMany(p => p.Orders).WithOne(p => p.Vehicle).HasForeignKey(p => p.VehicleId).OnDelete(DeleteBehavior.NoAction);
     }
 }

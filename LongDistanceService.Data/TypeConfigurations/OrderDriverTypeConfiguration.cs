@@ -14,8 +14,8 @@ public class OrderDriverTypeConfiguration : IEntityTypeConfiguration<OrderDriver
         builder.ToTable("order_drivers").HasKey(k => new { k.DriverId, k.OrderId });
 
         builder.HasOne(p => p.Driver)
-            .WithMany(p => p.OrderDrivers).HasForeignKey(p => p.DriverId);
+            .WithMany(p => p.OrderDrivers).HasForeignKey(p => p.DriverId).OnDelete(DeleteBehavior.NoAction);
         builder.HasOne(p => p.Order)
-            .WithMany(p => p.OrderDrivers).HasForeignKey(p => p.OrderId);
+            .WithMany(p => p.OrderDrivers).HasForeignKey(p => p.OrderId).OnDelete(DeleteBehavior.NoAction);
     }
 }

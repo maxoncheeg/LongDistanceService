@@ -15,9 +15,9 @@ public class VehicleBrandTypeConfiguration : IEntityTypeConfiguration<VehicleBra
             .HasKey(k => k.Id);
         
         
-        builder.HasAlternateKey(p => p.Name);
+        builder.HasIndex(p => p.Name).IsUnique();
         
         builder.HasMany(p => p.Models)
-            .WithOne(p => p.Brand).HasForeignKey(p => p.BrandId);
+            .WithOne(p => p.Brand).HasForeignKey(p => p.BrandId).OnDelete(DeleteBehavior.NoAction);
     }
 }

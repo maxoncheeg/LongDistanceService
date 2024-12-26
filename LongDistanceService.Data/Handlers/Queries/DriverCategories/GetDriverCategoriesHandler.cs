@@ -1,7 +1,6 @@
-﻿using LongDistanceService.Data.Contexts;
-using LongDistanceService.Data.Contexts.Abstract;
+﻿using LongDistanceService.Data.Contexts.Abstract;
 using LongDistanceService.Domain.CQRS.Queries.DriverCategories;
-using LongDistanceService.Domain.CQRS.Responses.DriverCategories;
+using LongDistanceService.Domain.CQRS.Responses.Drivers;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,13 +12,9 @@ public class GetDriverCategoriesHandler(IApplicationDbContext context)
     public async Task<IList<DriverCategoryResponse>> Handle(GetDriverCategoriesRequest request,
         CancellationToken cancellationToken)
     {
-        var result = string.IsNullOrEmpty(request.Search)
-            ? context.DriverCategories
-            : context.DriverCategories.Where(c =>
-                c.Name.Contains(request.Search, StringComparison.InvariantCultureIgnoreCase));
+        var result = context.DriverCategories;
 
-        return await result.Skip(request.Skip)
-            .Take(request.Take)
+        return await result
             .Select(c => new DriverCategoryResponse() { Id = c.Id, Name = c.Name })
             .ToListAsync(cancellationToken);
     }

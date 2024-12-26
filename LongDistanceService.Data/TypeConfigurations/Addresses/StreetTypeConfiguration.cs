@@ -13,10 +13,10 @@ public class StreetTypeConfiguration : IEntityTypeConfiguration<Street>
         
         builder.ToTable("streets").HasKey(p => p.Id);
 
-        builder.HasAlternateKey(p => p.Name);
+        builder.HasIndex(p => p.Name).IsUnique();
         
-        builder.HasMany(p => p.ReceiveOrders).WithOne(p => p.ReceiveStreet).HasForeignKey(p => p.ReceiveStreetId);
-        builder.HasMany(p => p.SendOrders).WithOne(p => p.SendStreet).HasForeignKey(p => p.SendStreetId);
-        builder.HasMany(p => p.Legals).WithOne(p => p.Street).HasForeignKey(p => p.StreetId);
+        builder.HasMany(p => p.ReceiveOrders).WithOne(p => p.ReceiveStreet).HasForeignKey(p => p.ReceiveStreetId).OnDelete(DeleteBehavior.NoAction);
+        builder.HasMany(p => p.SendOrders).WithOne(p => p.SendStreet).HasForeignKey(p => p.SendStreetId).OnDelete(DeleteBehavior.NoAction);
+        builder.HasMany(p => p.Legals).WithOne(p => p.Street).HasForeignKey(p => p.StreetId).OnDelete(DeleteBehavior.NoAction);
     }
 }

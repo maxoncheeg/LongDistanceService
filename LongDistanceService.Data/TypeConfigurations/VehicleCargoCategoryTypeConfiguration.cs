@@ -14,8 +14,8 @@ public class VehicleCargoCategoryTypeConfiguration : IEntityTypeConfiguration<Ve
         builder.ToTable("vehicle_cargo_categories").HasKey(k => new { k.VehicleId, k.CargoCategoryId });
 
         builder.HasOne(p => p.Vehicle)
-            .WithMany(p => p.VehicleCargoCategories).HasForeignKey(p => p.VehicleId);
+            .WithMany(p => p.VehicleCargoCategories).HasForeignKey(p => p.VehicleId).OnDelete(DeleteBehavior.NoAction);
         builder.HasOne(p => p.Category)
-            .WithMany(p => p.VehicleCargoCategories).HasForeignKey(p => p.CargoCategoryId);
+            .WithMany(p => p.VehicleCargoCategories).HasForeignKey(p => p.CargoCategoryId).OnDelete(DeleteBehavior.NoAction);
     }
 }
