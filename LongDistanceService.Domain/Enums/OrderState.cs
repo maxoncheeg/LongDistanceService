@@ -2,5 +2,5 @@
 
 public enum OrderState
 {
-    Running, Complete
+    Loading, Running, Complete
 }
