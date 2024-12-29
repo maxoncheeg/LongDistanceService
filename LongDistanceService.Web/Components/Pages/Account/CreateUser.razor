@@ -1,0 +1,137 @@
+﻿@attribute [Route(template: ServiceRoutes.Identity.UserCreate)]
+@using LongDistanceService.Domain.Models.Abstract.Users
+@using LongDistanceService.Domain.Services.Abstract
+@using LongDistanceService.Web.Models.Identity
+@using LongDistanceService.Web.Components.Layout
+@using LongDistanceService.Web.Models.Scenario.Abstract
+@using LongDistanceService.Web.Routes
+@using LongDistanceService.Web.Services.Abstract
+
+@rendermode InteractiveServer
+@layout EmptyLayout
+
+<PageTitle>Создание пользователя</PageTitle>
+
+<div>
+    <div class="intro"></div>
+    <image class="media" src="res/road.jpg" autoplay muted loop></image>
+
+
+    <div class="shell">
+        <div class="login">
+            <div class="loginTitle loginText">
+                <h1>ГРУЗОВЫЕ АВТОПЕРЕВОЗКИ</h1>
+            </div>
+
+            <div class="loginCenter">
+                <div class="loginCenterLogo">
+                    <img src="https://lucaclinic.ru/bitrix/templates/main/planeta.png" alt="no"/>
+                </div>
+                <div class="loginCenterForm loginText">
+
+                    <EditForm class="login-form w-100" Model="Input" method="post" OnValidSubmit="SetNewPassword"
+                              FormName="login">
+                        <DataAnnotationsValidator/>
+                        @* <ValidationSummary class="text-danger" role="alert"/> *@
+                        <div>
+                            <h3 class="loginText" style="color:aliceblue">Создание пользователя</h3>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <InputText @bind-Value="Input.Login" class="form-control"
+                                       aria-required="true" placeholder="login"/>
+                            <label for="login" class="form-label">Старый пароль</label>
+                            <ValidationMessage For="() => Input.Login" class="text-danger"/>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <InputText type="password" @bind-Value="Input.Password" class="form-control"
+                                       aria-required="true" placeholder="password"/>
+                            <label for="password" class="form-label">Пароль</label>
+                            <ValidationMessage For="() => Input.Password" class="text-danger"/>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <InputText @bind-Value="Input.Name" class="form-control"
+                                       aria-required="true" placeholder="login"/>
+                            <label for="name" class="form-label">Имя</label>
+                            <ValidationMessage For="() => Input.Name" class="text-danger"/>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <InputText @bind-Value="Input.Surname" class="form-control"
+                                       aria-required="true" placeholder="login"/>
+                            <label for="surname" class="form-label">Фамилия</label>
+                            <ValidationMessage For="() => Input.Surname" class="text-danger"/>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <InputSelect class="form-select w-25 m-auto" @bind-Value="Input.RoleId">
+                                @for (int i = 0; i < Roles.Count; i++)
+                                {
+                                    @if (i == 0)
+                                    {
+                                        <option selected="selected" value="@Roles[i].Id">@Roles[i].Name</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@Roles[i].Id">@Roles[i].Name</option>
+                                    }
+                                }
+                            </InputSelect>
+                            <label for="roleId" class="form-label">Роль</label>
+                        </div>
+                        <div>
+                            <button type="submit" class="w-100 btn btn-dark btn-lg">Создать пользователя</button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+
+            <div class="loginFooter loginText">
+                <h5>сайт мистера максонелиуса 2k24</h5>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [SupplyParameterFromForm] public CreateUserModel Input { get; set; } = new();
+
+    [Inject] public IIdentityService IdentityService { get; set; } = null!;
+    [Inject] public IUserService UserService { get; set; } = null!;
+    [Inject] public NavigationManager NavigationManager { get; set; } = null!;
+    [Inject] public IScenarioService ScenarioService { get; set; } = null!;
+    [Inject] public IJSRuntime JsRuntime { get; set; } = null!;
+
+    public IAuthResult? AuthResult { get; set; }
+
+    public IList<IRole> Roles { get; set; } = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        AuthResult = await ScenarioService.TryAuthenticateUserAsync(tryRefreshToken: true, redirectToLogin: true);
+
+        if (AuthResult == null)
+        {
+            NavigationManager.NavigateTo(ServiceRoutes.Home);
+            await base.OnInitializedAsync();
+        }
+
+        Roles = await UserService.GetRoles();
+        if (Roles.Count > 0)
+            Input.RoleId = Roles[0].Id;
+    }
+
+    public async Task SetNewPassword()
+    {
+        if (AuthResult != null)
+        {
+            var result = await UserService.CreateUser(Input.Login, Input.Password, Input.Name, Input.Surname, Input.RoleId);
+            if (result)
+            {
+                NavigationManager.NavigateTo(ServiceRoutes.Home);
+            }
+            else
+            {
+                await JsRuntime.InvokeAsync<object>("alert", "Не удалось создать пользователя");
+            }
+        }
+    }
+
+}
