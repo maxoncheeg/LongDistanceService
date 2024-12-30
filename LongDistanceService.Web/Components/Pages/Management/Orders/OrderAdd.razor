@@ -1,0 +1,351 @@
+﻿@using LongDistanceService.Data.Entities
+@using LongDistanceService.Domain.Enums
+@using LongDistanceService.Web.Routes
+@using LongDistanceService.Domain.Services.Abstract
+@using LongDistanceService.Web.Services.Abstract
+@using LongDistanceService.Domain.Models.Abstract
+@using LongDistanceService.Domain.Models.Abstract.Addresses
+@using LongDistanceService.Domain.Models.Abstract.Cargoes
+@using LongDistanceService.Domain.Models.Abstract.Drivers
+@using LongDistanceService.Domain.Models.Abstract.Personals
+@using LongDistanceService.Domain.Models.Abstract.Vehicles
+@using LongDistanceService.Web.Models.Orders
+@using LongDistanceService.Web.Models.Scenario.Abstract
+@attribute [Route(ServiceRoutes.Orders.Add)]
+@rendermode InteractiveServer
+
+
+<div class="box">
+    <h2>Создание заказа</h2>
+
+    <EditForm Model="Model" FormName="orderAdd" method="post" OnValidSubmit="Submit">
+        <div class="propertiesList">
+            <div class="propertiesColumn">
+                <h6 class="c-g">Город отправления</h6>
+                <InputSelect TValue="int" class="form-select" @bind-Value="Model.SendCityId">
+                    @foreach (var t in Cities)
+                    {
+                        if (t.Id == Model.SendCityId)
+                        {
+                            <option selected="selected" value="@t.Id">@t.Name</option>
+                        }
+                        else
+                        {
+                            <option value="@t.Id">@t.Name</option>
+                        }
+                    }
+                </InputSelect>
+                <br>
+
+                <h6 class="c-g">Улица отправления</h6>
+                <InputSelect TValue="int" class="form-select" @bind-Value="Model.SendStreetId">
+                    @foreach (var t in Streets)
+                    {
+                        if (t.Id == Model.SendStreetId)
+                        {
+                            <option selected="selected" value="@t.Id">@t.Name</option>
+                        }
+                        else
+                        {
+                            <option value="@t.Id">@t.Name</option>
+                        }
+                    }
+                </InputSelect>
+                <br>
+
+                <h6 class="c-g">Дом отправления</h6>
+                <InputText class="form-control"
+                           @bind-Value="@Model.SendHouseNumber">@Model.SendHouseNumber</InputText>
+                <br>
+
+
+                <h6 class="c-g">Город назначения</h6>
+                <InputSelect TValue="int" class="form-select" @bind-Value="Model.ReceiveCityId">
+                    @foreach (var t in Cities)
+                    {
+                        if (t.Id == Model.ReceiveCityId)
+                        {
+                            <option selected="selected" value="@t.Id">@t.Name</option>
+                        }
+                        else
+                        {
+                            <option value="@t.Id">@t.Name</option>
+                        }
+                    }
+                </InputSelect>
+                <br>
+
+                <h6 class="c-g">Улица назначения</h6>
+                <InputSelect TValue="int" class="form-select" @bind-Value="Model.ReceiveStreetId">
+                    @foreach (var t in Streets)
+                    {
+                        if (t.Id == Model.ReceiveStreetId)
+                        {
+                            <option selected="selected" value="@t.Id">@t.Name</option>
+                        }
+                        else
+                        {
+                            <option value="@t.Id">@t.Name</option>
+                        }
+                    }
+                </InputSelect>
+                <br>
+
+                <h6 class="c-g">Дом назначения</h6>
+                <InputText class="form-control"
+                           @bind-Value="@Model.ReceiveHouseNumber">@Model.ReceiveHouseNumber</InputText>
+                <br>
+
+                <h6 class="c-g">Авто</h6>
+                <InputSelect TValue="int" class="form-select" @bind-Value="Model.VehicleId">
+                    @foreach (var vehicle in Vehicles)
+                    {
+                        if (vehicle.Id == Model.VehicleId)
+                        {
+                            <option selected="selected" value="@vehicle.Id">@vehicle.BrandAndModel</option>
+                        }
+                        else
+                        {
+                            <option value="@vehicle.Id">@vehicle.BrandAndModel</option>
+                        }
+                    }
+                </InputSelect>
+                <br>
+
+                <h6 class="c-g">Тип отправителя</h6>
+                <InputSelect TValue="ClientTypes" class="form-select" @bind-Value="Model.ReceiverType">
+                    <option selected="selected" value="@ClientTypes.Individual">Физ. лицо</option>
+                    <option value="@ClientTypes.Legal">Юр. лицо</option>
+                </InputSelect>
+                <br>
+
+                <h6 class="c-g">Отправитель</h6>
+                @if (Model.ReceiverType == ClientTypes.Individual)
+                {
+                    <InputSelect TValue="int" class="form-select" @bind-Value="Model.ReceiverId">
+                        @foreach (var p in Individuals)
+                        {
+                            if (p.Id == Model.ReceiverId)
+                            {
+                                <option selected="selected"
+                                        value="@p.Id">@(p.Surname + " " + @p.Name + $"({@p.Phone})")</option>
+                            }
+                            else
+                            {
+                                <option value="@p.Id">@(p.Surname + " " + @p.Name + $"({@p.Phone})")</option>
+                            }
+                        }
+                    </InputSelect>
+                    <br>
+                }
+                else
+                {
+                    <InputSelect TValue="int" class="form-select" @bind-Value="Model.ReceiverId">
+                        @foreach (var p in Legals)
+                        {
+                            if (p.Id == Model.ReceiverId)
+                            {
+                                <option selected="selected" value="@p.Id">@(p.CompanyName + $"({@p.Phone})")</option>
+                            }
+                            else
+                            {
+                                <option value="@p.Id">@(p.CompanyName + $"({@p.Phone})")</option>
+                            }
+                        }
+                    </InputSelect>
+                    <br>
+                }
+
+                <h6 class="c-g">Тип получателя</h6>
+                <InputSelect TValue="ClientTypes" class="form-select" @bind-Value="Model.SenderType">
+                    <option value="@ClientTypes.Individual">Физ. лицо</option>
+                    <option selected="selected" value="@ClientTypes.Legal">Юр. лицо</option>
+                </InputSelect>
+                <br>
+
+                <h6 class="c-g">Получатель</h6>
+                @if (Model.SenderType == ClientTypes.Individual)
+                {
+                    <InputSelect TValue="int" class="form-select" @bind-Value="Model.SenderId">
+                        @foreach (var p in Individuals)
+                        {
+                            if (p.Id == Model.SenderId)
+                            {
+                                <option selected="selected"
+                                        value="@p.Id">@(p.Surname + " " + p.Name + $"({p.Phone})")</option>
+                            }
+                            else
+                            {
+                                <option value="@p.Id">@(p.Surname + " " + p.Name + $"({p.Phone})")</option>
+                            }
+                        }
+                    </InputSelect>
+                    <br>
+                }
+                else
+                {
+                    <InputSelect TValue="int" class="form-select" @bind-Value="Model.SenderId">
+                        @foreach (var p in Legals)
+                        {
+                            if (p.Id == Model.SenderId)
+                            {
+                                <option selected="selected" value="@p.Id">@(p.CompanyName + $"({p.Phone})")</option>
+                            }
+                            else
+                            {
+                                <option value="@p.Id">@(p.CompanyName + $"({p.Phone})")</option>
+                            }
+                        }
+                    </InputSelect>
+                    <br>
+                }
+
+                <button type="submit" class="btn btn-dark btn-lg">Оформить заказ</button>
+            </div>
+
+            <div class="propertiesColumn">
+                <h6 class="c-g">Водители:</h6>
+                <div class="form_label">
+                    <div class="multiselect_block">
+                        <label for="select-1" class="field_multiselect">Откройте для редактирования</label>
+                        <input id="checkbox-1" class="multiselect_checkbox" type="checkbox">
+                        <label for="checkbox-1" class="multiselect_label"></label>
+                        <select id="select-1" class="field_select" @bind="Model.Drivers" multiple>
+                            @foreach (var driver in Drivers)
+                            {
+                                <option value="@driver.Id">@driver.FullName</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+
+                <h6 class="c-g">Длина маршрута</h6>
+                <InputNumber TValue="decimal" @bind-Value="Model.RouteLength"></InputNumber>
+
+                <h6 class="c-g">Дата погрузки</h6>
+                <InputDate TValue="DateTime" @bind-Value="Model.LoadingDate"></InputDate>
+
+            </div>
+            
+            <div class="propertiesColumn">
+                <h4>Добавление груза</h4>
+                <h6>Груз</h6>
+                <select @bind="Model.CargoModel.CargoId">
+                    @foreach (var cargo in Cargoes)
+                    {
+                        <option value="@cargo.Id">@($"{cargo.Name}({cargo.Category.Unit.Name})")</option>
+                    }
+                </select>
+                <h6>Кол-во</h6>
+                <input type="number" class="form-control" @bind="Model.CargoModel.Amount" placeholder="Количество">
+                <h6>Вес(кг)</h6>
+                <input type="number" class="form-control" @bind="Model.CargoModel.Weight" placeholder="Вес">
+                <h6>Цена(руб.)</h6>
+                <input type="number" class="form-control" @bind="Model.CargoModel.Price" placeholder="Цена">
+                <button type="button" class="btn btn-outline-secondary" @onclick="AddCargo">Добавить груз</button>
+            </div>
+        </div>
+    </EditForm>
+
+</div>
+
+
+@code {
+    [Inject] public IScenarioService ScenarioService { get; set; } = null!;
+    [Inject] public IJSRuntime JsRuntime { get; set; } = null!;
+    [Inject] public ISecurityService SecurityService { get; set; } = null!;
+    [Inject] public NavigationManager NavigationManager { get; set; } = null!;
+
+    [Inject] public IOrderService OrderService { get; set; } = null!;
+    [Inject] public IPersonalService PersonalService { get; set; } = null!;
+    [Inject] public IAddressService AddressService { get; set; } = null!;
+    [Inject] public IVehicleService VehicleService { get; set; } = null!;
+    [Inject] public ICargoService CargoService { get; set; } = null!;
+    [Inject] public IDriverService DriverService { get; set; } = null!;
+
+    public IAuthResult? AuthResult { get; set; }
+    public IUserRights? UserRights { get; set; }
+
+    public IList<IIndividual> Individuals { get; set; } = [];
+    public IList<ILegal> Legals { get; set; } = [];
+    public IList<ICargo> Cargoes { get; set; } = [];
+    public IList<IVehicleInfo> Vehicles { get; set; } = [];
+    public IList<IDriverInfo> Drivers { get; set; } = [];
+    public IList<ICity> Cities { get; set; } = [];
+    public IList<IStreet> Streets { get; set; } = [];
+
+    public OrderModel Model { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        AuthResult = await ScenarioService.TryAuthenticateUserAsync(tryRefreshToken: true, redirectToLogin: true);
+
+        if (AuthResult == null)
+            NavigationManager.NavigateTo(ServiceRoutes.Home);
+        else
+        {
+            UserRights = await SecurityService.GetUserRightsToPageAsync(AuthResult.User, ServiceRoutes.Vehicles.Route);
+
+            if (UserRights is not { Read: true, Write: true })
+                NavigationManager.NavigateTo(ServiceRoutes.Home);
+
+            await SetEmptyModel();
+
+            StateHasChanged();
+            await base.OnInitializedAsync();
+        }
+    }
+
+    public async Task SetEmptyModel()
+    {
+        Streets = await AddressService.GetStreetsAsync();
+        Cities = await AddressService.GetCitiesAsync();
+        Vehicles = await VehicleService.GetVehiclesAsync();
+        Cargoes = await CargoService.GetCargoesAsync();
+        Individuals = await PersonalService.GetIndividualsAsync();
+        Legals = await PersonalService.GetLegalsAsync();
+        Drivers = await DriverService.GetDriversAsync();
+
+        Model = new()
+        {
+            SenderType = ClientTypes.Individual,
+            ReceiverType = ClientTypes.Legal,
+            ReceiverId = Individuals[0].Id,
+            SenderId = Legals[0].Id,
+            SendCityId = Cities[0].Id,
+            SendStreetId = Streets[0].Id,
+            ReceiveCityId = Cities[1].Id,
+            ReceiveStreetId = Streets[1].Id,
+            LoadingDate = DateTime.Now
+        };
+    }
+
+
+    public async Task Submit()
+    {
+        bool result = await JsRuntime.InvokeAsync<bool>("confirm", "Вы уверены?");
+        if (result)
+        {
+            await OrderService.AddOrder(Model);
+            NavigationManager.NavigateTo(ServiceRoutes.Orders.Route);
+        }
+    }
+
+    public string GetState(OrderState state)
+    {
+        return state switch
+        {
+            OrderState.Running => "В пути",
+            OrderState.Complete => "Завершен",
+            OrderState.Loading => "Погрузка"
+        };
+    }
+
+    private void AddCargo()
+    {
+        Model.Cargoes.Add(Model.CargoModel);
+        Model.CargoModel = new();
+        StateHasChanged();
+    }
+
+}

@@ -32,6 +32,9 @@ public static class ServicesExtensions
             .AddScoped<IDriverService, DriverService>()
             .AddScoped<IAddressService, AddressService>()
             .AddScoped<IBankService, BankService>()
-            .AddScoped<IPersonalService, PersonalService>();
+            .AddScoped<IPersonalService, PersonalService>()
+            .AddScoped<IOrderService, OrderService>()
+            .AddScoped<IUserService, UserService>()
+            ;
     }
 }

@@ -10,7 +10,7 @@
 
 <div class="box ">
     <h2>Заказы</h2>
-    <a class="btn btn-info" href='@($"{ServiceRoutes.Orders.Show}/0/add")'>Добавить заказ</a>
+    <a class="btn btn-info" href='@(ServiceRoutes.Orders.Add)'>Добавить заказ</a>
     <div class="magicCenter">
         <div class="vehicleListBox" style="width: 960px">
             @foreach (var order in Orders)
@@ -26,14 +26,10 @@
                         <p><span class="fw-bold">Кол-во водителей:</span> @order.DriversAmount</p>
                         <p><span class="fw-bold">Состояние:</span> @GetState(order.State)</p>
                         <div class="buttonBox">
-                            @if (UserRights?.Write ?? false)
+                            @if (UserRights?.Read ?? false)
                             {
                                 <a class="btn btn-info" href='@($"{ServiceRoutes.Orders.Route}/{order.Id}/show")'>Подробнее</a>
                             }
-                            @* @if (UserRights?.Edit ?? false) *@
-                            @* { *@
-                            @*     <a class="btn btn-info" href='@($"{ServiceRoutes.Vehicles.Edit}/{order.Id}/update")'>Изменить</a> *@
-                            @* } *@
                             @* @if (UserRights?.Delete ?? false) *@
                             @* { *@
                             @*     <form @formname="deleteVehicle" method="post" @onsubmit="@(() => DeleteCar(vehicle.Id))"> *@

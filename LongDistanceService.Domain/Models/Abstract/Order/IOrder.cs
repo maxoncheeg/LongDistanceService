@@ -1,5 +1,7 @@
 ﻿using LongDistanceService.Domain.Enums;
 using LongDistanceService.Domain.Models.Abstract.Addresses;
+using LongDistanceService.Domain.Models.Abstract.Drivers;
+using LongDistanceService.Domain.Models.Abstract.Personals;
 using LongDistanceService.Domain.Models.Abstract.Vehicles;
 
 namespace LongDistanceService.Domain.Models.Abstract.Order;
@@ -27,5 +29,10 @@ public interface IOrder
     public DateTime? LoadingDate { get; set; }
 
     public IList<IOrderCargo> OrderCargoes { get; set; }
-    public IList<IOrderDriver> OrderDrivers { get; set; }
+    public IList<IDriver> OrderDrivers { get; set; }
+    
+    public IIndividual? IndividualSender { get; set; }
+    public IIndividual? IndividualReceiver { get; set; }
+    public ILegal? LegalSender { get; set; }
+    public ILegal? LegalReceiver { get; set; }
 }

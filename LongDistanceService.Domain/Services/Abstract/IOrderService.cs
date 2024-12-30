@@ -7,4 +7,5 @@ public interface IOrderService
 {
     public Task<IList<IOrderInfo>> GetOrdersInfo();
     public Task<IOrder?> GetOrderById(int orderId);
+    public Task<bool> AddOrder(IOrderOnAdd orderInfo);
 }

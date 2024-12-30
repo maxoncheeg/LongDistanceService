@@ -1,9 +1,10 @@
 ﻿using LongDistanceService.Domain.Models.Abstract;
 using LongDistanceService.Domain.Models.Abstract.Users;
+using MediatR;
 
-namespace LongDistanceService.Domain.CQRS.Responses.Users;
+namespace LongDistanceService.Domain.CQRS.Commands.Users;
 
-public class UserResponse : IUser
+public class UpdateUserRequest : IRequest<bool>, IUser
 {
     public int Id { get; set; }
     public string Login { get; set; } = string.Empty;
