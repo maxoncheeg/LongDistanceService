@@ -12,7 +12,7 @@ public static class ServiceRoutes
         public const string Register = IdentityRoute + "/register";
         
         public const string LoginType = Login + "/{type}";
-        public const string AdminLogin = Login + "/admin";
+        public const string AdminLogin = Login + "/user";
         public const string UserLogin = Login + "/user";
         
         public const string ChangePassword = IdentityRoute + "/change_password";
