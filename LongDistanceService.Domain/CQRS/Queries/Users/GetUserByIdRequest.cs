@@ -3,7 +3,4 @@ using MediatR;
 
 namespace LongDistanceService.Domain.CQRS.Queries.Users;
 
-public class GetUserByLoginRequest : IRequest<LoginUserResponse?>
-{
-    public string Login { get; set; } = String.Empty;
-}
+public record GetUserByIdRequest(int Id) : IRequest<LoginUserResponse?>;

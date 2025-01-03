@@ -11,12 +11,12 @@ public class GetMenuHandler(IApplicationDbContext context) : IRequestHandler<Get
 {
     public async Task<IList<MenuItemResponse>> Handle(GetMenuRequest request, CancellationToken cancellationToken)
     {
-        var role = await context.Users.Include(p => p.Role)
+        var user = await context.Users
             .SingleOrDefaultAsync(r => r.Id == request.UserId, cancellationToken);
-        if (role == null) return Array.Empty<MenuItemResponse>();
+        if (user == null) return Array.Empty<MenuItemResponse>();
 
         var menuTabs = await context.MenuTabRights
-            .Where(r => r.RoleId == role.RoleId)
+            .Where(r => r.RoleId == user.RoleId)
             .Include(p => p.MenuTab)
             .Select(r => new MenuItemResponse()
             {

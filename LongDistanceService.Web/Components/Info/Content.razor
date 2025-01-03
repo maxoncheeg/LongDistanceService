@@ -1,0 +1,59 @@
+﻿@page "/content"
+@using LongDistanceService.Domain.CQRS.Queries.Menus
+@using LongDistanceService.Domain.Models.Abstract
+@using LongDistanceService.Web.Models.Scenario.Abstract
+@using LongDistanceService.Web.Routes
+@using LongDistanceService.Web.Services.Abstract
+@using MediatR
+
+<div style="width: 70%; text-align: center; margin: auto; padding-top: 10%">
+    <h3 class="fw-bold"> Содержание</h3>
+    <div style="text-align: left">
+        <ul>
+            @((MarkupString)List)
+        </ul>
+    </div>
+</div>
+@code {
+    public IAuthResult? AuthResult { get; set; }
+    [Inject] public IScenarioService ScenarioService { get; set; } = null!;
+    [Inject] public IMediator Mediator { get; set; } = null!;
+    [Inject] public NavigationManager NavigationManager { get; set; } = null!;
+    public string List { get; set; } = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        AuthResult = await ScenarioService.TryAuthenticateUserAsync(tryRefreshToken: true, redirectToLogin: true);
+
+        if (AuthResult == null)
+        {
+            NavigationManager.NavigateTo(ServiceRoutes.Home);
+
+        }
+        
+        var menus = await Mediator.Send(new GetMenuRequest() { UserId = AuthResult.User.Id });
+
+        List = ParseMenuToHtmlDropdown([..menus]);
+        await base.OnInitializedAsync();
+    }
+    
+    private string ParseMenuToHtmlDropdown(IList<IMenuItem> menu)
+    {
+        string html = "";
+
+        foreach (var item in menu)
+            if (item.Children == null)
+            {
+                string li = @"<li>" + item.Name + "</li>";
+                html += li;
+            }
+            else
+            {
+                string li = "<li>" + item.Name;
+                string ul = @"<ul>" + ParseMenuToHtmlDropdown(item.Children) + "</ul>";
+                html += li + ul + "</li>";
+            }
+
+        return html;
+    }
+}

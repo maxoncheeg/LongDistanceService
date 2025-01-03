@@ -30,15 +30,15 @@
                 </div>
                 <div class="loginCenterForm loginText">
 
-                    <EditForm class="login-form" Model="Input" method="post" OnValidSubmit="LoginUser" FormName="login">
+                    <EditForm class="login-form w-100" Model="Input" method="post" OnValidSubmit="LoginUser" FormName="login">
                         <DataAnnotationsValidator/>
                         @* <ValidationSummary class="text-danger" role="alert"/> *@
                         <div>
-                            <h3 class="loginText" style="color:aliceblue">Вход в сервис для Администратора</h3>
+                            <h3 class="loginText" style="color:aliceblue">Вход в сервис</h3>
                         </div>
                         <div class="form-floating mb-3">
                             <InputText @bind-Value="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com"/>
-                            <label for="email" class="form-label">Почта</label>
+                            <label for="email" class="form-label">Логин</label>
                             <ValidationMessage For="() => Input.Email" class="text-danger"/>
                         </div>
                         <div class="form-floating mb-3">
@@ -59,9 +59,9 @@
                         </div>
                     </EditForm>
                 </div>
-                <div class="loginCenterSocial loginText">
-                    <h4>входи через ВТентакли</h4>
-                </div>
+                @* <div class="loginCenterSocial loginText"> *@
+                @*     <h4>входи через ВТентакли</h4> *@
+                @* </div> *@
             </div>
 
             <div class="loginFooter loginText">

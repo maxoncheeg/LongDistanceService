@@ -12,8 +12,13 @@ public static class ServiceRoutes
         public const string Register = IdentityRoute + "/register";
         
         public const string LoginType = Login + "/{type}";
-        public const string AdminLogin = Login + "/admin";
+        public const string AdminLogin = Login + "/user";
         public const string UserLogin = Login + "/user";
+        
+        public const string ChangePassword = IdentityRoute + "/change_password";
+        public const string User = IdentityRoute + "/user";
+        public const string UserCreate = User + "/create";
+        public const string UserEdit = User + "/edit";
 
         public const string RefreshToken = Login + "/refresh";
     }
@@ -73,6 +78,13 @@ public static class ServiceRoutes
         
         public const string Edit = Route + "/edit";
         public const string TypedEdit = Edit + "/{id}/{type}";
+    }
+
+    public static class Orders
+    {
+        public const string Route = "orders";
+        public const string Show = Route + "/{id}/show";
+        public const string Add = Route + "/add";
     }
 
     public static class Drivers

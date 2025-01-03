@@ -1,57 +1,43 @@
 ﻿@page "/"
-@using LongDistanceService.Web.Models.Identity
+@using LongDistanceService.Domain.Models.Abstract
 @using LongDistanceService.Web.Services.Abstract
 @using LongDistanceService.Domain.Services.Abstract
 
+@using LongDistanceService.Web.Models.Scenario.Abstract
+@using LongDistanceService.Web.Routes
+
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
-
-@* <form class="login-form" method="post" @onsubmit="LoginUser" @formname="loginTest"> *@
-@*     $1$ <ValidationSummary class="text-danger" role="alert"/> #1# *@
-@*     <div> *@
-@*         <h3 class="loginText" style="color:aliceblue">Вход в сервис для Администратора</h3> *@
-@*     </div> *@
-@*     <div class="form-floating mb-3"> *@
-@*         <input name="login" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com"/> *@
-@*         <label for="login" class="form-label">Почта</label> *@
-@*     </div> *@
-@*     <div class="form-floating mb-3"> *@
-@*         <input type="password" name="password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password"/> *@
-@*         <label for="password" class="form-label">Пароль</label> *@
-@*     </div> *@
-@*     <div> *@
-@*         <button type="submit" class="w-100 btn btn-dark btn-lg">ВХОД</button> *@
-@*     </div> *@
-@*     <div> *@
-@*         $1$ <p> #1# *@
-@*         $1$     <a href="Account/ForgotPassword">Forgot your password?</a> #1# *@
-@*         $1$ </p> #1# *@
-@*         $1$ <p> #1# *@
-@*         $1$     <a class="link-light loginText" href="@(NavigationManager.GetUriWithQueryParameters("identity/register", new Dictionary<string, object?> { ["ReturnUrl"] = ReturnUrl }))">Зарегистрироваться</a> #1# *@
-@*         $1$ </p> #1# *@
-@*     </div> *@
-@*      *@
-@*     <AntiforgeryToken /> *@
-@* </form> *@
+<div style="text-align: center; width: 100%;">
+    <h1>Сервис грузовых автоперевозок</h1>
+    @if (AuthResult != null)
+    {
+        <form method="post" @onsubmit="LogOut" Context="lol" @formname="logout">
+            <button type="submit" class="w-50 btn btn-lg btn-primary">ВЫХОД</button>
+            <AntiforgeryToken/>
+        </form>
+    }
+</div>
 
 
 @code{
-    [SupplyParameterFromForm(FormName = "loginTest")] public string Login { get; set; } = string.Empty;
-    [SupplyParameterFromForm(FormName = "loginTest")] public string Password { get; set; } = string.Empty;
-    [Inject] IIdentityService IdentityService { get; set; } = null!;
-    [Inject] IPasswordHasher PasswordHasher { get; set; } = null!;
-    [Inject] public NavigationManager NavigationManager { get; set; }
+    [Inject] public IIdentityService IdentityService { get; set; } = null!;
+    [Inject] public IPasswordHasher PasswordHasher { get; set; } = null!;
+    [Inject] public IScenarioService ScenarioService { get; set; } = null!;
+    [Inject] public NavigationManager NavigationManager { get; set; } = null!;
 
-    protected override Task OnInitializedAsync()
-    {
-        //Console.WriteLine("\n\n\n" + PasswordHasher.Hash("123") + "\n\n\n");
-        return base.OnInitializedAsync();
-    }
+    public IAuthResult? AuthResult { get; set; }
+    public IUserRights? UserRights { get; set; }
 
-    public async Task LoginUser()
+    protected override async Task OnInitializedAsync()
     {
+        AuthResult = await ScenarioService.TryAuthenticateUserAsync(tryRefreshToken: true, redirectToLogin: true);
 
     }
-
+    
+    public async Task LogOut()
+    {
+        await IdentityService.SignOutAsync();
+        NavigationManager.NavigateTo(ServiceRoutes.Home);
+    }
 }

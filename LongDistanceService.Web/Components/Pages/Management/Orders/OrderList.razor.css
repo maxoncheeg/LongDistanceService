@@ -1,0 +1,50 @@
+﻿.box{
+    width: 100%;
+    text-align: center;
+}
+
+.magicCenter{
+    display: flex;
+    justify-content: center;
+}
+
+.vehicleListBox{
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    flex-wrap: wrap;
+    margin: 20px;
+}
+
+
+.vehicleBox{
+    display: flex;
+    flex-direction: column;
+    justify-content: left;
+    margin: 10px;
+    width: 300px;
+}
+
+.vehicleImage{
+    justify-content: right;
+    height: 200px;
+}
+
+.vehicleImage img{
+    height: 100%;
+    max-width: 100%;
+    margin: auto;
+    object-fit: cover;
+}
+
+.vehicleInfo{
+    justify-content: left;
+    text-align: left;
+    padding: 5px;
+}
+
+.buttonBox{
+    justify-content: right;
+    flex-direction: row;
+    display: flex;
+}
