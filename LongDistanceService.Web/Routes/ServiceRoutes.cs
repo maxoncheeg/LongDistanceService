@@ -6,7 +6,7 @@ public static class ServiceRoutes
     
     public static class Identity
     {
-        public const string IdentityRoute = "identity";
+        public const string IdentityRoute = "auth";
         
         public const string Login = IdentityRoute + "/login";
         public const string Register = IdentityRoute + "/register";
@@ -90,5 +90,10 @@ public static class ServiceRoutes
     public static class Drivers
     {
         public const string Route = "driver";
+    }
+
+    public static class Hubs
+    {
+        public const string ApplicationChat = "application_chat";
     }
 }

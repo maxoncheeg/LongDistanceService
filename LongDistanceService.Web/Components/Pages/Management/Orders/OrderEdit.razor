@@ -86,7 +86,6 @@
     [Inject] public NavigationManager NavigationManager { get; set; } = null!;
 
     public IAuthResult? AuthResult { get; set; }
-    public IUserRights? UserRights { get; set; }
 
     public IOrder? Order { get; set; }
 
@@ -98,10 +97,7 @@
             NavigationManager.NavigateTo(ServiceRoutes.Home);
         else
         {
-            UserRights = await SecurityService.GetUserRightsToPageAsync(AuthResult.User, ServiceRoutes.Vehicles.Route);
-
-
-            if (UserRights is not { Read: true })
+            if (!await SecurityService.IsManagementAsync())
                 NavigationManager.NavigateTo(ServiceRoutes.Home);
 
             if (int.TryParse(Id, out var id))

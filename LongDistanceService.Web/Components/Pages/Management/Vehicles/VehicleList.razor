@@ -22,21 +22,18 @@
                         <p>@vehicle.BrandAndModel</p>
                         <p>@vehicle.LicensePlate</p>
                         <div class="buttonBox">
-                            @if (UserRights?.Write ?? false)
-                            {
-                                <a class="btn btn-info" href='@($"{ServiceRoutes.Vehicles.Edit}/{vehicle.Id}/show")'>Подробнее</a>
-                            }
-                            @if (UserRights?.Edit ?? false)
-                            {
-                                <a class="btn btn-info" href='@($"{ServiceRoutes.Vehicles.Edit}/{vehicle.Id}/update")'>Изменить</a>
-                            }
-                            @if (UserRights?.Delete ?? false)
-                            {
-                                <form @formname="deleteVehicle" method="post" @onsubmit="@(() => DeleteCar(vehicle.Id))">
-                                    <button type="submit" class="btn btn-danger">Удалить</button>
-                                    <AntiforgeryToken/>
-                                </form>
-                            }
+
+                            <a class="btn btn-info" href='@($"{ServiceRoutes.Vehicles.Edit}/{vehicle.Id}/show")'>Подробнее</a>
+
+
+                            <a class="btn btn-info" href='@($"{ServiceRoutes.Vehicles.Edit}/{vehicle.Id}/update")'>Изменить</a>
+
+
+                            <form @formname="deleteVehicle" method="post" @onsubmit="@(() => DeleteCar(vehicle.Id))">
+                                <button type="submit" class="btn btn-danger">Удалить</button>
+                                <AntiforgeryToken/>
+                            </form>
+                            
                         </div>
                     </div>
                 </div>
@@ -53,7 +50,6 @@
     [Inject] public NavigationManager NavigationManager { get; set; } = null!;
 
     public IAuthResult? AuthResult { get; set; } = null;
-    public IUserRights? UserRights { get; set; } = null;
 
     public IList<IVehicleInfo> Vehicles { get; set; } = [];
 
@@ -66,9 +62,7 @@
             NavigationManager.NavigateTo(ServiceRoutes.Home);
         else
         {
-            UserRights = await SecurityService.GetUserRightsToPageAsync(AuthResult.User, ServiceRoutes.Vehicles.Route);
-
-            if (UserRights == null || !UserRights.Read)
+            if (!await SecurityService.IsManagementAsync())
                 NavigationManager.NavigateTo(ServiceRoutes.Home);
 
             Vehicles = await VehicleService.GetVehiclesAsync();

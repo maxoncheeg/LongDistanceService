@@ -46,12 +46,10 @@
         </table>
     </div>
 
-    @if (UserRights is { Write: true })
-    {
         <button class="btn btn-lg btn-info m-2 w-75" @onclick="AddBrand"> Новая марка</button>
-    }
+    
 
-    @if (UserRights is { Edit: true } && SelectedBrand != null || UserRights is { Write: true } && SelectedBrand == null && IsAdd)
+    @if (SelectedBrand != null ||SelectedBrand == null && IsAdd)
     {
         <div class="justify-content-center w-75 m-auto">
             <EditForm Model="Model" method="post" FormName="brandEdit" OnValidSubmit="EditBrand">
@@ -64,7 +62,7 @@
                 <button type="submit"
                         class="btn btn-dark btn-lg">@(SelectedBrand == null ? "Добавить" : "Редактировать") </button>
             </EditForm>
-            @if (UserRights is { Delete: true } && SelectedBrand != null)
+            @if (SelectedBrand != null)
             {
                 <button type="submit"
                         class="btn btn-danger btn-lg m-1" @onclick="DeleteBrand"> Удалить
@@ -83,7 +81,6 @@
     [Inject] public IJSRuntime JsRuntime { get; set; } = null!;
 
     public IAuthResult? AuthResult { get; set; }
-    public IUserRights? UserRights { get; set; }
 
     public IList<IBrand> Brands { get; set; } = [];
     public IBrand? SelectedBrand { get; set; }
@@ -102,9 +99,7 @@
             NavigationManager.NavigateTo(ServiceRoutes.Home);
         else
         {
-            UserRights = await SecurityService.GetUserRightsToPageAsync(AuthResult.User, Route);
-
-            if (UserRights == null || !UserRights.Read)
+            if (!await SecurityService.IsManagementAsync())
             {
                 NavigationManager.NavigateTo(ServiceRoutes.Home);
                 return;
@@ -138,14 +133,7 @@
     private async Task EditBrand()
     {
         var auth = await ScenarioService.TryAuthenticateUserAsync(tryRefreshToken: true, redirectToLogin: true);
-        if (auth == null)
-        {
-            NavigationManager.NavigateTo(ServiceRoutes.Home);
-            return;
-        }
-
-        var rights = await SecurityService.GetUserRightsToPageAsync(auth.User, Route);
-        if (rights is { Edit: false } && SelectedBrand != null || rights is { Write: false } && SelectedBrand == null)
+        if (auth == null || !await SecurityService.IsManagementAsync())
         {
             NavigationManager.NavigateTo(ServiceRoutes.Home);
             return;
@@ -167,14 +155,7 @@
         if (SelectedBrand != null)
         {
             var auth = await ScenarioService.TryAuthenticateUserAsync(tryRefreshToken: true, redirectToLogin: true);
-            if (auth == null)
-            {
-                NavigationManager.NavigateTo(ServiceRoutes.Home);
-                return;
-            }
-
-            var rights = await SecurityService.GetUserRightsToPageAsync(auth.User, Route);
-            if (rights is { Delete: false })
+            if (auth == null || !await SecurityService.IsManagementAsync())
             {
                 NavigationManager.NavigateTo(ServiceRoutes.Home);
                 return;

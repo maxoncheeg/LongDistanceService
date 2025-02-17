@@ -13,10 +13,9 @@
 <div class="box">
     <div class="driverBox">
         <h3>Водители</h3>
-        @if(UserRights is { Write: true })
-        {
+
             <button class="btn btn-info btn-lg" @onclick="AddDriver">Добавить</button>
-        }
+        
         
         <div class="driverList">
             <ol class="list-group list-group-numbered">
@@ -38,7 +37,7 @@
     </div>
 
     <div class="driverBox">
-        @if (IsEdit && (UserRights is {Write: true} && Driver == null || UserRights is { Edit: true} && Driver != null))
+        @if (Driver == null || Driver != null)
         {
             <EditForm Model="DriverModel" FormName="editDriver" method="post" OnValidSubmit="EditDriver">
                 <DataAnnotationsValidator/>
@@ -103,7 +102,7 @@
                 <button type="submit" class="btn btn-dark btn-lg">@(Driver == null ? "Добавить" : "Редактировать")</button>
             </EditForm>
             
-            @if(UserRights is { Delete: true } && Driver != null)
+            @if(Driver != null)
             {
                 <button class="btn btn-info btn-lg" @onclick="DeleteDriver">Удалить</button>
             }
@@ -119,7 +118,6 @@
     [Inject] public IJSRuntime JsRuntime { get; set; } = null!;
 
     public IAuthResult? AuthResult { get; set; }
-    public IUserRights? UserRights { get; set; }
 
     public IList<IDriverCategory> Categories { get; set; } = [];
     public IList<IDriverInfo> Drivers { get; set; } = [];
@@ -137,9 +135,7 @@
             NavigationManager.NavigateTo(ServiceRoutes.Home);
         else
         {
-            UserRights = await SecurityService.GetUserRightsToPageAsync(AuthResult.User, ServiceRoutes.Vehicles.Route);
-
-            if (UserRights == null || !UserRights.Read)
+            if (!await SecurityService.IsManagementAsync())
                 NavigationManager.NavigateTo(ServiceRoutes.Home);
 
             Drivers = await DriverService.GetDriversAsync();

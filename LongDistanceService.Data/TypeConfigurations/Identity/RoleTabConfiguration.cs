@@ -8,11 +8,11 @@ public class RoleTabConfiguration : IEntityTypeConfiguration<Role>
 {
     public void Configure(EntityTypeBuilder<Role> builder)
     {
-        builder.Property(p => p.Name).HasMaxLength(32).HasColumnName("name");
+        builder.Property(p => p.Type).HasConversion<int>().HasColumnName("type");
         builder.Property(p => p.Id).HasColumnName("id").ValueGeneratedOnAdd();
 
         builder.ToTable("roles").HasKey(p => p.Id);
 
-        builder.HasIndex(p => p.Name).IsUnique();
+        builder.HasIndex(p => p.Type).IsUnique();
     }
 }

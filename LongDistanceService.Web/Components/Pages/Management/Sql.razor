@@ -118,8 +118,7 @@
         var authResult = await ScenarioService.TryAuthenticateUserAsync(returnUrl: ServiceRoutes.Reference.Sql, redirectToLogin: true);
         if (authResult != null)
         {
-            var haveAccess = await SecurityService.GetUserRightsToPageAsync(authResult.User, ServiceRoutes.Reference.Sql);
-            if(haveAccess is null) NavigationManager.NavigateTo(ServiceRoutes.Home);
+            if(!await SecurityService.IsManagementAsync()) NavigationManager.NavigateTo(ServiceRoutes.Home);
         }
 
         await base.OnInitializedAsync();

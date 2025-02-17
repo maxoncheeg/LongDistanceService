@@ -264,7 +264,6 @@
     [Inject] public IDriverService DriverService { get; set; } = null!;
 
     public IAuthResult? AuthResult { get; set; }
-    public IUserRights? UserRights { get; set; }
 
     public IList<IIndividual> Individuals { get; set; } = [];
     public IList<ILegal> Legals { get; set; } = [];
@@ -284,9 +283,7 @@
             NavigationManager.NavigateTo(ServiceRoutes.Home);
         else
         {
-            UserRights = await SecurityService.GetUserRightsToPageAsync(AuthResult.User, ServiceRoutes.Vehicles.Route);
-
-            if (UserRights is not { Read: true, Write: true })
+            if (!await SecurityService.IsManagementAsync())
                 NavigationManager.NavigateTo(ServiceRoutes.Home);
 
             await SetEmptyModel();

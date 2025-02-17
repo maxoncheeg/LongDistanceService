@@ -12,7 +12,6 @@ using LongDistanceService.Data.Handlers.Queries.Applications;
 using LongDistanceService.Data.Handlers.Queries.Cargoes;
 using LongDistanceService.Data.Handlers.Queries.DriverCategories;
 using LongDistanceService.Data.Handlers.Queries.Drivers;
-using LongDistanceService.Data.Handlers.Queries.Menus;
 using LongDistanceService.Data.Handlers.Queries.Orders;
 using LongDistanceService.Data.Handlers.Queries.Personals;
 using LongDistanceService.Data.Handlers.Queries.Users;
@@ -31,7 +30,6 @@ using LongDistanceService.Domain.CQRS.Queries.Applications;
 using LongDistanceService.Domain.CQRS.Queries.Cargoes;
 using LongDistanceService.Domain.CQRS.Queries.DriverCategories;
 using LongDistanceService.Domain.CQRS.Queries.Drivers;
-using LongDistanceService.Domain.CQRS.Queries.Menus;
 using LongDistanceService.Domain.CQRS.Queries.Orders;
 using LongDistanceService.Domain.CQRS.Queries.Personals;
 using LongDistanceService.Domain.CQRS.Queries.Users;
@@ -40,12 +38,12 @@ using LongDistanceService.Domain.CQRS.Responses.Addresses;
 using LongDistanceService.Domain.CQRS.Responses.Applications;
 using LongDistanceService.Domain.CQRS.Responses.Cargoes;
 using LongDistanceService.Domain.CQRS.Responses.Drivers;
-using LongDistanceService.Domain.CQRS.Responses.Menus;
 using LongDistanceService.Domain.CQRS.Responses.Orders;
 using LongDistanceService.Domain.CQRS.Responses.Personals;
 using LongDistanceService.Domain.CQRS.Responses.Sql;
 using LongDistanceService.Domain.CQRS.Responses.Users;
 using LongDistanceService.Domain.CQRS.Responses.Vehicles;
+using LongDistanceService.Domain.Enums;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -116,11 +114,6 @@ public static class MediatRHandlersExtensions
                 GetUserHandler>()
             .AddTransient<IRequestHandler<GetUsersRequest, IList<UserResponse>>,
                 GetUserHandler>()
-            .AddTransient<IRequestHandler<GetMenuRequest, IList<MenuItemResponse>>,
-                GetMenuHandler>()
-            .AddTransient<IRequestHandler<GetUserRightsRequest, UserRightsResponse?>,
-                UserRightsHandler>()
-            .AddTransient<IRequestHandler<IsUserAdminRequest, bool>, UserRightsHandler>()
             .AddTransient<IRequestHandler<GetApplicationsInfoRequest, IList<ApplicationInfoResponse>>,
                 GetApplicationHandler>()
             .AddTransient<IRequestHandler<GetApplicationWithMessagesRequest, ApplicationResponse?>,
@@ -148,6 +141,7 @@ public static class MediatRHandlersExtensions
             .AddTransient<IRequestHandler<GetOrderRequest, OrderResponse?>, GetOrdersHandler>()
             .AddTransient<IRequestHandler<GetBanksRequest, IList<BankResponse>>, GetBanksHandler>()
             .AddTransient<IRequestHandler<GetRolesRequest, IList<RoleResponse>>, GetRolesHandler>()
+            .AddTransient<IRequestHandler<GetUserRoleRequest, UserRole?>, GetUserRoleHandler>()
             ;
 
         #endregion

@@ -1,4 +1,4 @@
-﻿@attribute [Route(template: ServiceRoutes.Identity.LoginType)]
+﻿@attribute [Route(template: ServiceRoutes.Identity.Login)]
 @using LongDistanceService.Web.Models.Identity
 @using LongDistanceService.Web.Components.Layout
 @using LongDistanceService.Web.Routes
@@ -10,13 +10,9 @@
 
 <div>
     <div class="intro"></div>
-    @if (Type == "admin")
-    {
+
         <image class="media" src="res/trucker.gif" autoplay muted loop></image>
-    }
-    @if (Type != "admin"){
-        <image class="media" src="res/road.jpg" autoplay muted loop></image>
-    }
+
     
     <div class="shell">
         <div class="login">
@@ -72,7 +68,6 @@
 </div>
 
 @code {
-    [Parameter] public string Type { get; set; } = string.Empty;
     [SupplyParameterFromQuery] public string? ReturnUrl { get; set; }
     [SupplyParameterFromForm] public LoginModel Input { get; set; } = new();
 
@@ -83,11 +78,6 @@
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        
-        if ((new List<string>() { "admin", "user" }).All(x => x != Type))
-        {
-            NavigationManager.NavigateTo(ServiceRoutes.Codes.NotFound);
-        }
 
         var result = await ScenarioService.TryAuthenticateUserAsync(returnUrl: ReturnUrl ?? string.Empty, tryRefreshToken: true, redirectToLogin: false);
         

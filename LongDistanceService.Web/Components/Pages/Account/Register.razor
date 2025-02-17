@@ -1,58 +1,106 @@
-﻿@page "/identity/register"
+﻿@using LongDistanceService.Domain.Enums
+@using LongDistanceService.Domain.Services.Abstract
+@using LongDistanceService.Web.Components.Layout
 @using LongDistanceService.Web.Models.Identity
+@using LongDistanceService.Web.Routes
+@using LongDistanceService.Web.Services.Abstract
+@attribute [Route(ServiceRoutes.Identity.Register)]
 
-@inject NavigationManager NavigationManager
-@inject IJSRuntime JsRuntime
+@layout EmptyLayout
 
-<PageTitle>Register</PageTitle>
+<PageTitle>Регистрация</PageTitle>
 
-<h1>Register</h1>
-
-<div class="row">
-    <div class="col-md-4">
-        @* <StatusMessage Message="@Message"/> *@
-        <EditForm Model="Input" asp-route-returnUrl="@ReturnUrl" method="post" OnValidSubmit="RegisterUser" FormName="register">
-            <DataAnnotationsValidator/>
-            <h2>Create a new account.</h2>
-            <hr/>
-            <ValidationSummary class="text-danger" role="alert"/>
-            <div class="form-floating mb-3">
-                <InputText @bind-Value="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com"/>
-                <label for="email">Email</label>
-                <ValidationMessage For="() => Input.Email" class="text-danger"/>
+<div>
+    <div class="intro"></div>
+    <image class="media" src="res/trucker.gif" autoplay muted loop></image>
+    
+    <div class="shell">
+        <div class="login">
+            <div class="loginTitle loginText">
+                <h1>ГРУЗОВЫЕ АВТОПЕРЕВОЗКИ</h1>
             </div>
-            <div class="form-floating mb-3">
-                <InputText type="password" @bind-Value="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password"/>
-                <label for="password">Password</label>
-                <ValidationMessage For="() => Input.Password" class="text-danger"/>
+
+            <div class="loginCenter">
+                <div class="loginCenterLogo">
+                    <img src="res/stollenlogo.png" alt="no"/>
+                </div>
+                <div class="loginCenterForm loginText">
+
+                    <EditForm class="login-form w-100" Model="Model" method="post" OnValidSubmit="RegisterUser" FormName="register">
+                        <DataAnnotationsValidator/>
+                        @* <ValidationSummary class="text-danger" role="alert"/> *@
+                        <div>
+                            <h3 class="loginText" style="color:aliceblue">РЕГИСТРАЦИЯ</h3>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <InputText @bind-Value="Model.Email" class="form-control" aria-required="true" placeholder="name@example.com"/>
+                            <label for="email" class="form-label">Почта</label>
+                            <ValidationMessage For="() => Model.Email" class="text-danger"/>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <InputText type="password" @bind-Value="Model.Password" class="form-control" aria-required="true" placeholder="password"/>
+                            <label for="password" class="form-label">Пароль</label>
+                            <ValidationMessage For="() => Model.Password" class="text-danger"/>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <InputText type="password" @bind-Value="Model.PasswordRepeat" class="form-control" aria-required="true" placeholder="password"/>
+                            <label for="passwordRepeat" class="form-label">Повторите пароль</label>
+                            <ValidationMessage For="() => Model.PasswordRepeat" class="text-danger"/>
+                        </div>
+                        <div>
+                            <button type="submit" class="w-100 btn btn-dark btn-lg">Создать аккаунт</button>
+                        </div>
+                    </EditForm>
+                </div>
+                <div class="loginCenterSocial loginText">
+                    <h4>входи через ВТентакли</h4>
+                </div>
             </div>
-            @* <div class="form-floating mb-3"> *@
-            @*     <InputText type="password" @bind-Value="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password"/> *@
-            @*     <label for="confirm-password">Confirm Password</label> *@
-            @*     <ValidationMessage For="() => Input.ConfirmPassword" class="text-danger"/> *@
-            @* </div> *@
-            <button type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
-        </EditForm>
-    </div>
-    <div class="col-md-6 col-md-offset-2">
-        <section>
-            <h3>Use another service to register.</h3>
-            <hr/>
-            <ExternalLoginPicker/>
-        </section>
+
+            <div class="loginFooter loginText">
+                <h5>сайт мистера максонелиуса 2k24</h5>
+            </div>
+        </div>
     </div>
 </div>
 
 @code {
-    [SupplyParameterFromQuery] public string? ReturnUrl { get; set; }
-    [SupplyParameterFromForm] public LoginModel Input { get; set; } = new();
+    [Parameter] public string Type { get; set; } = string.Empty;
+    [SupplyParameterFromForm] public RegisterUserModel Model { get; set; } = new();
+
+    [Inject] public IIdentityService IdentityService { get; set; } = null!;
+    [Inject] public NavigationManager NavigationManager { get; set; } = null!;
+    [Inject] public IScenarioService ScenarioService { get; set; } = null!;
+    [Inject] public IUserService UserService { get; set; } = null!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        var result = await ScenarioService.TryAuthenticateUserAsync(returnUrl: string.Empty, tryRefreshToken: true, redirectToLogin: false);
+        
+        if (result != null)
+            NavigationManager.NavigateTo(ServiceRoutes.Home);
+    }
 
     public async Task RegisterUser()
     {
-        // var user = new ApplicationIdentityUser() { Email = Input.Email, Password = Input.Password };
-        // var result = await AuthenticationService.RegisterUser(user);
-
-        //if (result) NavigationManager.NavigateTo(ReturnUrl);
+        if (Model.Password.Equals(Model.PasswordRepeat))
+        {
+            if (await UserService.CreateUserAsync(Model.Email, Model.Password, UserRole.Guest))
+            {
+                NavigationManager.NavigateTo(ServiceRoutes.Identity.Login);
+            }
+            else
+            {
+                NavigationManager.NavigateTo(ServiceRoutes.Identity.Register);
+            }
+        }
+        else
+        {
+            NavigationManager.NavigateTo(ServiceRoutes.Identity.Register);
+            return;
+        }
     }
 
 }

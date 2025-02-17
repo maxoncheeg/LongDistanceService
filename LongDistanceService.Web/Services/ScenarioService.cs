@@ -10,7 +10,8 @@ namespace LongDistanceService.Web.Services;
 public class ScenarioService(
     NavigationManager navigation,
     IIdentityService identityService,
-    ISecurityService securityService) : IScenarioService
+    ISecurityService securityService,
+    IAccessTokenService accessTokenService) : IScenarioService
 {
     public async Task<IAuthResult?> TryAuthenticateUserAsync(string returnUrl, bool tryRefreshToken, bool redirectToLogin)
     {
@@ -18,7 +19,7 @@ public class ScenarioService(
         
         if (token != null)
         {
-            var result = await securityService.ValidateTokenAsync(token);
+            var result = await accessTokenService.GetUserDataFromTokenAsync(token);
 
             if (result != null)
                 return new AuthResult(token, result);

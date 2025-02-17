@@ -1,11 +1,13 @@
-﻿using LongDistanceService.Domain.Models.Abstract;
+﻿using LongDistanceService.Domain.Enums;
+using LongDistanceService.Domain.Models.Abstract;
 
 namespace LongDistanceService.Domain.Services.Abstract;
 
 public interface ISecurityService
 {
-    public Task<IUser?> ValidateTokenAsync(string token);
-    public Task<string?> RefreshTokenAsync(string refreshToken, string expiredToken);
-    public Task<bool> IsAdminAsync(IUser user);
-    public Task<IUserRights?> GetUserRightsToPageAsync(IUser user, string route);
+    public Task<bool> IsAdminAsync();
+    public Task<bool> IsManagementAsync();
+    public Task<bool> IsDriverAsync();
+    public Task<bool> IsClientAsync();
+    public Task<UserRole?> GetUserRoleAsync();
 }

@@ -28,12 +28,10 @@ public class GetUserHandler(IApplicationDbContext context) :  IRequestHandler<Ge
         {
             Id = u.Id,
             Login = u.Login,
-            Name = u.Name,
-            Surname = u.Surname,
             Role = new RoleResponse()
             {
                 Id = u.Role.Id,
-                Name = u.Role.Name
+                Type = u.Role.Type
             }
         }).ToListAsync(cancellationToken);
     }

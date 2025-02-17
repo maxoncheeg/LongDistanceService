@@ -40,7 +40,7 @@
         AuthResult = await ScenarioService.TryAuthenticateUserAsync(ServiceRoutes.Application.Create, redirectToLogin: true);
         if (AuthResult != null)
         {
-            if (await SecurityService.IsAdminAsync(AuthResult.User))
+            if (await SecurityService.IsAdminAsync())
                 NavigationManager.NavigateTo(ServiceRoutes.Home);
 
             return;

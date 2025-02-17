@@ -27,11 +27,10 @@
     [Inject] public NavigationManager NavigationManager { get; set; } = null!;
 
     public IAuthResult? AuthResult { get; set; }
-    public IUserRights? UserRights { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        AuthResult = await ScenarioService.TryAuthenticateUserAsync(tryRefreshToken: true, redirectToLogin: true);
+        //AuthResult = await ScenarioService.TryAuthenticateUserAsync(tryRefreshToken: true, redirectToLogin: true);
 
     }
     

@@ -4,7 +4,9 @@ using LongDistanceService.Domain.Services.Options;
 using LongDistanceService.Shared.DependencyInjection.Data;
 using LongDistanceService.Shared.DependencyInjection.MediatR;
 using LongDistanceService.Web.Components;
+using LongDistanceService.Web.Routes;
 using LongDistanceService.Web.Services;
+using LongDistanceService.Web.Services.Abstract;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Components;
@@ -17,7 +19,6 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 #region cookie&identity
-
 
 var jwtOptions = builder.Configuration
     .GetSection("JwtOptions")
@@ -56,6 +57,8 @@ builder.Services.AddHttpContextAccessor()
     .AddDomainAuthorizationServices()
     .AddAuthorizationServices().AddLdsServices();
 
+builder.Services.AddSignalR(); 
+
 
 #endregion
 
@@ -87,6 +90,8 @@ app.UseAntiforgery();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
+
+app.MapHub<ApplicationHub>(ServiceRoutes.Hubs.ApplicationChat);
 
 
 
