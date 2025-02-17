@@ -59,9 +59,7 @@
             NavigationManager.NavigateTo(ServiceRoutes.Home);
         else
         {
-            var rights = await SecurityService.GetUserRightsToPageAsync(result.User, ServiceRoutes.Admin.Excel);
-
-            if (rights == null)
+            if (!await SecurityService.IsManagementAsync())
                 NavigationManager.NavigateTo(ServiceRoutes.Home);
             await base.OnInitializedAsync();
         }

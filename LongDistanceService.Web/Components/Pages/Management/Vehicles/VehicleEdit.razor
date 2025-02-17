@@ -162,7 +162,6 @@
     [Inject] public NavigationManager NavigationManager { get; set; } = null!;
 
     public IAuthResult? AuthResult { get; set; }
-    public IUserRights? UserRights { get; set; }
 
     public IVehicle? Vehicle { get; set; }
     public IList<IModel> Models { get; set; } = [];
@@ -180,15 +179,8 @@
             NavigationManager.NavigateTo(ServiceRoutes.Home);
         else
         {
-            UserRights = await SecurityService.GetUserRightsToPageAsync(AuthResult.User, ServiceRoutes.Vehicles.Route);
 
-            if (Type is not ("show" or "update" or "add"))
-                NavigationManager.NavigateTo(ServiceRoutes.Home);
-            else if (UserRights is not { Read: true })
-                NavigationManager.NavigateTo(ServiceRoutes.Home);
-            else if (UserRights is not { Edit: true } && Type == "update")
-                NavigationManager.NavigateTo(ServiceRoutes.Home);
-            else if (UserRights is not { Write: true } && Type == "add")
+            if (Type is not ("show" or "update" or "add") || !await SecurityService.IsManagementAsync())
                 NavigationManager.NavigateTo(ServiceRoutes.Home);
 
             if (int.TryParse(Id, out var id))

@@ -50,12 +50,11 @@
         </table>
     </div>
 
-    @if (UserRights is { Write: true })
-    {
-        <button class="btn btn-lg btn-info m-2 w-75" @onclick="AddCargo"> Новый груз</button>
-    }
 
-    @if (UserRights is { Edit: true } && SelectedCargo != null || UserRights is { Write: true } && SelectedCargo == null && IsAdd)
+        <button class="btn btn-lg btn-info m-2 w-75" @onclick="AddCargo"> Новый груз</button>
+    
+
+    @if ( SelectedCargo != null ||  SelectedCargo == null && IsAdd)
     {
         <div class="justify-content-center w-75 m-auto">
             <EditForm Model="Model" method="post" FormName="cargoEdit" OnValidSubmit="EditCargo">
@@ -83,7 +82,7 @@
                 <button type="submit"
                         class="btn btn-dark btn-lg">@(SelectedCargo == null ? "Добавить" : "Редактировать") </button>
             </EditForm>
-            @if (UserRights is { Delete: true } && SelectedCargo != null)
+            @if ( SelectedCargo != null)
             {
                 <button type="submit"
                         class="btn btn-danger btn-lg m-1" @onclick="DeleteCargo"> Удалить
@@ -102,7 +101,6 @@
     [Inject] public IJSRuntime JsRuntime { get; set; } = null!;
 
     public IAuthResult? AuthResult { get; set; }
-    public IUserRights? UserRights { get; set; }
 
     public IList<ICargo> Cargoes { get; set; } = [];
     public IList<ICargoCategory> Categories { get; set; } = [];
@@ -121,9 +119,8 @@
             NavigationManager.NavigateTo(ServiceRoutes.Home);
         else
         {
-            UserRights = await SecurityService.GetUserRightsToPageAsync(AuthResult.User, Route);
 
-            if (UserRights == null || !UserRights.Read)
+            if (!await SecurityService.IsManagementAsync())
             {
                 NavigationManager.NavigateTo(ServiceRoutes.Home);
                 return;
@@ -162,18 +159,12 @@
     private async Task EditCargo()
     {
         var auth = await ScenarioService.TryAuthenticateUserAsync(tryRefreshToken: true, redirectToLogin: true);
-        if (auth == null)
+        if (auth == null || !await SecurityService.IsManagementAsync())
         {
             NavigationManager.NavigateTo(ServiceRoutes.Home);
             return;
         }
 
-        var rights = await SecurityService.GetUserRightsToPageAsync(auth.User, Route);
-        if (rights is { Edit: false } && SelectedCargo != null || rights is { Write: false } && SelectedCargo == null)
-        {
-            NavigationManager.NavigateTo(ServiceRoutes.Home);
-            return;
-        }
 
         bool result = await JsRuntime.InvokeAsync<bool>("confirm", "Вы уверены?");
         if (result)
@@ -191,18 +182,12 @@
         if (SelectedCargo != null)
         {
             var auth = await ScenarioService.TryAuthenticateUserAsync(tryRefreshToken: true, redirectToLogin: true);
-            if (auth == null)
+            if (auth == null || !await SecurityService.IsManagementAsync())
             {
                 NavigationManager.NavigateTo(ServiceRoutes.Home);
                 return;
             }
 
-            var rights = await SecurityService.GetUserRightsToPageAsync(auth.User, Route);
-            if (rights is { Delete: false })
-            {
-                NavigationManager.NavigateTo(ServiceRoutes.Home);
-                return;
-            }
 
             bool result = await JsRuntime.InvokeAsync<bool>("confirm", "Вы уверены?");
             if (result)

@@ -81,7 +81,7 @@
                 return;
             }
 
-            IsAdmin = await SecurityService.IsAdminAsync(AuthResult.User);
+            IsAdmin = await SecurityService.IsAdminAsync();
             Application = await ApplicationService.GetApplicationWithMessagesAsync(applicationId);
 
             if (Application?.CreatorId != AuthResult?.User.Id && !IsAdmin)

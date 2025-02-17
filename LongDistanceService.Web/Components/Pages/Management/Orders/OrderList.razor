@@ -26,10 +26,10 @@
                         <p><span class="fw-bold">Кол-во водителей:</span> @order.DriversAmount</p>
                         <p><span class="fw-bold">Состояние:</span> @GetState(order.State)</p>
                         <div class="buttonBox">
-                            @if (UserRights?.Read ?? false)
-                            {
-                                <a class="btn btn-info" href='@($"{ServiceRoutes.Orders.Route}/{order.Id}/show")'>Подробнее</a>
-                            }
+
+                            <a class="btn btn-info"
+                               href='@($"{ServiceRoutes.Orders.Route}/{order.Id}/show")'>Подробнее</a>
+                            
                             @* @if (UserRights?.Delete ?? false) *@
                             @* { *@
                             @*     <form @formname="deleteVehicle" method="post" @onsubmit="@(() => DeleteCar(vehicle.Id))"> *@
@@ -53,7 +53,6 @@
     [Inject] public NavigationManager NavigationManager { get; set; } = null!;
 
     public IAuthResult? AuthResult { get; set; } = null;
-    public IUserRights? UserRights { get; set; } = null;
 
     public IList<IOrderInfo> Orders { get; set; } = [];
 
@@ -66,9 +65,7 @@
             NavigationManager.NavigateTo(ServiceRoutes.Home);
         else
         {
-            UserRights = await SecurityService.GetUserRightsToPageAsync(AuthResult.User, ServiceRoutes.Vehicles.Route);
-
-            if (UserRights == null || !UserRights.Read)
+            if (!await SecurityService.IsManagementAsync())
                 NavigationManager.NavigateTo(ServiceRoutes.Home);
 
             Orders = await OrderService.GetOrdersInfo();
@@ -89,7 +86,7 @@
         return state switch
         {
             OrderState.Running => "В пути",
-            OrderState.Complete => "Завершен", 
+            OrderState.Complete => "Завершен",
             OrderState.Loading => "Погрузка"
         };
     }

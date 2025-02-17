@@ -39,10 +39,9 @@
 
 <div class="refBox justify-content-center">
     <h3>ЮРИДИЧЕСКИЕ ЛИЦА</h3>
-    @if (UserRights is { Write: true })
-    {
-        <button class="btn btn-lg btn-outline-info m-2 w-75" @onclick="AddLegal">Добавить юр. лицо</button>
-    }
+
+    <button class="btn btn-lg btn-outline-info m-2 w-75" @onclick="AddLegal">Добавить юр. лицо</button>
+    
     <div class="refList">
         <table class="table table-hover">
             <thead>
@@ -79,7 +78,7 @@
         </table>
     </div>
 
-    @if (UserRights is { Edit: true } && SelectedLegal != null || UserRights is { Write: true } && SelectedLegal == null && IsAdd)
+    @if (SelectedLegal != null || SelectedLegal == null && IsAdd)
     {
         <div class="justify-content-center w-75 m-auto">
             <EditForm Model="Model" class="inputs" method="post" FormName="cargoCategoryEdit" OnValidSubmit="EditLegal">
@@ -201,7 +200,7 @@
                 <button type="submit"
                         class="btn btn-dark btn-lg w-100">@(SelectedLegal == null ? "Добавить" : "Редактировать") </button>
             </EditForm>
-            @if (UserRights is { Delete: true } && SelectedLegal != null)
+            @if (SelectedLegal != null)
             {
                 <button type="submit"
                         class="btn btn-outline-danger btn-lg m-1 w-100" @onclick="DeleteLegal"> Удалить
@@ -222,7 +221,6 @@
     [Inject] public IJSRuntime JsRuntime { get; set; } = null!;
 
     public IAuthResult? AuthResult { get; set; }
-    public IUserRights? UserRights { get; set; }
 
     public IList<ILegal> LegalList { get; set; } = [];
     public IList<IBank> Banks { get; set; } = [];
@@ -243,9 +241,7 @@
             NavigationManager.NavigateTo(ServiceRoutes.Home);
         else
         {
-            UserRights = await SecurityService.GetUserRightsToPageAsync(AuthResult.User, Route);
-
-            if (UserRights == null || !UserRights.Read)
+            if (!await SecurityService.IsManagementAsync())
             {
                 NavigationManager.NavigateTo(ServiceRoutes.Home);
                 return;
@@ -260,7 +256,7 @@
         }
     }
 
-    public void SelectLegal(ILegal legal)
+    private void SelectLegal(ILegal legal)
     {
         SelectedLegal = legal;
         Model = new()
@@ -282,7 +278,7 @@
         StateHasChanged();
     }
 
-    public void AddLegal()
+    private void AddLegal()
     {
         IsAdd = true;
         SelectedLegal = null;
@@ -304,8 +300,7 @@
             return;
         }
 
-        var rights = await SecurityService.GetUserRightsToPageAsync(auth.User, Route);
-        if (rights is { Edit: false } && SelectedLegal != null || rights is { Write: false } && SelectedLegal == null)
+        if (SelectedLegal != null || SelectedLegal == null)
         {
             NavigationManager.NavigateTo(ServiceRoutes.Home);
             return;
@@ -322,19 +317,12 @@
         }
     }
 
-    public async Task DeleteLegal()
+    private async Task DeleteLegal()
     {
         if (SelectedLegal != null)
         {
             var auth = await ScenarioService.TryAuthenticateUserAsync(tryRefreshToken: true, redirectToLogin: true);
-            if (auth == null)
-            {
-                NavigationManager.NavigateTo(ServiceRoutes.Home);
-                return;
-            }
-
-            var rights = await SecurityService.GetUserRightsToPageAsync(auth.User, Route);
-            if (rights is { Delete: false })
+            if (auth == null || !await SecurityService.IsManagementAsync())
             {
                 NavigationManager.NavigateTo(ServiceRoutes.Home);
                 return;

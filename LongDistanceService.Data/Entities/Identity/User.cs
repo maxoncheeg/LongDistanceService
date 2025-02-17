@@ -10,8 +10,6 @@ public class User : IEntity
     public Role Role { get; set; }
     public string Login { get; set; } = String.Empty;
     public string Password { get; set; } = String.Empty;
-    public string Name { get; set; } = String.Empty;
-    public string Surname { get; set; } = String.Empty;
 
     public IList<Application> Applications { get; set; } = null!;
     public IList<ApplicationMessage> ApplicationMessages { get; set; } = null!;

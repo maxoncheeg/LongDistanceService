@@ -87,7 +87,7 @@
         var result = await ScenarioService.TryAuthenticateUserAsync(ServiceRoutes.Application.List, redirectToLogin: true);
         if (result != null)
         {
-            IsAdmin = await SecurityService.IsAdminAsync(result.User);
+            IsAdmin = await SecurityService.IsAdminAsync();
             Applications = await ApplicationService.GetApplicationInfoAsync(result.User.Id);
         }
 

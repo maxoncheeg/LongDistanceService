@@ -1,14 +1,15 @@
-﻿using LongDistanceService.Domain.Models.Abstract;
+﻿using LongDistanceService.Domain.Enums;
+using LongDistanceService.Domain.Models.Abstract;
 using LongDistanceService.Domain.Models.Abstract.Users;
 
 namespace LongDistanceService.Domain.Services.Abstract;
 
 public interface IUserService
 {
-    public Task<bool> CreateUser(string login, string password, string name, string surname, int roleId);
-    public Task<bool> ChangePassword(int userId, string oldPassword, string password);
-    public Task<IList<IRole>> GetRoles();
-    public Task<IList<IUser>> GetUsers();
-    public Task<bool> UpdateUser(IUser user);
-    public Task<bool> DeleteUser(int userId);
+    public Task<bool> CreateUserAsync(string login, string password, UserRole role);
+    public Task<bool> ChangePasswordAsync(int userId, string oldPassword, string password);
+    public Task<IList<IRole>> GetRolesAsync();
+    public Task<IList<IUser>> GetUsersAsync();
+    public Task<bool> UpdateUserAsync(IUser user);
+    public Task<bool> DeleteUserAsync(int userId);
 }

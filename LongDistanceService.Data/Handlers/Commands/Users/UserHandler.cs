@@ -32,7 +32,7 @@ public class UserHandler(IApplicationDbContext context) : IRequestHandler<Change
 
     public async Task<bool> Handle(CreateUserRequest request, CancellationToken cancellationToken)
     {
-        var role = await context.Roles.SingleOrDefaultAsync(r => r.Id == request.RoleId, cancellationToken: cancellationToken);
+        var role = await context.Roles.SingleOrDefaultAsync(r => r.Type == request.Role, cancellationToken: cancellationToken);
         if (role == null) return false;
         
         var user = new User
@@ -40,8 +40,6 @@ public class UserHandler(IApplicationDbContext context) : IRequestHandler<Change
             Password = request.Password,
             Role = role,
             Login = request.Login,
-            Name = request.Name,
-            Surname = request.Surname
         };
 
         try
@@ -67,8 +65,6 @@ public class UserHandler(IApplicationDbContext context) : IRequestHandler<Change
         
         try
         {
-            user.Name = request.Name;
-            user.Surname = request.Surname;
             user.Role = role;
             user.Login = request.Login;
             context.Update(user);

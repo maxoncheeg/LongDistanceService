@@ -38,10 +38,9 @@
 
 <div class="refBox justify-content-center">
     <h3>ФИЗИЧЕСКИЕ ЛИЦА</h3>
-    @if (UserRights is { Write: true })
-    {
-        <button class="btn btn-lg btn-outline-info m-2 w-75" @onclick="AddIndividual">Добавить физ. лицо</button>
-    }
+
+    <button class="btn btn-lg btn-outline-info m-2 w-75" @onclick="AddIndividual">Добавить физ. лицо</button>
+    
     <div class="refList">
         <table class="table table-hover">
             <thead>
@@ -68,10 +67,11 @@
         </table>
     </div>
 
-    @if (UserRights is { Edit: true } && SelectedIndividual != null || UserRights is { Write: true } && SelectedIndividual == null && IsAdd)
+    @if (SelectedIndividual != null || SelectedIndividual == null && IsAdd)
     {
         <div class="justify-content-center w-75 m-auto">
-            <EditForm Model="Model" class="inputs" method="post" FormName="cargoCategoryEdit" OnValidSubmit="EditIndividual">
+            <EditForm Model="Model" class="inputs" method="post" FormName="cargoCategoryEdit"
+                      OnValidSubmit="EditIndividual">
                 <DataAnnotationsValidator/>
                 <div class="w-20">
                     <h6 class="c-g"> Имя </h6>
@@ -125,7 +125,7 @@
                 <button type="submit"
                         class="btn btn-dark btn-lg w-100">@(SelectedIndividual == null ? "Добавить" : "Редактировать") </button>
             </EditForm>
-            @if (UserRights is { Delete: true } && SelectedIndividual != null)
+            @if (SelectedIndividual != null)
             {
                 <button type="submit"
                         class="btn btn-outline-danger btn-lg m-1 w-100" @onclick="DeleteIndividual"> Удалить
@@ -144,7 +144,6 @@
     [Inject] public IJSRuntime JsRuntime { get; set; } = null!;
 
     public IAuthResult? AuthResult { get; set; }
-    public IUserRights? UserRights { get; set; }
 
     public IList<IIndividual> IndividualList { get; set; } = [];
     public IIndividual? SelectedIndividual { get; set; }
@@ -158,18 +157,10 @@
     {
         AuthResult = await ScenarioService.TryAuthenticateUserAsync(tryRefreshToken: true, redirectToLogin: true);
 
-        if (AuthResult == null)
+        if (AuthResult == null || !await SecurityService.IsManagementAsync())
             NavigationManager.NavigateTo(ServiceRoutes.Home);
         else
         {
-            UserRights = await SecurityService.GetUserRightsToPageAsync(AuthResult.User, Route);
-
-            if (UserRights == null || !UserRights.Read)
-            {
-                NavigationManager.NavigateTo(ServiceRoutes.Home);
-                return;
-            }
-            
             IndividualList = await PersonalService.GetIndividualsAsync();
 
             await base.OnInitializedAsync();
@@ -193,7 +184,7 @@
         StateHasChanged();
     }
 
-    public void AddIndividual()
+    private void AddIndividual()
     {
         IsAdd = true;
         SelectedIndividual = null;
@@ -204,14 +195,7 @@
     private async Task EditIndividual()
     {
         var auth = await ScenarioService.TryAuthenticateUserAsync(tryRefreshToken: true, redirectToLogin: true);
-        if (auth == null)
-        {
-            NavigationManager.NavigateTo(ServiceRoutes.Home);
-            return;
-        }
-
-        var rights = await SecurityService.GetUserRightsToPageAsync(auth.User, Route);
-        if (rights is { Edit: false } && SelectedIndividual != null || rights is { Write: false } && SelectedIndividual == null)
+        if (auth == null || !await SecurityService.IsManagementAsync())
         {
             NavigationManager.NavigateTo(ServiceRoutes.Home);
             return;
@@ -228,19 +212,12 @@
         }
     }
 
-    public async Task DeleteIndividual()
+    private async Task DeleteIndividual()
     {
         if (SelectedIndividual != null)
         {
             var auth = await ScenarioService.TryAuthenticateUserAsync(tryRefreshToken: true, redirectToLogin: true);
-            if (auth == null)
-            {
-                NavigationManager.NavigateTo(ServiceRoutes.Home);
-                return;
-            }
-
-            var rights = await SecurityService.GetUserRightsToPageAsync(auth.User, Route);
-            if (rights is { Delete: false })
+            if (auth == null || !await SecurityService.IsManagementAsync())
             {
                 NavigationManager.NavigateTo(ServiceRoutes.Home);
                 return;

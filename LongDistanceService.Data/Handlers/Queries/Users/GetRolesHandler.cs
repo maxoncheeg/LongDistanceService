@@ -10,6 +10,6 @@ public class GetRolesHandler(IApplicationDbContext context) : IRequestHandler<Ge
 {
     public async Task<IList<RoleResponse>> Handle(GetRolesRequest request, CancellationToken cancellationToken)
     {
-        return await context.Roles.Select(r => new RoleResponse() { Id = r.Id, Name = r.Name }).ToListAsync(cancellationToken);
+        return await context.Roles.Select(r => new RoleResponse() { Id = r.Id, Type = r.Type }).ToListAsync(cancellationToken);
     }
 }
