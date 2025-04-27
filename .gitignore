@@ -4,3 +4,5 @@
 /ForExample
 /LongDistanceService.Web/EXCEL
 /LongDistanceService.Web/WORD
+/environments/lds_docker/prometheus
+/environments/lds_docker/tempo-data
