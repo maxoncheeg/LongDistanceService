@@ -10,6 +10,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LongDistanceService.Data", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LongDistanceService.Domain.Tests", "LongDistanceService.Domain.Tests\LongDistanceService.Domain.Tests.csproj", "{998E318C-B107-4529-8E45-6E98F6724FB8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LongDistanceService.Api", "LongDistanceService.Api\LongDistanceService.Api.csproj", "{DD668A38-8CF6-4B8D-8467-7BA4FA4FCBCE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +38,9 @@ Global
 		{998E318C-B107-4529-8E45-6E98F6724FB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{998E318C-B107-4529-8E45-6E98F6724FB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{998E318C-B107-4529-8E45-6E98F6724FB8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DD668A38-8CF6-4B8D-8467-7BA4FA4FCBCE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD668A38-8CF6-4B8D-8467-7BA4FA4FCBCE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DD668A38-8CF6-4B8D-8467-7BA4FA4FCBCE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DD668A38-8CF6-4B8D-8467-7BA4FA4FCBCE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
