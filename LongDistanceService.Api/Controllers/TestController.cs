@@ -1,20 +1,36 @@
 ﻿using System.Diagnostics;
+using LongDistanceService.Api.Controllers.Abstract;
 using LongDistanceService.Api.Controllers.Routes;
+using LongDistanceService.Domain.Services.Abstract;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LongDistanceService.Api.Controllers;
 
 public class TestTruck
 {
+    /// <summary>
+    /// Идентификатор тестового трака
+    /// </summary>
     public int Id { get; set; }
+    /// <summary>
+    /// Название тестового трака
+    /// </summary>
     public string Name { get; set; }
+    /// <summary>
+    /// Цвет трака. Желательно использовать БЛАГОРОДНЫЕ цвета
+    /// </summary>
     public string Color { get; set; }
+    /// <summary>
+    /// URL картинки приемлемого качества из интернетов
+    /// </summary>
     public string Image { get; set; }
 }
 
-public class TestController : Controller
+public class TestController(IVehicleService vehicleService) : AbstractController
 {
     private static readonly ActivitySource ActivitySource = new("TestController");
+
     static List<TestTruck> trucks =
     [
         new()
@@ -36,25 +52,25 @@ public class TestController : Controller
 
     private Random _random = new Random();
 
-    [HttpGet(ServiceRoutes.Test)]
+    [HttpGet(ServiceRoutes.Test.Base)]
     public IActionResult Index()
     {
-        return Ok("test");
+        return BaseResponse(200, "test");
     }
 
 
-    [HttpGet(ServiceRoutes.TestRoutes.GetRandomNumber)]
+    [HttpGet(ServiceRoutes.Test.GetRandomNumber)]
     public async Task<IActionResult> GetRandomNumberAsync()
     {
-        return Ok(_random.Next(1000));
+        return BaseResponse(200, _random.Next(1, 1000));
     }
 
-    [HttpGet(ServiceRoutes.TestRoutes.GetAgeByYear)]
+    [HttpGet(ServiceRoutes.Test.GetAgeByYear)]
     public async Task<IActionResult> GetAgeByYearAsync(string year)
     {
         if (!int.TryParse(year, out int result))
         {
-            return BadRequest("ГОД НЕ ИНТОВЫЙ!");
+            return BaseResponse(StatusCodes.Status400BadRequest, null);
         }
 
         //await Task.Delay(_random.Next(500, 2000));
@@ -66,22 +82,36 @@ public class TestController : Controller
             activity.Stop();
         }
 
-        return Ok("примерна: " + (DateTime.Now.Year - result));
+        return BaseResponse(200, "примерна: " + (DateTime.Now.Year - result));
     }
 
-    [HttpGet(ServiceRoutes.TestRoutes.GetTestTrucks)]
+    [HttpGet(ServiceRoutes.Test.GetTestTrucks)]
     public async Task<IActionResult> GetTestTrucks()
     {
-        return Ok(trucks);
+        var vehicles = await vehicleService.GetVehiclesAsync();
+        var testTrucks = vehicles.Select(v => new TestTruck()
+        {
+            Id = v.Id,
+            Color = v.LicensePlate,
+            Image = v.ImagePath ?? "none",
+            Name = v.BrandAndModel
+        }).ToList();
+        
+        return BaseResponse(StatusCodes.Status200OK, testTrucks);
     }
 
-    [HttpPost(ServiceRoutes.TestRoutes.CreateTestTruck)]
-    public async Task<IActionResult> GetTestTrucks([FromBody]TestTruck truck)
+    /// <summary>
+    /// Создание трака
+    /// </summary>
+    /// <param name="truck">Тестовый трак</param>
+    /// <returns></returns>
+    [HttpPost(ServiceRoutes.Test.CreateTestTruck)]
+    public async Task<IActionResult> GetTestTrucks([FromBody] TestTruck truck)
     {
         int nextId = trucks.Max(t => t.Id) + 1;
         truck.Id = nextId;
         trucks.Add(truck);
-        
-        return Ok();
+
+        return BaseResponse(StatusCodes.Status200OK, null);
     }
 }

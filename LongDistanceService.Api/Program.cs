@@ -1,4 +1,10 @@
 using System.Diagnostics.Metrics;
+using System.Reflection;
+using LongDistanceService.Api.Middlewares;
+using LongDistanceService.Domain.Services;
+using LongDistanceService.Domain.Services.Abstract;
+using LongDistanceService.Shared.DependencyInjection.Data;
+using LongDistanceService.Shared.DependencyInjection.MediatR;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
@@ -33,13 +39,23 @@ builder.Services.AddOpenTelemetry()
         .AddAspNetCoreInstrumentation()
         .AddRuntimeInstrumentation()
         .AddHttpClientInstrumentation()
-        .AddMeter("lds_metrics")
+        .AddMeter("ControllerMeter")
         .AddPrometheusExporter()
     );
 
 #endregion
 
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
+                       throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+
+builder.Services.AddPostgresDatabase(connectionString).AddPostresConnection(connectionString);
+builder.Services.AddScoped<IVehicleService, VehicleService>();
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()))
+    .AddMediatRHandlers();
+
 var app = builder.Build();
+
+app.UseMiddleware<ExceptionHandlerMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

@@ -1,4 +1,5 @@
 using System.Reflection;
+using LongDistanceService.Domain.Services;
 using LongDistanceService.Domain.Services.Abstract;
 using LongDistanceService.Domain.Services.Options;
 using LongDistanceService.Shared.DependencyInjection.Data;
@@ -65,7 +66,8 @@ builder.Services.AddSignalR();
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
                        throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
-builder.Services.AddPostgresDatabase(connectionString).AddPostresConnection(connectionString);
+builder.Services.AddPostgresDatabase(connectionString);
+builder.Services.AddScoped<IVehicleService, VehicleService>();
 
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()))
     .AddMediatRHandlers();
