@@ -10,6 +10,7 @@ public static class ServiceRoutes
         public const string GetRandomNumber = Base + "randomnum/";
         public const string GetAgeByYear = Base + "age/{year}/";
         public const string GetTestTrucks = Base + "trucks/";
+        public const string GetTestTruckById = GetTestTrucks + "{id}";
         public const string CreateTestTruck = Base + "trucks/";
     }
 

@@ -21,11 +21,11 @@ public abstract class AbstractController : Controller
         );
     }
     
-    public ActionResult BaseResponse(int statusCode, object? data)
+    public ActionResult BaseResponse(int statusCode, bool success, object? data = null, string message = "")
     {
-        ApiResponse response = new(statusCode, JsonConvert.SerializeObject(data));
+        ApiResponse response = new(statusCode, success, data, message);
         
-        _responseBodySizeCounter.Add(response.Data.Length, new KeyValuePair<string, object?>("route", this.Request.Path.Value));
+        _responseBodySizeCounter.Add(JsonConvert.SerializeObject(data).Length, new KeyValuePair<string, object?>("route", this.Request.Path.Value));
         return Ok(response);
     }
 }

@@ -7,62 +7,30 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LongDistanceService.Api.Controllers;
 
-public class TestTruck
+public class SlimTestTruck
 {
-    /// <summary>
-    /// Идентификатор тестового трака
-    /// </summary>
     public int Id { get; set; }
-    /// <summary>
-    /// Название тестового трака
-    /// </summary>
-    public string Name { get; set; }
-    /// <summary>
-    /// Цвет трака. Желательно использовать БЛАГОРОДНЫЕ цвета
-    /// </summary>
-    public string Color { get; set; }
-    /// <summary>
-    /// URL картинки приемлемого качества из интернетов
-    /// </summary>
+    public string BrandAndModel { get; set; }
     public string Image { get; set; }
 }
 
 public class TestController(IVehicleService vehicleService) : AbstractController
 {
     private static readonly ActivitySource ActivitySource = new("TestController");
-
-    static List<TestTruck> trucks =
-    [
-        new()
-        {
-            Id = 1, Name = "Man", Color = "Шоколадный",
-            Image = @"https://i.ytimg.com/vi/QFshYicw8p0/maxresdefault.jpg"
-        },
-        new()
-        {
-            Id = 2, Name = "Газель", Color = "Благородная золотая",
-            Image = @"https://avatars.mds.yandex.net/get-autoru-vos/2079997/666887c28db232c7da9a23c19308f46b/1200x900"
-        },
-        new()
-        {
-            Id = 3, Name = "Нива", Color = "Платина",
-            Image = @"https://s.auto.drom.ru/i24223/s/checked/3903731/22103646.jpg"
-        },
-    ];
-
+    
     private Random _random = new Random();
 
     [HttpGet(ServiceRoutes.Test.Base)]
     public IActionResult Index()
     {
-        return BaseResponse(200, "test");
+        return BaseResponse(200, true, "test");
     }
 
 
     [HttpGet(ServiceRoutes.Test.GetRandomNumber)]
     public async Task<IActionResult> GetRandomNumberAsync()
     {
-        return BaseResponse(200, _random.Next(1, 1000));
+        return BaseResponse(200,  true, _random.Next(1, 1000));
     }
 
     [HttpGet(ServiceRoutes.Test.GetAgeByYear)]
@@ -70,7 +38,7 @@ public class TestController(IVehicleService vehicleService) : AbstractController
     {
         if (!int.TryParse(year, out int result))
         {
-            return BaseResponse(StatusCodes.Status400BadRequest, null);
+            return BaseResponse(StatusCodes.Status400BadRequest, false, null);
         }
 
         //await Task.Delay(_random.Next(500, 2000));
@@ -82,22 +50,53 @@ public class TestController(IVehicleService vehicleService) : AbstractController
             activity.Stop();
         }
 
-        return BaseResponse(200, "примерна: " + (DateTime.Now.Year - result));
+        return BaseResponse(200, true, "примерна: " + (DateTime.Now.Year - result));
     }
 
     [HttpGet(ServiceRoutes.Test.GetTestTrucks)]
-    public async Task<IActionResult> GetTestTrucks()
+    public async Task<IActionResult> GetTestTrucks([FromQuery]string take, [FromQuery]string skip)
     {
-        var vehicles = await vehicleService.GetVehiclesAsync();
-        var testTrucks = vehicles.Select(v => new TestTruck()
+        int.TryParse(take, out var takeNumber);
+        int.TryParse(skip, out var skipNumber);
+        
+        if (takeNumber <= 0)
+            takeNumber = 30;
+        if (skipNumber < 0)
+            skipNumber = 0;
+        
+        var vehicles = await vehicleService.GetVehiclesAsync(takeNumber, skipNumber);
+        var testTrucks = vehicles.Select(v => new SlimTestTruck()
         {
             Id = v.Id,
-            Color = v.LicensePlate,
             Image = v.ImagePath ?? "none",
-            Name = v.BrandAndModel
+            BrandAndModel = v.BrandAndModel
         }).ToList();
         
-        return BaseResponse(StatusCodes.Status200OK, testTrucks);
+        return BaseResponse(StatusCodes.Status200OK, true, testTrucks);
+    }
+    
+    [HttpGet(ServiceRoutes.Test.GetTestTruckById)]
+    public async Task<IActionResult> GetTestTrucks(int id)
+    {
+        var vehicle = await vehicleService.GetVehicleAsync(id);
+        
+        
+        if(vehicle == null)
+            return BaseResponse(StatusCodes.Status404NotFound, true, null, "resource not found");
+        else
+        {
+            var obj = new
+            {
+                vehicle.Id,
+                Image = vehicle.ImagePath ?? "none",
+                Brand = vehicle.Model.Brand.Name,
+                Model = vehicle.Model.Name,
+                vehicle.Year,
+                vehicle.LicensePlate,
+            };
+            
+            return BaseResponse(StatusCodes.Status200OK, true, obj);
+        }
     }
 
     /// <summary>
@@ -106,12 +105,8 @@ public class TestController(IVehicleService vehicleService) : AbstractController
     /// <param name="truck">Тестовый трак</param>
     /// <returns></returns>
     [HttpPost(ServiceRoutes.Test.CreateTestTruck)]
-    public async Task<IActionResult> GetTestTrucks([FromBody] TestTruck truck)
+    public async Task<IActionResult> GetTestTrucks([FromBody] SlimTestTruck truck)
     {
-        int nextId = trucks.Max(t => t.Id) + 1;
-        truck.Id = nextId;
-        trucks.Add(truck);
-
-        return BaseResponse(StatusCodes.Status200OK, null);
+        return BaseResponse(StatusCodes.Status200OK, true, null);
     }
 }

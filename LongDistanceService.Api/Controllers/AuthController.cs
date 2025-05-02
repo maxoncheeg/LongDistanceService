@@ -14,6 +14,6 @@ public class AuthController : AbstractController
     [HttpPost(ServiceRoutes.Auth.Login)]
     public async Task<IActionResult> Login()
     {
-        return BaseResponse(StatusCodes.Status200OK, null);
+        return BaseResponse(StatusCodes.Status200OK, false);
     }
 }
