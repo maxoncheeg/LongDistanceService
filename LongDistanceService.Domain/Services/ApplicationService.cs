@@ -1,6 +1,7 @@
 ﻿using LongDistanceService.Domain.CQRS.Commands.Applications;
 using LongDistanceService.Domain.CQRS.Queries.Applications;
 using LongDistanceService.Domain.Models.Abstract;
+using LongDistanceService.Domain.Models.Abstract.Applications;
 using LongDistanceService.Domain.Services.Abstract;
 using MediatR;
 

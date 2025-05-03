@@ -1,5 +1,4 @@
-﻿using System.Net;
-using LongDistanceService.Api.Models.Responses;
+﻿using LongDistanceService.Api.Models.Responses;
 using Newtonsoft.Json;
 
 namespace LongDistanceService.Api.Middlewares;
@@ -28,10 +27,10 @@ public class ExceptionHandlerMiddleware
     private static Task HandleExceptionMessageAsync(HttpContext context, Exception exception)  
     {  
         context.Response.ContentType = "application/json";  
-        int statusCode = (int)HttpStatusCode.InternalServerError;  
+        int statusCode = StatusCodes.Status500InternalServerError;  
         var result = JsonConvert.SerializeObject(new ApiResponse(statusCode, false, null, exception.Message));  
         context.Response.ContentType = "application/json";  
-        context.Response.StatusCode = statusCode;  
+        context.Response.StatusCode = StatusCodes.Status200OK;  
         return context.Response.WriteAsync(result);
     } 
 }

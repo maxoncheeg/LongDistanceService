@@ -3,6 +3,7 @@ using LongDistanceService.Api.Controllers.Abstract;
 using LongDistanceService.Api.Controllers.Routes;
 using LongDistanceService.Domain.Services.Abstract;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LongDistanceService.Api.Controllers;
@@ -30,6 +31,7 @@ public class TestController(IVehicleService vehicleService) : AbstractController
     [HttpGet(ServiceRoutes.Test.GetRandomNumber)]
     public async Task<IActionResult> GetRandomNumberAsync()
     {
+        throw new Exception("для федора");
         return BaseResponse(200,  true, _random.Next(1, 1000));
     }
 
@@ -41,7 +43,6 @@ public class TestController(IVehicleService vehicleService) : AbstractController
             return BaseResponse(StatusCodes.Status400BadRequest, false, null);
         }
 
-        //await Task.Delay(_random.Next(500, 2000));
         using var activity = ActivitySource.StartActivity("PossibleTimeLoss", ActivityKind.Server);
         if (activity != null)
         {
@@ -75,6 +76,7 @@ public class TestController(IVehicleService vehicleService) : AbstractController
         return BaseResponse(StatusCodes.Status200OK, true, testTrucks);
     }
     
+   // [Authorize]
     [HttpGet(ServiceRoutes.Test.GetTestTruckById)]
     public async Task<IActionResult> GetTestTrucks(int id)
     {

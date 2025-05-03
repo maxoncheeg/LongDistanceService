@@ -2,21 +2,23 @@
 
 public static class ServiceRoutes
 {
-    public const string Api = "api/";
+    public const string Api = "/api";
 
     public static class Test
     {
-        public const string Base = Api + "test/";
-        public const string GetRandomNumber = Base + "randomnum/";
-        public const string GetAgeByYear = Base + "age/{year}/";
-        public const string GetTestTrucks = Base + "trucks/";
-        public const string GetTestTruckById = GetTestTrucks + "{id}";
-        public const string CreateTestTruck = Base + "trucks/";
+        public const string Base = Api + "/test";
+        public const string GetRandomNumber = Base + "/randomnum";
+        public const string GetAgeByYear = Base + "/age/{year}";
+        public const string GetTestTrucks = Base + "/trucks";
+        public const string GetTestTruckById = GetTestTrucks + "/{id}";
+        public const string CreateTestTruck = Base + "/trucks";
     }
 
     public static class Auth
     {
-        public const string Base = Api + "auth/";
-        public const string Login = Base + "login/";
+        public const string Base = Api + "/auth";
+        public const string Login = Base + "/login";
+        public const string Logout = Base + "/logout";
+        public const string RefreshToken = Base + "/token/refresh";
     }
 }

@@ -9,5 +9,5 @@ public class User : IUser
     public string Login { get; set; } = String.Empty;
     public string Name { get; set; } = String.Empty;
     public string Surname { get; set; } = String.Empty;
-    public IRole Role { get; set; }
+    public required IRole Role { get; set; }
 }

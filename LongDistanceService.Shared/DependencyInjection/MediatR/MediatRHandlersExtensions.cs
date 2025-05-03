@@ -61,43 +61,58 @@ public static class MediatRHandlersExtensions
                 SqlHandler>()
             .AddTransient<IRequestHandler<CommandSqlRequest, SqlCommandResponse>,
                 SqlHandler>()
+            
             .AddTransient<IRequestHandler<CreateApplicationRequest>,
                 ApplicationHandler>()
             .AddTransient<IRequestHandler<FinishApplicationRequest>,
                 ApplicationHandler>()
+            
             .AddTransient<IRequestHandler<SendApplicationMessageRequest>,
                 ApplicationMessagesHandler>()
+            
             .AddTransient<IRequestHandler<DeleteVehicleRequest>,
                 VehicleHandler>()
             .AddTransient<IRequestHandler<EditVehicleRequest>,
                 VehicleHandler>()
+            
             .AddTransient<IRequestHandler<DeleteDriverRequest, bool>, DriverHandler>()
             .AddTransient<IRequestHandler<EditDriverRequest, bool>, DriverHandler>()
+            
             .AddTransient<IRequestHandler<EditBrandRequest, bool>, BrandHandler>()
             .AddTransient<IRequestHandler<DeleteBrandRequest, bool>, BrandHandler>()
+            
             .AddTransient<IRequestHandler<EditDriverCategoryRequest, bool>, DriverCategoryHandler>()
             .AddTransient<IRequestHandler<DeleteDriverCategoryRequest, bool>, DriverCategoryHandler>()
+            
             .AddTransient<IRequestHandler<EditStreetRequest, bool>, AddressHandler>()
             .AddTransient<IRequestHandler<DeleteStreetRequest, bool>, AddressHandler>()
             .AddTransient<IRequestHandler<EditCityRequest, bool>, AddressHandler>()
             .AddTransient<IRequestHandler<DeleteCityRequest, bool>, AddressHandler>()
+            
             .AddTransient<IRequestHandler<EditUnitRequest, bool>, UnitHandler>()
             .AddTransient<IRequestHandler<DeleteUnitRequest, bool>, UnitHandler>()
+            
             .AddTransient<IRequestHandler<DeleteModelRequest, bool>, ModelHandler>()
             .AddTransient<IRequestHandler<EditModelRequest, bool>, ModelHandler>()
+            
             .AddTransient<IRequestHandler<DeleteCargoCategoryRequest, bool>, CargoCategoryHandler>()
             .AddTransient<IRequestHandler<EditCargoCategoryRequest, bool>, CargoCategoryHandler>()
+            
             .AddTransient<IRequestHandler<DeleteCargoRequest, bool>, CargoHandler>()
             .AddTransient<IRequestHandler<EditCargoRequest, bool>, CargoHandler>()
+            
+            .AddTransient<IRequestHandler<AddOrderRequest, bool>, OrderHandler>()
+            
             .AddTransient<IRequestHandler<DeleteLegalRequest, bool>, PersonalHandler>()
             .AddTransient<IRequestHandler<EditLegalRequest, bool>, PersonalHandler>()
             .AddTransient<IRequestHandler<DeleteIndividualRequest, bool>, PersonalHandler>()
             .AddTransient<IRequestHandler<EditIndividualRequest, bool>, PersonalHandler>()
+            
             .AddTransient<IRequestHandler<EditBankRequest, bool>, BankHandler>()
             .AddTransient<IRequestHandler<DeleteBankRequest, bool>, BankHandler>()
+            
             .AddTransient<IRequestHandler<CreateUserRequest, bool>, UserHandler>()
             .AddTransient<IRequestHandler<ChangeUserPasswordRequest, bool>, UserHandler>()
-            .AddTransient<IRequestHandler<AddOrderRequest, bool>, OrderHandler>()
             .AddTransient<IRequestHandler<UpdateUserRequest, bool>, UserHandler>()
             .AddTransient<IRequestHandler<DeleteUserRequest, bool>, UserHandler>()
             ;
@@ -108,39 +123,56 @@ public static class MediatRHandlersExtensions
 
         @this.AddTransient<IRequestHandler<GetDriverCategoriesRequest, IList<DriverCategoryResponse>>,
                 GetDriverCategoriesHandler>()
-            .AddTransient<IRequestHandler<GetUserByLoginRequest, LoginUserResponse?>,
+            
+            .AddTransient<IRequestHandler<GetLoginUserByLoginRequest, LoginUserResponse?>,
                 GetUserHandler>()
-            .AddTransient<IRequestHandler<GetUserByIdRequest, LoginUserResponse?>,
+            .AddTransient<IRequestHandler<GetLoginUserByIdRequest, LoginUserResponse?>,
                 GetUserHandler>()
             .AddTransient<IRequestHandler<GetUsersRequest, IList<UserResponse>>,
                 GetUserHandler>()
+            .AddTransient<IRequestHandler<GetUserByIdRequest, UserResponse?>,
+                GetUserHandler>()
+            
             .AddTransient<IRequestHandler<GetApplicationsInfoRequest, IList<ApplicationInfoResponse>>,
                 GetApplicationHandler>()
             .AddTransient<IRequestHandler<GetApplicationWithMessagesRequest, ApplicationResponse?>,
                 GetApplicationHandler>()
+            
             .AddTransient<IRequestHandler<GetVehiclesInfoRequest, IList<VehicleInfoResponse>>,
                 GetVehicleHandler>()
             .AddTransient<IRequestHandler<GetVehicleRequest, VehicleResponse?>,
                 GetVehicleHandler>()
+            
             .AddTransient<IRequestHandler<GetModelsRequest, IList<ModelResponse>>,
                 GetModelsHandler>()
+            
             .AddTransient<IRequestHandler<GetCargoCategoriesRequest, IList<CargoCategoryResponse>>,
                 GetCargoesHandler>()
+            
             .AddTransient<IRequestHandler<GetDriversInfoRequest, IList<DriverInfoResponse>>,
                 GetDriverHandler>()
             .AddTransient<IRequestHandler<GetDriverRequest, DriverResponse?>,
                 GetDriverHandler>()
+            
             .AddTransient<IRequestHandler<GetLegalsRequest, IList<LegalResponse>>, GetPersonalsHandler>()
             .AddTransient<IRequestHandler<GetIndividualsRequest, IList<IndividualResponse>>, GetPersonalsHandler>()
+            
             .AddTransient<IRequestHandler<GetCitiesRequest, IList<CityResponse>>, GetAddressHandler>()
             .AddTransient<IRequestHandler<GetStreetsRequest, IList<StreetResponse>>, GetAddressHandler>()
+            
             .AddTransient<IRequestHandler<GetBrandsRequest, IList<BrandResponse>>, GetBrandsHandler>()
+            
             .AddTransient<IRequestHandler<GetUnitsRequest, IList<UnitResponse>>, GetUnitsHandler>()
+            
             .AddTransient<IRequestHandler<GetCargoesRequest, IList<CargoResponse>>, GetCargoesHandler>()
+            
             .AddTransient<IRequestHandler<GetOrderInfosRequest, IList<OrderInfoResponse>>, GetOrdersHandler>()
             .AddTransient<IRequestHandler<GetOrderRequest, OrderResponse?>, GetOrdersHandler>()
+            
             .AddTransient<IRequestHandler<GetBanksRequest, IList<BankResponse>>, GetBanksHandler>()
+            
             .AddTransient<IRequestHandler<GetRolesRequest, IList<RoleResponse>>, GetRolesHandler>()
+            
             .AddTransient<IRequestHandler<GetUserRoleRequest, UserRole?>, GetUserRoleHandler>()
             ;
 

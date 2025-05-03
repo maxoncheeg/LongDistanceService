@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using LongDistanceService.Domain.Models;
 using LongDistanceService.Domain.Models.Abstract;
+using LongDistanceService.Domain.Models.Abstract.Users;
 using LongDistanceService.Domain.Services.Abstract;
 using LongDistanceService.Domain.Services.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -74,7 +75,7 @@ public class AccessTokenService(JwtOptions jwtOptions)
         return result.IsValid;
     }
 
-    public async Task<IUser?> GetUserDataFromTokenAsync(string token)
+    public async Task<ILoginUser?> GetUserDataFromTokenAsync(string token)
     {
         var result = await GetValidationResultAsync(token);
 
@@ -91,7 +92,7 @@ public class AccessTokenService(JwtOptions jwtOptions)
         string? login = name.ToString();
 
         if (login != null)
-            return new User() { Id = id, Login = login };
+            return new LoginUser(id) { Login = login };
         return null;
     }
 

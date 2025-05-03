@@ -1,4 +1,5 @@
 ﻿using LongDistanceService.Domain.Models.Abstract;
+using LongDistanceService.Domain.Models.Abstract.Users;
 using LongDistanceService.Domain.Services;
 using LongDistanceService.Domain.Services.Abstract;
 using LongDistanceService.Domain.Services.Options;

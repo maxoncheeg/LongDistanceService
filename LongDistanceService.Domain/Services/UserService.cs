@@ -22,7 +22,7 @@ public class UserService(IMediator mediator, IPasswordHasher hasher) : IUserServ
 
     public async Task<bool> ChangePasswordAsync(int userId, string oldPassword, string password)
     {
-        var user = await mediator.Send(new GetUserByIdRequest(userId));
+        var user = await mediator.Send(new GetLoginUserByIdRequest(userId));
         if (user == null) return false;
 
         if (hasher.VerifyHashedPassword(user.PasswordHash, oldPassword))
@@ -50,8 +50,6 @@ public class UserService(IMediator mediator, IPasswordHasher hasher) : IUserServ
         {
             Id = user.Id,
             Login = user.Login,
-            Name = user.Name,
-            Surname = user.Surname,
             Role = user.Role
         });
     }
