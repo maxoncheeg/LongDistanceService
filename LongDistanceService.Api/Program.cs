@@ -1,11 +1,11 @@
 using System.Reflection;
 using LongDistanceService.Api.Middlewares;
 using LongDistanceService.Api.Settings;
+using LongDistanceService.Api.Settings.Options;
 using LongDistanceService.Domain.Services.Options;
 using LongDistanceService.Shared.DependencyInjection.Data;
 using LongDistanceService.Shared.DependencyInjection.MediatR;
 using LongDistanceService.Shared.DependencyInjection.Services;
-using Microsoft.AspNetCore.CookiePolicy;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,19 +15,21 @@ var jwtOptions = builder.Configuration
 if (jwtOptions == null) throw new ApplicationException("JwtOptions == null");
 builder.Services.AddSingleton(jwtOptions);
 
-
 builder.Services.AddHttpContextAccessor();
+builder.Services
+    .AddControllers();
 
 builder.Services
     .AddSwagger()
     .AddOpenTelemetryForGrafana(["ControllerMeter"])
-    .AddJwtTokens(jwtOptions)
     .AddLongDistanceServices()
     .AddApiServices();
 
-builder.Services
-    .AddControllers();
-
+builder.Services.AddJwtTokens(jwtOptions)
+    .AddOAuthVk(builder.Configuration.GetSection("OAuth:VK").Get<OAuthVkOptions>()!)
+    .AddOAuthOdnoklassniki(builder.Configuration.GetSection("OAuth:OK").Get<OAuthOkOptions>()!)
+    .AddCookie();
+    ;
 
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
@@ -39,14 +41,13 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.Get
 
 var app = builder.Build();
 
+
 app.UseMiddleware<TokenMiddleware>();
 app.UseMiddleware<ExceptionHandlerMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger(options =>
-    {
-    });
+    app.UseSwagger();
     app.UseSwaggerUI();
 }
 
@@ -56,16 +57,12 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 
-app.UseCookiePolicy(new CookiePolicyOptions
-{
-    MinimumSameSitePolicy = SameSiteMode.Strict,
-    HttpOnly = HttpOnlyPolicy.Always,
-    Secure = CookieSecurePolicy.Always
-});
-
-app.UseAuthentication();
-app.UseAuthorization();
-
+// app.UseCookiePolicy(new CookiePolicyOptions
+// {
+//     MinimumSameSitePolicy = SameSiteMode.Strict,
+//     HttpOnly = HttpOnlyPolicy.Always,
+//     Secure = CookieSecurePolicy.Always
+// });
 
 app.UseCors(options =>
 {
@@ -75,6 +72,8 @@ app.UseCors(options =>
     options.AllowCredentials();
 });
 
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 

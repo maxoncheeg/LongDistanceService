@@ -1,9 +1,15 @@
-﻿using LongDistanceService.Api.Services;
+﻿using System.Security.Claims;
+using AspNet.Security.OAuth.VkId;
+using LongDistanceService.Api.Controllers.Routes;
+using LongDistanceService.Api.Services;
 using LongDistanceService.Api.Services.Abstract;
+using LongDistanceService.Api.Settings.Options;
+using LongDistanceService.Domain.Enums;
 using LongDistanceService.Domain.Services.Options;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
@@ -49,9 +55,9 @@ public static class SettingsExtensions
         return @this;
     }
 
-    public static IServiceCollection AddJwtTokens(this IServiceCollection @this, JwtOptions jwtOptions)
+    public static AuthenticationBuilder AddJwtTokens(this IServiceCollection @this, JwtOptions jwtOptions)
     {
-        @this.AddAuthentication(options =>
+        var builder = @this.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultSignInScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -69,43 +75,74 @@ public static class SettingsExtensions
                     RequireExpirationTime = true,
                     ValidateIssuerSigningKey = true,
                     ValidIssuer = jwtOptions.Issuer,
+
                     ValidAudience = jwtOptions.Audience,
                     ClockSkew = jwtOptions.ClockSkew,
-                    IssuerSigningKey = jwtOptions.SymmetricSecurityKey
+                    IssuerSigningKey = jwtOptions.SymmetricSecurityKey,
+
+                    RoleClaimType = ClaimTypes.Role,
                 };
+
+                //
+                // options.Events = new JwtBearerEvents
+                // {
+                //     OnAuthenticationFailed = Task.FromResult,
+                // };
             });
 
-        return @this;
+        @this.AddAuthorizationBuilder()
+            .AddPolicy("AdminOnly", policy =>
+                policy.RequireRole(UserRole.Admin.ToString()));
+
+        return builder;
+    }
+
+    public static AuthenticationBuilder AddOAuthVk(this AuthenticationBuilder @this, OAuthVkOptions options, string name = "vk")
+    {
+        return @this.AddVkId(name, opt =>
+        {
+            opt.ClientId = options.AppId;
+            opt.ClientSecret = options.AppSecret;
+            opt.UsePkce = true;
+            
+            opt.CallbackPath = new PathString(ServiceRoutes.Auth.OAuth.Callback(name));
+            
+            opt.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            opt.CorrelationCookie = new CookieBuilder()
+            {
+                HttpOnly = true, MaxAge = TimeSpan.FromMinutes(5), Expiration = TimeSpan.FromMinutes(5), SecurePolicy = CookieSecurePolicy.Always
+            };
+            
+            opt.SaveTokens = true;
+
+            //opt.Fields.Add("uid");
+            //opt.ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "uid");
+        });
+    }
+    
+    public static AuthenticationBuilder AddOAuthOdnoklassniki(this AuthenticationBuilder @this, OAuthOkOptions options, string name = "ok")
+    {
+        return @this.AddOdnoklassniki(name, opt =>
+        {
+            opt.ClientId = options.AppId;
+            opt.ClientSecret = options.AppSecret;
+            opt.PublicSecret = options.PublicSecret;
+            
+            opt.CallbackPath = new PathString(ServiceRoutes.Auth.OAuth.Callback(name));
+            
+            opt.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            opt.CorrelationCookie = new CookieBuilder()
+            {
+                HttpOnly = true, MaxAge = TimeSpan.FromMinutes(5), Expiration = TimeSpan.FromMinutes(5), SecurePolicy = CookieSecurePolicy.Always
+            };
+            
+            opt.SaveTokens = true;
+        });
     }
 
     public static IServiceCollection AddSwagger(this IServiceCollection @this)
     {
-        return @this.AddSwaggerGen(options =>
-        {
-            options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-            {
-                Description = "JWT Authorization header using the Bearer scheme. Example: \"Bearer {token}\"",
-                Name = "Authorization",
-                In = ParameterLocation.Header,
-                Type = SecuritySchemeType.ApiKey,
-                Scheme = "Bearer"
-            });
-
-            options.AddSecurityRequirement(new OpenApiSecurityRequirement
-            {
-                {
-                    new OpenApiSecurityScheme
-                    {
-                        Reference = new OpenApiReference
-                        {
-                            Type = ReferenceType.SecurityScheme,
-                            Id = "Bearer"
-                        }
-                    },
-                    Array.Empty<string>()
-                }
-            });
-        });
+        return @this.AddSwaggerGen(options => { });
     }
 
     public static IServiceCollection AddApiServices(this IServiceCollection @this) =>
