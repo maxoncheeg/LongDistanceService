@@ -1,6 +1,8 @@
 ﻿using LongDistanceService.Data.Contexts.Abstract;
+using LongDistanceService.Data.Mappings;
 using LongDistanceService.Domain.CQRS.Queries.Users;
 using LongDistanceService.Domain.CQRS.Responses.Users;
+using LongDistanceService.Domain.Models.Abstract.Users;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -31,31 +33,21 @@ public class GetUserHandler(IApplicationDbContext context) :
 
     public async Task<IList<UserResponse>> Handle(GetUsersRequest request, CancellationToken cancellationToken)
     {
-        return await context.Users.Include(u => u.Role).Select(u => new UserResponse()
-        {
-            Id = u.Id,
-            Login = u.Login,
-            Role = new RoleResponse()
-            {
-                Id = u.Role.Id,
-                Type = u.Role.Type
-            }
-        }).ToListAsync(cancellationToken);
+        return await context.Users
+            .Include(u => u.AuthProviders)
+            .Include(u => u.UserRoles)
+            .ThenInclude(u => u.Role)
+            .ToUserResponse()
+            .ToListAsync(cancellationToken);
     }
 
     public async Task<UserResponse?> Handle(GetUserByIdRequest request, CancellationToken cancellationToken)
     {
-        return await context.Users.Include(u => u.Role)
-            .Select(u => new UserResponse()
-            {
-                Id = u.Id,
-                Login = u.Login,
-                Role = new RoleResponse()
-                {
-                    Id = u.Role.Id,
-                    Type = u.Role.Type
-                }
-            })
+        return await context.Users
+            .Include(u => u.AuthProviders)
+            .Include(u => u.UserRoles)
+            .ThenInclude(u => u.Role)
+            .ToUserResponse()
             .SingleOrDefaultAsync(u => u.Id == request.Id, cancellationToken: cancellationToken);
     }
 }

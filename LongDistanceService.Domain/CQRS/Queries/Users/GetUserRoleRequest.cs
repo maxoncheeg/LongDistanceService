@@ -4,4 +4,4 @@ using MediatR;
 
 namespace LongDistanceService.Domain.CQRS.Queries.Users;
 
-public record GetUserRoleRequest(int UserId) : IRequest<UserRole?>;
+public record GetUserRoleRequest(int UserId) : IRequest<Roles?>;

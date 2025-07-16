@@ -4,11 +4,9 @@ using MediatR;
 
 namespace LongDistanceService.Domain.CQRS.Commands.Users;
 
-public class UpdateUserRequest : IRequest<bool>, IUser
+public class UpdateUserRequest : IRequest<bool>
 {
     public int Id { get; set; }
     public string Login { get; set; } = string.Empty;
-    public string Name { get; set; } = string.Empty;
-    public string Surname { get; set; } = string.Empty;
-    public IRole Role { get; set; } = null!;
+    public IList<IRole> Roles { get; set; } = null!;
 }

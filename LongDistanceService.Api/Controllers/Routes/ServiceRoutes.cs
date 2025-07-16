@@ -12,6 +12,12 @@ public static class ServiceRoutes
         public const string GetTestTrucks = Base + "/trucks";
         public const string GetTestTruckById = GetTestTrucks + "/{id}";
         public const string CreateTestTruck = Base + "/trucks";
+        public const string SendTestMail = Base + "/mail";
+        
+        public const string AdminOnly = Base + "/admin";
+        public const string VerifiedEmailOnly = Base + "/email";
+        public const string ExternalUserOnly = Base + "/external";
+        public const string CompleteExternalUserOnly = Base + "/external/complete";
     }
 
     public static class Auth
@@ -25,14 +31,22 @@ public static class ServiceRoutes
         public const string Logout = Base + "/logout";
         public const string LoginByToken = Base + "/token/login";
         public const string RefreshToken = Base + "/token/refresh";
-        
+
         public static class OAuth
         {
-            public const string Base = "/oauth";
+            public const string Base = Api + "/oauth";
             public const string Provider = Base + "/{provider}";
-            public static string Callback(string provider) => $"{Base}/login/{provider}"; 
+            public static string Callback(string provider) => $"{Base}/login/{provider}";
             public const string Authorize = Base + "/authorize";
+            public const string Register = Base + "/register";
         }
+    }
+
+    public static class Profile
+    {
+        public const string Base = Api + "/profile";
+        public const string Email = Base + "/email";
+        public const string VerifyEmail = Base + "/email/verify";
     }
 
     public static class Bank

@@ -52,7 +52,7 @@ public class DriverHandler(IApplicationDbContext context)
         try
         {
             if (request.Id == 0)
-                context.Create(driver);
+                await context.CreateAsync(driver);
             else
                 context.Update(driver);
 

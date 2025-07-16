@@ -18,7 +18,7 @@ public class ApplicationMessagesHandler(IApplicationDbContext context) : IReques
             Timestamp = DateTime.UtcNow
         };
         
-        context.Create(message);
+        await context.CreateAsync(message);
 
         await context.SaveAsync();
     }

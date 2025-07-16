@@ -3,12 +3,18 @@ using AspNet.Security.OAuth.VkId;
 using LongDistanceService.Api.Controllers.Routes;
 using LongDistanceService.Api.Services;
 using LongDistanceService.Api.Services.Abstract;
+using LongDistanceService.Api.Settings.Authentication;
 using LongDistanceService.Api.Settings.Options;
+using LongDistanceService.Data.Entities.Identity;
 using LongDistanceService.Domain.Enums;
+using LongDistanceService.Domain.Services.Identity;
+using LongDistanceService.Domain.Services.Identity.Abstract;
 using LongDistanceService.Domain.Services.Options;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.IdentityModel.Tokens;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
@@ -90,52 +96,71 @@ public static class SettingsExtensions
                 // };
             });
 
+
+        var adminPolicy = new AuthorizationPolicy(
+            [new RolesAuthorizationRequirement([Roles.Admin.ToString()])],
+            [JwtBearerDefaults.AuthenticationScheme]);
+        var externalUserPolicy = new AuthorizationPolicy(
+            [new ClaimsAuthorizationRequirement(Claims.ExternalUser, [true.ToString()])],
+            [JwtBearerDefaults.AuthenticationScheme]);
+        var emailVerifiedPolicy = new AuthorizationPolicy(
+            [new ClaimsAuthorizationRequirement(Claims.EmailVerified, [true.ToString()])],
+            [JwtBearerDefaults.AuthenticationScheme]);
+
         @this.AddAuthorizationBuilder()
-            .AddPolicy("AdminOnly", policy =>
-                policy.RequireRole(UserRole.Admin.ToString()));
+            .AddPolicy(Policies.Admin, adminPolicy)
+            .AddPolicy(Policies.ExternalUser, externalUserPolicy)
+            .AddPolicy(Policies.EmailVerified, emailVerifiedPolicy)
+            .AddPolicy(Policies.CompleteExternalUser,
+                policy => policy.Combine(externalUserPolicy).Combine(emailVerifiedPolicy))
+            ;
 
         return builder;
     }
 
-    public static AuthenticationBuilder AddOAuthVk(this AuthenticationBuilder @this, OAuthVkOptions options, string name = "vk")
+    public static AuthenticationBuilder AddOAuthVk(this AuthenticationBuilder @this, OAuthVkOptions options,
+        string name = "vk")
     {
         return @this.AddVkId(name, opt =>
         {
             opt.ClientId = options.AppId;
             opt.ClientSecret = options.AppSecret;
             opt.UsePkce = true;
-            
+
             opt.CallbackPath = new PathString(ServiceRoutes.Auth.OAuth.Callback(name));
-            
+
             opt.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             opt.CorrelationCookie = new CookieBuilder()
             {
-                HttpOnly = true, MaxAge = TimeSpan.FromMinutes(5), Expiration = TimeSpan.FromMinutes(5), SecurePolicy = CookieSecurePolicy.Always
+                HttpOnly = true, MaxAge = TimeSpan.FromMinutes(5), Expiration = TimeSpan.FromMinutes(5),
+                SecurePolicy = CookieSecurePolicy.Always
             };
-            
+
             opt.SaveTokens = true;
 
             //opt.Fields.Add("uid");
             //opt.ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "uid");
         });
     }
-    
-    public static AuthenticationBuilder AddOAuthOdnoklassniki(this AuthenticationBuilder @this, OAuthOkOptions options, string name = "ok")
+
+    public static AuthenticationBuilder AddOAuthOdnoklassniki(this AuthenticationBuilder @this, OAuthOkOptions options,
+        string name = "ok")
     {
         return @this.AddOdnoklassniki(name, opt =>
         {
             opt.ClientId = options.AppId;
             opt.ClientSecret = options.AppSecret;
             opt.PublicSecret = options.PublicSecret;
-            
+
             opt.CallbackPath = new PathString(ServiceRoutes.Auth.OAuth.Callback(name));
-            
+
             opt.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             opt.CorrelationCookie = new CookieBuilder()
             {
-                HttpOnly = true, MaxAge = TimeSpan.FromMinutes(5), Expiration = TimeSpan.FromMinutes(5), SecurePolicy = CookieSecurePolicy.Always
+                HttpOnly = true, MaxAge = TimeSpan.FromMinutes(5), Expiration = TimeSpan.FromMinutes(5),
+                SecurePolicy = CookieSecurePolicy.Always
             };
-            
+
             opt.SaveTokens = true;
         });
     }
@@ -146,5 +171,7 @@ public static class SettingsExtensions
     }
 
     public static IServiceCollection AddApiServices(this IServiceCollection @this) =>
-        @this.AddTransient<ITokenManager, TokenManager>();
+        @this
+            .AddTransient<ITokenManager, TokenManager>()
+            .AddTransient<ISecurityService, SecurityService>();
 }

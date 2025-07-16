@@ -1,4 +1,5 @@
 ﻿using LongDistanceService.Data.Entities.Identity;
+using LongDistanceService.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

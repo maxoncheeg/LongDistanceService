@@ -1,5 +1,4 @@
-﻿using LongDistanceService.Domain.Models.Abstract;
-using LongDistanceService.Domain.Models.Abstract.Users;
+﻿using LongDistanceService.Domain.Models.Abstract.Users;
 
 namespace LongDistanceService.Domain.Models;
 // todo: user checks
@@ -7,7 +6,7 @@ public class User : IUser
 {
     public int Id { get; set; }
     public string Login { get; set; } = String.Empty;
-    public string Name { get; set; } = String.Empty;
-    public string Surname { get; set; } = String.Empty;
-    public required IRole Role { get; set; }
+    public bool IsEmailVerified { get; set; }
+    public bool IsExternalUser { get; set; }
+    public IList<IRole> Roles { get; set; } = [];
 }

@@ -1,6 +1,4 @@
-﻿using LongDistanceService.Data.Entities.Abstract;
-
-namespace LongDistanceService.Data.Entities.Identity;
+﻿namespace LongDistanceService.Data.Entities.Identity;
 
 public class AuthProvider
 {

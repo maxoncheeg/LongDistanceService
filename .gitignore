@@ -6,3 +6,4 @@
 /LongDistanceService.Web/WORD
 /environments/lds_docker/prometheus
 /environments/lds_docker/tempo-data
+/LongDistanceService.Api/appsettings.json

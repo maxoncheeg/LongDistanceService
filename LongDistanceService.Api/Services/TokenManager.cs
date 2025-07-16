@@ -1,5 +1,6 @@
 ﻿using LongDistanceService.Api.Controllers.Routes;
 using LongDistanceService.Api.Services.Abstract;
+using LongDistanceService.Domain.Services.Identity.Abstract;
 
 namespace LongDistanceService.Api.Services;
 

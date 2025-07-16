@@ -1,5 +1,6 @@
 ﻿using LongDistanceService.Domain.Services;
-using LongDistanceService.Domain.Services.Abstract;
+using LongDistanceService.Domain.Services.Utils;
+using LongDistanceService.Domain.Services.Utils.Abstract;
 
 namespace LongDistanceService.Domain.Tests.Services;
 

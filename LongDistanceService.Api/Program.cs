@@ -15,6 +15,12 @@ var jwtOptions = builder.Configuration
 if (jwtOptions == null) throw new ApplicationException("JwtOptions == null");
 builder.Services.AddSingleton(jwtOptions);
 
+var emailOptions = builder.Configuration
+    .GetSection("EmailOptions")
+    .Get<EmailOptions>();
+if (emailOptions == null) throw new ApplicationException("EmailOptions == null");
+builder.Services.AddSingleton(emailOptions);
+
 builder.Services.AddHttpContextAccessor();
 builder.Services
     .AddControllers();
@@ -22,15 +28,15 @@ builder.Services
 builder.Services
     .AddSwagger()
     .AddOpenTelemetryForGrafana(["ControllerMeter"])
-    .AddLongDistanceServices()
+    .AddLongDistanceUtilServices()
+    .AddLongDistanceIdentityServices()
+    .AddLongDistanceEntityServices()
     .AddApiServices();
 
 builder.Services.AddJwtTokens(jwtOptions)
     .AddOAuthVk(builder.Configuration.GetSection("OAuth:VK").Get<OAuthVkOptions>()!)
     .AddOAuthOdnoklassniki(builder.Configuration.GetSection("OAuth:OK").Get<OAuthOkOptions>()!)
     .AddCookie();
-    ;
-
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
                        throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
@@ -57,13 +63,6 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 
-// app.UseCookiePolicy(new CookiePolicyOptions
-// {
-//     MinimumSameSitePolicy = SameSiteMode.Strict,
-//     HttpOnly = HttpOnlyPolicy.Always,
-//     Secure = CookieSecurePolicy.Always
-// });
-
 app.UseCors(options =>
 {
     options.WithOrigins("http://localhost:5173");
@@ -76,6 +75,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapGet("/", async context => context.Response.Redirect("/swagger"));
 
-app.Urls.Add("http://localhost:80");
+//app.Urls.Add("http://192.168.0.148:80");
 app.Run();

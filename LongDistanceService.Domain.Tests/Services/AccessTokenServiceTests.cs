@@ -1,7 +1,8 @@
 ﻿using LongDistanceService.Domain.Models.Abstract;
 using LongDistanceService.Domain.Models.Abstract.Users;
 using LongDistanceService.Domain.Services;
-using LongDistanceService.Domain.Services.Abstract;
+using LongDistanceService.Domain.Services.Identity;
+using LongDistanceService.Domain.Services.Identity.Abstract;
 using LongDistanceService.Domain.Services.Options;
 using LongDistanceService.Domain.Tests.Mocks;
 using Microsoft.IdentityModel.Tokens;

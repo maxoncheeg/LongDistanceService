@@ -9,8 +9,8 @@ public class AuthProviderTypeConfiguration : IEntityTypeConfiguration<AuthProvid
     public void Configure(EntityTypeBuilder<AuthProvider> builder)
     {
         builder.Property(p => p.UserId).HasColumnName("user_id");
-        builder.Property(p => p.ProviderId).HasColumnName("provider_id");
-        builder.Property(p => p.ProviderName).HasColumnName("provider_name");
+        builder.Property(p => p.ProviderId).HasColumnName("id");
+        builder.Property(p => p.ProviderName).HasColumnName("name");
 
         builder.ToTable("auth_providers").HasKey(p => new
         {

@@ -16,7 +16,7 @@ public class AuthProviderHandler(IApplicationDbContext context) : IRequestHandle
         AuthProvider provider = new AuthProvider
             { UserId = request.UserId, ProviderName = request.ProviderName, ProviderId = request.ProviderId };
 
-        context.Create(provider);
+        await context.CreateAsync(provider);
         await context.SaveAsync();
 
         return true;
