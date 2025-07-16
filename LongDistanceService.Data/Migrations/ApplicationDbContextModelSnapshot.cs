@@ -17,7 +17,7 @@ namespace LongDistanceService.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.8")
+                .HasAnnotation("ProductVersion", "9.0.4")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -309,6 +309,26 @@ namespace LongDistanceService.Data.Migrations
                     b.ToTable("application_messages", (string)null);
                 });
 
+            modelBuilder.Entity("LongDistanceService.Data.Entities.Identity.AuthProvider", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("user_id");
+
+                    b.Property<string>("ProviderName")
+                        .HasColumnType("text")
+                        .HasColumnName("name");
+
+                    b.Property<string>("ProviderId")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("id");
+
+                    b.HasKey("UserId", "ProviderName");
+
+                    b.ToTable("auth_providers", (string)null);
+                });
+
             modelBuilder.Entity("LongDistanceService.Data.Entities.Identity.Role", b =>
                 {
                     b.Property<int>("Id")
@@ -330,6 +350,39 @@ namespace LongDistanceService.Data.Migrations
                     b.ToTable("roles", (string)null);
                 });
 
+            modelBuilder.Entity("LongDistanceService.Data.Entities.Identity.TwoFactorSecret", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CodeReason")
+                        .HasColumnType("integer")
+                        .HasColumnName("reason");
+
+                    b.Property<DateTime>("Expires")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("expires");
+
+                    b.Property<string>("Secret")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("secret");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("two_factor_secrets", (string)null);
+                });
+
             modelBuilder.Entity("LongDistanceService.Data.Entities.Identity.User", b =>
                 {
                     b.Property<int>("Id")
@@ -338,6 +391,12 @@ namespace LongDistanceService.Data.Migrations
                         .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("IsEmailVerified")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_email_verified");
 
                     b.Property<string>("Login")
                         .IsRequired()
@@ -349,16 +408,10 @@ namespace LongDistanceService.Data.Migrations
                         .HasColumnType("text")
                         .HasColumnName("password");
 
-                    b.Property<int>("RoleId")
-                        .HasColumnType("integer")
-                        .HasColumnName("role_id");
-
                     b.HasKey("Id");
 
                     b.HasIndex("Login")
                         .IsUnique();
-
-                    b.HasIndex("RoleId");
 
                     b.ToTable("users", (string)null);
                 });
@@ -682,6 +735,23 @@ namespace LongDistanceService.Data.Migrations
                     b.ToTable("legals", (string)null);
                 });
 
+            modelBuilder.Entity("LongDistanceService.Data.Entities.UserRole", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("user_id");
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("integer")
+                        .HasColumnName("role_id");
+
+                    b.HasKey("UserId", "RoleId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("user_roles", (string)null);
+                });
+
             modelBuilder.Entity("LongDistanceService.Data.Entities.VehicleCargoCategory", b =>
                 {
                     b.Property<int>("VehicleId")
@@ -873,15 +943,26 @@ namespace LongDistanceService.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("LongDistanceService.Data.Entities.Identity.User", b =>
+            modelBuilder.Entity("LongDistanceService.Data.Entities.Identity.AuthProvider", b =>
                 {
-                    b.HasOne("LongDistanceService.Data.Entities.Identity.Role", "Role")
-                        .WithMany("Users")
-                        .HasForeignKey("RoleId")
+                    b.HasOne("LongDistanceService.Data.Entities.Identity.User", "User")
+                        .WithMany("AuthProviders")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.Navigation("Role");
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("LongDistanceService.Data.Entities.Identity.TwoFactorSecret", b =>
+                {
+                    b.HasOne("LongDistanceService.Data.Entities.Identity.User", "User")
+                        .WithMany("TwoFactorSecrets")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("LongDistanceService.Data.Entities.Order", b =>
@@ -992,6 +1073,25 @@ namespace LongDistanceService.Data.Migrations
                     b.Navigation("Street");
                 });
 
+            modelBuilder.Entity("LongDistanceService.Data.Entities.UserRole", b =>
+                {
+                    b.HasOne("LongDistanceService.Data.Entities.Identity.Role", "Role")
+                        .WithMany("UserRoles")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("LongDistanceService.Data.Entities.Identity.User", "User")
+                        .WithMany("UserRoles")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Role");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("LongDistanceService.Data.Entities.VehicleCargoCategory", b =>
                 {
                     b.HasOne("LongDistanceService.Data.Entities.Cargoes.CargoCategory", "Category")
@@ -1085,7 +1185,7 @@ namespace LongDistanceService.Data.Migrations
 
             modelBuilder.Entity("LongDistanceService.Data.Entities.Identity.Role", b =>
                 {
-                    b.Navigation("Users");
+                    b.Navigation("UserRoles");
                 });
 
             modelBuilder.Entity("LongDistanceService.Data.Entities.Identity.User", b =>
@@ -1093,6 +1193,12 @@ namespace LongDistanceService.Data.Migrations
                     b.Navigation("ApplicationMessages");
 
                     b.Navigation("Applications");
+
+                    b.Navigation("AuthProviders");
+
+                    b.Navigation("TwoFactorSecrets");
+
+                    b.Navigation("UserRoles");
                 });
 
             modelBuilder.Entity("LongDistanceService.Data.Entities.Order", b =>

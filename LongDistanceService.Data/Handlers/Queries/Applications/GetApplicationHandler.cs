@@ -2,6 +2,7 @@
 using LongDistanceService.Domain.CQRS.Queries.Applications;
 using LongDistanceService.Domain.CQRS.Responses.Applications;
 using LongDistanceService.Domain.Models.Abstract;
+using LongDistanceService.Domain.Models.Abstract.Applications;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 

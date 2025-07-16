@@ -42,7 +42,7 @@ public class VehicleHandler(IApplicationDbContext context) : IRequestHandler<Del
                 vehicle.VehicleCargoCategories.Add(new VehicleCargoCategory() { Category = category, Vehicle = vehicle});
         
         if(request.Id == 0)
-            context.Create(vehicle);
+            await context.CreateAsync(vehicle);
         else
             context.Update(vehicle);
         

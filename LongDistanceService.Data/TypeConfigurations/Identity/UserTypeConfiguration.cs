@@ -10,12 +10,10 @@ public class UserTypeConfiguration : IEntityTypeConfiguration<User>
     {
         builder.Property(p => p.Login).HasColumnName("login");
         builder.Property(p => p.Password).HasColumnName("password");
-        builder.Property(p => p.RoleId).HasColumnName("role_id");
+        builder.Property(p => p.IsEmailVerified).HasColumnName("is_email_verified").HasDefaultValue(false);
         builder.Property(p => p.Id).HasColumnName("id").ValueGeneratedOnAdd();
 
         builder.ToTable("users").HasKey(p => p.Id);
-        
-        builder.HasOne(p => p.Role).WithMany(p => p.Users).HasForeignKey(p => p.RoleId).OnDelete(DeleteBehavior.NoAction);
 
         builder.HasIndex(p => p.Login).IsUnique();
     }

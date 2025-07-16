@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 
 namespace LongDistanceService.Api.Controllers.Abstract;
 
+[ApiController]
 public abstract class AbstractController : Controller
 {
     // todo: обзавестить логгером
@@ -21,9 +22,9 @@ public abstract class AbstractController : Controller
         );
     }
     
-    public ActionResult BaseResponse(int statusCode, bool success, object? data = null, string message = "")
+    protected ActionResult BaseResponse(int statusCode, object? data = null, string message = "")
     {
-        ApiResponse response = new(statusCode, success, data, message);
+        ApiResponse response = new(statusCode, data, message);
         
         _responseBodySizeCounter.Add(JsonConvert.SerializeObject(data).Length, new KeyValuePair<string, object?>("route", this.Request.Path.Value));
         return Ok(response);

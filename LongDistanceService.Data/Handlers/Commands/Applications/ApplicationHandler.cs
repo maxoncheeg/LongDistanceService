@@ -25,8 +25,8 @@ public class ApplicationHandler(IApplicationDbContext context) : IRequestHandler
             Timestamp = DateTime.UtcNow
         };
         
-        context.Create(application);
-        context.Create(message);
+        await context.CreateAsync(application);
+        await context.CreateAsync(message);
 
         await context.SaveAsync();
     }

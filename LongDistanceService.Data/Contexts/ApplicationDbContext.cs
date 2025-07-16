@@ -7,6 +7,7 @@ using LongDistanceService.Data.Entities.Drivers;
 using LongDistanceService.Data.Entities.Identity;
 using LongDistanceService.Data.Entities.Personals;
 using LongDistanceService.Data.Entities.Vehicles;
+using LongDistanceService.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace LongDistanceService.Data.Contexts;
@@ -32,13 +33,21 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public IQueryable<OrderCargo> OrderCargoes => Set<OrderCargo>();
     public IQueryable<Order> Orders => Set<Order>();
     public IQueryable<User> Users => Set<User>();
+    public IQueryable<AuthProvider> AuthProviders => Set<AuthProvider>();
     public IQueryable<Role> Roles => Set<Role>();
+    public IQueryable<UserRole> UserRoles => Set<UserRole>();
+    public IQueryable<TwoFactorSecret> TwoFactorSecrets => Set<TwoFactorSecret>();
     public IQueryable<Application> Applications => Set<Application>();
     public IQueryable<ApplicationMessage> ApplicationMessages  => Set<ApplicationMessage>();
 
-    public void Create<TEntity>(TEntity entity) where TEntity : class
+    public async Task CreateAsync<TEntity>(TEntity entity) where TEntity : class
     {
-        Set<TEntity>().Add(entity);
+        await Set<TEntity>().AddAsync(entity);
+    }
+
+    public async Task CreateRangeAsync<TEntity>(IList<TEntity> entities) where TEntity : class
+    {
+        await Set<TEntity>().AddRangeAsync(entities);
     }
 
     public new void Update<TEntity>(TEntity entity) where TEntity : class
@@ -49,6 +58,11 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public void Delete<TEntity>(TEntity entity) where TEntity : class
     {
         Set<TEntity>().Remove(entity);
+    }
+
+    public void DeleteRange<TEntity>(IList<TEntity> entities) where TEntity : class
+    {
+        Set<TEntity>().RemoveRange(entities);
     }
 
     public async Task SaveAsync()

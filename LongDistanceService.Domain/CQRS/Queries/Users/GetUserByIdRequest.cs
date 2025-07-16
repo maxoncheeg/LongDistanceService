@@ -3,4 +3,4 @@ using MediatR;
 
 namespace LongDistanceService.Domain.CQRS.Queries.Users;
 
-public record GetUserByIdRequest(int Id) : IRequest<LoginUserResponse?>;
+public record GetUserByIdRequest(int Id) : IRequest<UserResponse?>;

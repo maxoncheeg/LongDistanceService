@@ -1,109 +1,81 @@
-using System.Diagnostics.Metrics;
 using System.Reflection;
 using LongDistanceService.Api.Middlewares;
-using LongDistanceService.Domain.Services;
-using LongDistanceService.Domain.Services.Abstract;
+using LongDistanceService.Api.Settings;
+using LongDistanceService.Api.Settings.Options;
+using LongDistanceService.Domain.Services.Options;
 using LongDistanceService.Shared.DependencyInjection.Data;
 using LongDistanceService.Shared.DependencyInjection.MediatR;
-using OpenTelemetry.Metrics;
-using OpenTelemetry.Resources;
-using OpenTelemetry.Trace;
+using LongDistanceService.Shared.DependencyInjection.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddSwaggerGen();
+var jwtOptions = builder.Configuration
+    .GetSection("JwtOptions")
+    .Get<JwtOptions>();
+if (jwtOptions == null) throw new ApplicationException("JwtOptions == null");
+builder.Services.AddSingleton(jwtOptions);
 
-builder.Services.AddControllers();
+var emailOptions = builder.Configuration
+    .GetSection("EmailOptions")
+    .Get<EmailOptions>();
+if (emailOptions == null) throw new ApplicationException("EmailOptions == null");
+builder.Services.AddSingleton(emailOptions);
 
-const string serviceName = "long_distance_service";
+builder.Services.AddHttpContextAccessor();
+builder.Services
+    .AddControllers();
 
-#region OpenTelemetry
+builder.Services
+    .AddSwagger()
+    .AddOpenTelemetryForGrafana(["ControllerMeter"])
+    .AddLongDistanceUtilServices()
+    .AddLongDistanceIdentityServices()
+    .AddLongDistanceEntityServices()
+    .AddApiServices();
 
-builder.Services.AddOpenTelemetry()
-    .ConfigureResource(resource => resource.AddService(serviceName))
-    .WithTracing(tracing => tracing
-        .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("LongDistanceService.Api"))
-        .AddSource("TestController")
-        .AddAspNetCoreInstrumentation()
-        .AddHttpClientInstrumentation()
-        .AddEntityFrameworkCoreInstrumentation()
-        .AddSqlClientInstrumentation()
-        .AddOtlpExporter(options =>
-        {
-            options.Endpoint = new Uri("http://localhost:4317"); // Endpoint для OTLP
-            options.TimeoutMilliseconds = 5000;
-        })
-    )
-    .WithMetrics(metrics => metrics
-        .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("LongDistanceService.Api"))
-        .AddAspNetCoreInstrumentation()
-        .AddRuntimeInstrumentation()
-        .AddHttpClientInstrumentation()
-        .AddMeter("ControllerMeter")
-        .AddPrometheusExporter()
-    );
-
-#endregion
+builder.Services.AddJwtTokens(jwtOptions)
+    .AddOAuthVk(builder.Configuration.GetSection("OAuth:VK").Get<OAuthVkOptions>()!)
+    .AddOAuthOdnoklassniki(builder.Configuration.GetSection("OAuth:OK").Get<OAuthOkOptions>()!)
+    .AddCookie();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
                        throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-
 builder.Services.AddPostgresDatabase(connectionString).AddPostresConnection(connectionString);
-builder.Services.AddScoped<IVehicleService, VehicleService>();
+
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()))
     .AddMediatRHandlers();
 
 var app = builder.Build();
 
+
+app.UseMiddleware<TokenMiddleware>();
 app.UseMiddleware<ExceptionHandlerMiddleware>();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-var meter = new Meter("lds_metrics");
-
-var requestBodySizeCounter = meter.CreateCounter<long>(
-    "request_body_size",
-    unit: "bytes",
-    description: "Size of incoming HTTP request bodies in bytes"
-);
-
 app.UseOpenTelemetryPrometheusScrapingEndpoint();
-app.Use((context, next) =>
-{
-    if (context.Request.ContentLength.HasValue || context.Response.ContentLength.HasValue)
-    {
-        var bytes = context.Request.ContentLength ?? 0 + context.Response.ContentLength ?? 0;
-        requestBodySizeCounter.Add(bytes,
-            new KeyValuePair<string, object?>("route", context.Request.Method + " " + context.Request.Path));
-    }
-
-    return next(context);
-});
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
-
-app.UseCookiePolicy();
-
-app.UseAuthentication();
-app.UseAuthorization();
-
 
 app.UseCors(options =>
 {
     options.WithOrigins("http://localhost:5173");
     options.AllowAnyMethod();
     options.AllowAnyHeader();
+    options.AllowCredentials();
 });
 
-app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+app.UseAuthentication();
+app.UseAuthorization();
 
+app.MapControllers();
+app.MapGet("/", async context => context.Response.Redirect("/swagger"));
 
-app.Urls.Add("http://localhost:80");
+//app.Urls.Add("http://192.168.0.148:80");
 app.Run();

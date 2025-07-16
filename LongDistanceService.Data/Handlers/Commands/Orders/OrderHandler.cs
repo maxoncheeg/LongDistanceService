@@ -70,7 +70,7 @@ public class OrderHandler(IApplicationDbContext context) : IRequestHandler<AddOr
                 
             
 
-            context.Create(order);
+            await context.CreateAsync(order);
             await context.SaveAsync();
 
             return true;
