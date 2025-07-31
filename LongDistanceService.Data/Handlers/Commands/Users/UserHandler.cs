@@ -61,7 +61,7 @@ public class UserHandler(IApplicationDbContext context) : IRequestHandler<Change
             return null;
         }
 
-        return await context.Users.ToUserResponse().SingleOrDefaultAsync(u => u.Login == request.Login, cancellationToken);
+        return await context.Users.ToUserResponse().SingleOrDefaultAsync(u => u.Email == request.Login, cancellationToken);
     }
 
     // todo: rework this method. totally bullshit. do not use

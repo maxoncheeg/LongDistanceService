@@ -11,7 +11,7 @@ public static class UserMappingExtensions
         return @this.Select(user => new UserResponse
         {
             Id = user.Id,
-            Login = user.Login,
+            Email = user.Login,
             IsEmailVerified = user.IsEmailVerified,
             IsExternalUser = user.AuthProviders.Count > 0,
             Roles = new List<IRole>(user.UserRoles.Select(userRole => new RoleResponse

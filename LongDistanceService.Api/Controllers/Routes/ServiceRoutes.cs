@@ -45,6 +45,7 @@ public static class ServiceRoutes
     public static class Profile
     {
         public const string Base = Api + "/profile";
+        public const string Me = Base + "/me";
         public const string Email = Base + "/email";
         public const string VerifyEmail = Base + "/email/verify";
     }

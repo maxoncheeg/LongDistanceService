@@ -32,7 +32,7 @@ public class AccessTokenServiceTests
 
         _tokenService = new AccessTokenService(options);
 
-        _user = new MockUser() { Id = 1, Login = "one" };
+        _user = new MockUser() { Id = 1, Email = "one" };
     }
 
     [Test]

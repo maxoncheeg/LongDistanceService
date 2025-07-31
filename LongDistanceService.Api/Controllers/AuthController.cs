@@ -5,10 +5,8 @@ using LongDistanceService.Api.Controllers.Routes;
 using LongDistanceService.Api.Models.Auth;
 using LongDistanceService.Api.Services.Abstract;
 using LongDistanceService.Domain.Enums;
-using LongDistanceService.Domain.Models.Abstract.Users;
 using LongDistanceService.Domain.Services.Entities.Abstract;
 using LongDistanceService.Domain.Services.Identity.Abstract;
-using LongDistanceService.Domain.Services.Utils.Abstract;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -54,10 +52,10 @@ public class AuthController(
     [HttpPost(ServiceRoutes.Auth.Login)]
     public async Task<IActionResult> Login([FromBody] UserModel model)
     {
-        if (string.IsNullOrWhiteSpace(model.Login) || string.IsNullOrWhiteSpace(model.Password))
+        if (string.IsNullOrWhiteSpace(model.Email) || string.IsNullOrWhiteSpace(model.Password))
             return BaseResponse(StatusCodes.Status400BadRequest, null, "Invalid login or password");
 
-        var authResult = await identityService.LoginAsync(model.Login, model.Password);
+        var authResult = await identityService.LoginAsync(model.Email, model.Password);
 
         if (!authResult.UserExists)
             return BaseResponse(StatusCodes.Status404NotFound, null, "No such user exists");
@@ -89,7 +87,7 @@ public class AuthController(
     {
         // todo: check mail
 
-        var user = await userService.CreateUserAsync(model.Login, model.Password, [Roles.Client]);
+        var user = await userService.CreateUserAsync(model.Email, model.Password, [Roles.Client]);
 
         if (user is null)
         {
@@ -160,6 +158,7 @@ public class AuthController(
 
         var redirectUrl = Url.Action(register ? nameof(RegisterProviderForUser) : nameof(GetAuthDataFromProvider),
             new { Provider = provider, ReturnUrl = returnUrl });
+        Console.WriteLine($"\n\n\n{returnUrl}\n\n\n");
         var properties = new AuthenticationProperties
         {
             RedirectUri = redirectUrl,
