@@ -1,13 +1,12 @@
 ﻿using System.Security.Claims;
+using System.Text;
 using LongDistanceService.Api.Controllers.Abstract;
 using LongDistanceService.Api.Controllers.Routes;
 using LongDistanceService.Api.Models.Auth;
 using LongDistanceService.Api.Services.Abstract;
 using LongDistanceService.Domain.Enums;
-using LongDistanceService.Domain.Models.Abstract.Users;
 using LongDistanceService.Domain.Services.Entities.Abstract;
 using LongDistanceService.Domain.Services.Identity.Abstract;
-using LongDistanceService.Domain.Services.Utils.Abstract;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -22,13 +21,41 @@ public class AuthController(
     ISecurityService securityService
 ) : AbstractController
 {
+    private readonly Func<string, string> _getRedirectHtml = url => $@"
+<!DOCTYPE html>
+<html lang=""ru"">
+<head>
+    <meta charset=""UTF-8"">
+    <title>Перенаправление</title>
+    <meta http-equiv=""refresh"" content=""0;url={url}"">
+    <style>
+        body {{
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 100px;
+        }}
+        button {{
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }}
+    </style>
+</head>
+<body>
+<h1>Вы будете перенаправлены...</h1>
+<p>Если не перенаправило автоматически, нажмите на кнопку ниже.</p>
+<button onclick=""window.location.href='{url}'"">Перейти</button>
+</body>
+</html>";
+
+
     [HttpPost(ServiceRoutes.Auth.Login)]
     public async Task<IActionResult> Login([FromBody] UserModel model)
     {
-        if (string.IsNullOrWhiteSpace(model.Login) || string.IsNullOrWhiteSpace(model.Password))
+        if (string.IsNullOrWhiteSpace(model.Email) || string.IsNullOrWhiteSpace(model.Password))
             return BaseResponse(StatusCodes.Status400BadRequest, null, "Invalid login or password");
 
-        var authResult = await identityService.LoginAsync(model.Login, model.Password);
+        var authResult = await identityService.LoginAsync(model.Email, model.Password);
 
         if (!authResult.UserExists)
             return BaseResponse(StatusCodes.Status404NotFound, null, "No such user exists");
@@ -60,8 +87,7 @@ public class AuthController(
     {
         // todo: check mail
 
-        var user = await userService.CreateUserAsync(model.Login, model.Password, [Roles.Client]);
-
+        var user = await userService.CreateUserAsync(model.Email, model.Password, [Roles.Client]);
 
         if (user is null)
         {
@@ -122,7 +148,6 @@ public class AuthController(
     [HttpGet(ServiceRoutes.Auth.OAuth.Provider)]
     public async Task<IActionResult> AuthByProvider(string provider, string returnUrl = "/api", bool register = false)
     {
-        
         string userId = string.Empty;
 
         if (tokenManager.Token != null)
@@ -130,9 +155,10 @@ public class AuthController(
             var data = await accessTokenService.GetUserDataFromTokenAsync(tokenManager.Token);
             userId = data?.Id.ToString() ?? string.Empty;
         }
-        
+
         var redirectUrl = Url.Action(register ? nameof(RegisterProviderForUser) : nameof(GetAuthDataFromProvider),
             new { Provider = provider, ReturnUrl = returnUrl });
+        Console.WriteLine($"\n\n\n{returnUrl}\n\n\n");
         var properties = new AuthenticationProperties
         {
             RedirectUri = redirectUrl,
@@ -146,12 +172,12 @@ public class AuthController(
     }
 
     [HttpGet(ServiceRoutes.Auth.OAuth.Authorize)]
-    public async Task<IActionResult> GetAuthDataFromProvider(string provider, string redirectUri = "/")
+    public async Task<IActionResult> GetAuthDataFromProvider(string provider, string returnUrl = "/")
     {
         AuthenticateResult externalAuthResult = await HttpContext.AuthenticateAsync(provider);
 
         ClaimsPrincipal? principal = externalAuthResult.Principal;
-        
+
         if (principal == null)
             return BaseResponse(StatusCodes.Status404NotFound, null, "Invalid provider authentication");
 
@@ -173,17 +199,17 @@ public class AuthController(
         tokenManager.Token = accessTokenService.GenerateToken(authResult.User).AccessToken;
         tokenManager.RefreshToken = accessTokenService.GenerateRefreshToken(authResult.User);
 
-        return BaseResponse(StatusCodes.Status200OK, authResult.User);
+        return Content(_getRedirectHtml(returnUrl), "text/html", Encoding.UTF8);
     }
 
     [HttpGet(ServiceRoutes.Auth.OAuth.Register)]
-    public async Task<IActionResult> RegisterProviderForUser(string provider, string redirectUri = "/")
+    public async Task<IActionResult> RegisterProviderForUser(string provider, string returnUrl = "/")
     {
         AuthenticateResult externalAuthResult = await HttpContext.AuthenticateAsync(provider);
 
         ClaimsPrincipal? principal = externalAuthResult.Principal;
         var userIdItem = externalAuthResult.Properties?.Items["userId"] ?? string.Empty;
-        
+
         if (principal == null)
             return BaseResponse(StatusCodes.Status404NotFound, null, "Invalid provider authentication");
 
@@ -200,7 +226,6 @@ public class AuthController(
 
         if (result)
         {
-            
             var authResult = await identityService.LoginByProviderAsync(provider, providerId);
 
             if (!authResult.UserExists)
@@ -214,7 +239,6 @@ public class AuthController(
             tokenManager.RefreshToken = accessTokenService.GenerateRefreshToken(authResult.User);
         }
 
-        return BaseResponse(result ? StatusCodes.Status201Created : StatusCodes.Status400BadRequest, null,
-            result ? string.Empty : "Provider was not added");
+        return Content(_getRedirectHtml(returnUrl), "text/html", Encoding.UTF8);
     }
 }

@@ -120,7 +120,7 @@ public class AccessTokenService(JwtOptions jwtOptions)
         var claims = new List<Claim>
         {
             new(Claims.Identifier, user.Id.ToString()),
-            new(Claims.Email, user.Login),
+            new(Claims.Email, user.Email),
             new(Claims.EmailVerified, user.IsEmailVerified.ToString()),
             new(Claims.ExternalUser, user.IsExternalUser.ToString())
         };

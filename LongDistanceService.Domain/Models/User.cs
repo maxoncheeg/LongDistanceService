@@ -5,7 +5,7 @@ namespace LongDistanceService.Domain.Models;
 public class User : IUser
 {
     public int Id { get; set; }
-    public string Login { get; set; } = String.Empty;
+    public string Email { get; set; } = String.Empty;
     public bool IsEmailVerified { get; set; }
     public bool IsExternalUser { get; set; }
     public IList<IRole> Roles { get; set; } = [];

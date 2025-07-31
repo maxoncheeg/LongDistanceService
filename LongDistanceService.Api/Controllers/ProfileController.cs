@@ -5,6 +5,7 @@ using LongDistanceService.Domain.Enums;
 using LongDistanceService.Domain.Services.Entities.Abstract;
 using LongDistanceService.Domain.Services.Identity.Abstract;
 using LongDistanceService.Domain.Services.Utils.Abstract;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LongDistanceService.Api.Controllers;
@@ -15,6 +16,19 @@ public class ProfileController(
     ITwoFactorCodeService codeService,
     IUserService userService) : AbstractController
 {
+    [Authorize]
+    [HttpGet(ServiceRoutes.Profile.Me)]
+    public async Task<IActionResult> GetMe()
+    {
+        var user = await securityService.GetCurrentUserAsync();
+
+        if (user == null)
+            return BaseResponse(StatusCodes.Status401Unauthorized);
+        
+       
+        return BaseResponse(StatusCodes.Status200OK, user);
+    }
+    
     [HttpPost(ServiceRoutes.Profile.Email)]
     public async Task<IActionResult> SendEmailVerificationCode()
     {
@@ -29,9 +43,9 @@ public class ProfileController(
         var code = await codeService.GenerateTwoFactorCodeAsync(user.Id, CodeReason.ConfirmEmail);
 
         if (code == null)
-            return BaseResponse(StatusCodes.Status400BadRequest, null, "Cannot generate code for user");
+            return BaseResponse(StatusCodes.Status422UnprocessableEntity, null, "Cannot generate code for user");
 
-        await emailSender.SendCodeAsync(user.Login, code, CodeReason.ConfirmEmail);
+        await emailSender.SendCodeAsync(user.Email, code, CodeReason.ConfirmEmail);
 
         return BaseResponse(StatusCodes.Status200OK, code);
     }

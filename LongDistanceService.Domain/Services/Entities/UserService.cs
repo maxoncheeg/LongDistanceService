@@ -54,7 +54,7 @@ public class UserService(IMediator mediator, IPasswordHasher hasher) : IUserServ
         return await mediator.Send(new UpdateUserRequest()
         {
             Id = user.Id,
-            Login = user.Login,
+            Login = user.Email,
             Roles = user.Roles
         });
     }
