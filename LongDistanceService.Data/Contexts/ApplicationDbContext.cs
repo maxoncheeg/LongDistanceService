@@ -33,6 +33,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public IQueryable<OrderCargo> OrderCargoes => Set<OrderCargo>();
     public IQueryable<Order> Orders => Set<Order>();
     public IQueryable<User> Users => Set<User>();
+    public IQueryable<UserPersonals> UserPersonals => Set<UserPersonals>();
     public IQueryable<AuthProvider> AuthProviders => Set<AuthProvider>();
     public IQueryable<Role> Roles => Set<Role>();
     public IQueryable<UserRole> UserRoles => Set<UserRole>();

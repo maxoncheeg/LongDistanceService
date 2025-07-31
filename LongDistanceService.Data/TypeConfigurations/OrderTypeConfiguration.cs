@@ -14,21 +14,29 @@ public class OrderTypeConfiguration : IEntityTypeConfiguration<Order>
         builder.Property(p => p.LoadingDate).HasColumnName("loading_date");
 
         builder.Property(p => p.State).HasConversion<int>().HasColumnName("state");
-        builder.Property(p => p.SenderType).HasConversion<int>().HasColumnName("receiver_type");
-        builder.Property(p => p.ReceiverType).HasConversion<int>().HasColumnName("sender_type");
         
         builder.Property(p => p.ReceiveCityId).HasColumnName("receive_city_id");
         builder.Property(p => p.ReceiveStreetId).HasColumnName("receive_street_id");
         builder.Property(p => p.SendStreetId).HasColumnName("send_street_id");
         builder.Property(p => p.SendCityId).HasColumnName("send_city_id");
-        builder.Property(p => p.ReceiverId).HasColumnName("receiver_id");
-        builder.Property(p => p.SenderId).HasColumnName("sender_id");
         builder.Property(p => p.VehicleId).HasColumnName("vehicle_id");
+        
+        
+        builder.Property(p => p.IndividualReceiverId).HasColumnName("individual_receiver_id");
+        builder.Property(p => p.LegalReceiverId).HasColumnName("legal_receiver_id");
+        builder.Property(p => p.IndividualSenderId).HasColumnName("individual_sender_id");
+        builder.Property(p => p.LegalSenderId).HasColumnName("legal_sender_id");
+        
         builder.Property(p => p.Id).HasColumnName("id").ValueGeneratedOnAdd();
 
         builder.ToTable("orders", t =>
         {
             t.HasCheckConstraint("CK_RouteLength", "route_length > 0");
         }).HasKey(p => p.Id);
+        
+        builder.HasOne(p => p.IndividualReceiver).WithMany(p => p.ReceivedOrders).HasForeignKey(p => p.IndividualReceiverId);
+        builder.HasOne(p => p.LegalReceiver).WithMany(p => p.ReceivedOrders).HasForeignKey(p => p.LegalReceiverId);
+        builder.HasOne(p => p.IndividualSender).WithMany(p => p.SendedOrders).HasForeignKey(p => p.IndividualSenderId);
+        builder.HasOne(p => p.LegalSender).WithMany(p => p.SendedOrders).HasForeignKey(p => p.LegalSenderId);
     }
 }

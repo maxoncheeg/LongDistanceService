@@ -15,4 +15,5 @@ public class User : IEntity
     public IList<AuthProvider> AuthProviders { get; set; } = null!;
     public IList<UserRole> UserRoles { get; set; } = null!;
     public IList<TwoFactorSecret> TwoFactorSecrets { get; set; } = null!;
+    public UserPersonals Personals { get; set; } = null!;
 }

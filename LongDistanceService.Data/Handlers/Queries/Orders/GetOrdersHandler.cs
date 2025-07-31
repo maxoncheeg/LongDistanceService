@@ -44,6 +44,9 @@ public class GetOrdersHandler(IApplicationDbContext context)
 
     public async Task<OrderResponse?> Handle(GetOrderRequest request, CancellationToken cancellationToken)
     {
+        
+        // todo: legals and individuals new scheme
+        
         var order = await context.Orders
             .Include(p => p.ReceiveCity)
             .Include(p => p.ReceiveStreet)
@@ -62,10 +65,6 @@ public class GetOrdersHandler(IApplicationDbContext context)
                 SendHouseNumber = o.SendHouseNumber,
                 State = o.State,
                 RouteLength = o.RouteLength,
-                ReceiverType = o.ReceiverType,
-                SenderType = o.SenderType,
-                ReceiverId = o.ReceiverId,
-                SenderId = o.SenderId,
                 ReceiveCity = new CityResponse { Id = o.ReceiveCity.Id, Name = o.ReceiveCity.Name },
                 ReceiveStreet = new StreetResponse { Id = o.ReceiveStreet.Id, Name = o.ReceiveStreet.Name },
                 SendCity = new CityResponse { Id = o.SendCity.Id, Name = o.SendCity.Name },

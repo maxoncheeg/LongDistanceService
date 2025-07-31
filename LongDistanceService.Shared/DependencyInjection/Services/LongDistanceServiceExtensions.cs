@@ -16,6 +16,7 @@ public static class LongDistanceServiceExtensions
     public static IServiceCollection AddLongDistanceEntityServices(this IServiceCollection @this) =>
         @this
             .AddScoped<IUserService, UserService>()
+            .AddScoped<IProfileService, ProfileService>()
             .AddScoped<IVehicleService, VehicleService>();
 
     public static IServiceCollection AddLongDistanceUtilServices(this IServiceCollection @this)

@@ -14,6 +14,7 @@ public class ProfileController(
     IEmailSender emailSender,
     ISecurityService securityService,
     ITwoFactorCodeService codeService,
+    IProfileService profileService,
     IUserService userService) : AbstractController
 {
     [Authorize]
@@ -25,8 +26,9 @@ public class ProfileController(
         if (user == null)
             return BaseResponse(StatusCodes.Status401Unauthorized);
         
+        var profile = await profileService.GetUserProfileAsync(user.Id);
        
-        return BaseResponse(StatusCodes.Status200OK, user);
+        return BaseResponse(StatusCodes.Status200OK, profile);
     }
     
     [HttpPost(ServiceRoutes.Profile.Email)]

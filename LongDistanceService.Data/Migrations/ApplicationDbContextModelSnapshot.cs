@@ -425,6 +425,22 @@ namespace LongDistanceService.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("IndividualReceiverId")
+                        .HasColumnType("integer")
+                        .HasColumnName("individual_receiver_id");
+
+                    b.Property<int?>("IndividualSenderId")
+                        .HasColumnType("integer")
+                        .HasColumnName("individual_sender_id");
+
+                    b.Property<int?>("LegalReceiverId")
+                        .HasColumnType("integer")
+                        .HasColumnName("legal_receiver_id");
+
+                    b.Property<int?>("LegalSenderId")
+                        .HasColumnType("integer")
+                        .HasColumnName("legal_sender_id");
+
                     b.Property<DateTime?>("LoadingDate")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("loading_date");
@@ -441,14 +457,6 @@ namespace LongDistanceService.Data.Migrations
                     b.Property<int>("ReceiveStreetId")
                         .HasColumnType("integer")
                         .HasColumnName("receive_street_id");
-
-                    b.Property<int>("ReceiverId")
-                        .HasColumnType("integer")
-                        .HasColumnName("receiver_id");
-
-                    b.Property<int>("ReceiverType")
-                        .HasColumnType("integer")
-                        .HasColumnName("sender_type");
 
                     b.Property<decimal>("RouteLength")
                         .HasPrecision(9, 2)
@@ -468,14 +476,6 @@ namespace LongDistanceService.Data.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("send_street_id");
 
-                    b.Property<int>("SenderId")
-                        .HasColumnType("integer")
-                        .HasColumnName("sender_id");
-
-                    b.Property<int>("SenderType")
-                        .HasColumnType("integer")
-                        .HasColumnName("receiver_type");
-
                     b.Property<int>("State")
                         .HasColumnType("integer")
                         .HasColumnName("state");
@@ -485,6 +485,14 @@ namespace LongDistanceService.Data.Migrations
                         .HasColumnName("vehicle_id");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("IndividualReceiverId");
+
+                    b.HasIndex("IndividualSenderId");
+
+                    b.HasIndex("LegalReceiverId");
+
+                    b.HasIndex("LegalSenderId");
 
                     b.HasIndex("ReceiveCityId");
 
@@ -735,6 +743,25 @@ namespace LongDistanceService.Data.Migrations
                     b.ToTable("legals", (string)null);
                 });
 
+            modelBuilder.Entity("LongDistanceService.Data.Entities.Personals.UserPersonals", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("user_id");
+
+                    b.Property<int>("PersonalId")
+                        .HasColumnType("integer")
+                        .HasColumnName("personal_id");
+
+                    b.Property<int>("PersonalType")
+                        .HasColumnType("integer")
+                        .HasColumnName("personal_type");
+
+                    b.HasKey("UserId");
+
+                    b.ToTable("user_personals", (string)null);
+                });
+
             modelBuilder.Entity("LongDistanceService.Data.Entities.UserRole", b =>
                 {
                     b.Property<int>("UserId")
@@ -967,6 +994,22 @@ namespace LongDistanceService.Data.Migrations
 
             modelBuilder.Entity("LongDistanceService.Data.Entities.Order", b =>
                 {
+                    b.HasOne("LongDistanceService.Data.Entities.Personals.Individual", "IndividualReceiver")
+                        .WithMany("ReceivedOrders")
+                        .HasForeignKey("IndividualReceiverId");
+
+                    b.HasOne("LongDistanceService.Data.Entities.Personals.Individual", "IndividualSender")
+                        .WithMany("SendedOrders")
+                        .HasForeignKey("IndividualSenderId");
+
+                    b.HasOne("LongDistanceService.Data.Entities.Personals.Legal", "LegalReceiver")
+                        .WithMany("ReceivedOrders")
+                        .HasForeignKey("LegalReceiverId");
+
+                    b.HasOne("LongDistanceService.Data.Entities.Personals.Legal", "LegalSender")
+                        .WithMany("SendedOrders")
+                        .HasForeignKey("LegalSenderId");
+
                     b.HasOne("LongDistanceService.Data.Entities.Addresses.City", "ReceiveCity")
                         .WithMany("ReceiveOrders")
                         .HasForeignKey("ReceiveCityId")
@@ -996,6 +1039,14 @@ namespace LongDistanceService.Data.Migrations
                         .HasForeignKey("VehicleId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
+
+                    b.Navigation("IndividualReceiver");
+
+                    b.Navigation("IndividualSender");
+
+                    b.Navigation("LegalReceiver");
+
+                    b.Navigation("LegalSender");
 
                     b.Navigation("ReceiveCity");
 
@@ -1071,6 +1122,17 @@ namespace LongDistanceService.Data.Migrations
                     b.Navigation("City");
 
                     b.Navigation("Street");
+                });
+
+            modelBuilder.Entity("LongDistanceService.Data.Entities.Personals.UserPersonals", b =>
+                {
+                    b.HasOne("LongDistanceService.Data.Entities.Identity.User", "User")
+                        .WithOne("Personals")
+                        .HasForeignKey("LongDistanceService.Data.Entities.Personals.UserPersonals", "UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("LongDistanceService.Data.Entities.UserRole", b =>
@@ -1196,6 +1258,9 @@ namespace LongDistanceService.Data.Migrations
 
                     b.Navigation("AuthProviders");
 
+                    b.Navigation("Personals")
+                        .IsRequired();
+
                     b.Navigation("TwoFactorSecrets");
 
                     b.Navigation("UserRoles");
@@ -1211,6 +1276,20 @@ namespace LongDistanceService.Data.Migrations
             modelBuilder.Entity("LongDistanceService.Data.Entities.Personals.Bank", b =>
                 {
                     b.Navigation("Legals");
+                });
+
+            modelBuilder.Entity("LongDistanceService.Data.Entities.Personals.Individual", b =>
+                {
+                    b.Navigation("ReceivedOrders");
+
+                    b.Navigation("SendedOrders");
+                });
+
+            modelBuilder.Entity("LongDistanceService.Data.Entities.Personals.Legal", b =>
+                {
+                    b.Navigation("ReceivedOrders");
+
+                    b.Navigation("SendedOrders");
                 });
 
             modelBuilder.Entity("LongDistanceService.Data.Entities.Vehicles.Vehicle", b =>
