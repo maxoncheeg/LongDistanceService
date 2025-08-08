@@ -74,7 +74,7 @@ public class TestController(IVehicleService vehicleService, IEmailSender emailSe
         {
             Id = v.Id,
             Image = v.ImagePath ?? "none",
-            BrandAndModel = v.BrandAndModel
+            BrandAndModel = v.Name
         }).ToList();
 
         return BaseResponse(StatusCodes.Status200OK, testTrucks);

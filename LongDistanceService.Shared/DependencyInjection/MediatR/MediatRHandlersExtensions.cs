@@ -39,6 +39,7 @@ using LongDistanceService.Domain.CQRS.Queries.DriverCategories;
 using LongDistanceService.Domain.CQRS.Queries.Drivers;
 using LongDistanceService.Domain.CQRS.Queries.Orders;
 using LongDistanceService.Domain.CQRS.Queries.Personals;
+using LongDistanceService.Domain.CQRS.Queries.Profile;
 using LongDistanceService.Domain.CQRS.Queries.TwoFactor;
 using LongDistanceService.Domain.CQRS.Queries.Users;
 using LongDistanceService.Domain.CQRS.Queries.Vehicles;
@@ -137,6 +138,8 @@ public static class MediatRHandlersExtensions
             .AddTransient<IRequestHandler<UpdateUserRequest, bool>, UserHandler>()
             .AddTransient<IRequestHandler<DeleteUserRequest, bool>, UserHandler>()
             
+            .AddTransient<IRequestHandler<GetUserProfileRequest, UserProfileResponse?>, GetUserProfileHandler>()
+            
             .AddTransient<IRequestHandler<UpdateUserEmailVerificationRequest, bool>, UserProfileHandler>()
             
             // auth providers
@@ -208,7 +211,7 @@ public static class MediatRHandlersExtensions
             .AddTransient<IRequestHandler<GetCargoesRequest, IList<CargoResponse>>, GetCargoesHandler>()
             
             // orders
-            .AddTransient<IRequestHandler<GetOrderInfosRequest, IList<OrderInfoResponse>>, GetOrdersHandler>()
+            .AddTransient<IRequestHandler<GetSlimOrdersRequest, IList<SlimOrderResponse>>, GetOrdersHandler>()
             .AddTransient<IRequestHandler<GetOrderRequest, OrderResponse?>, GetOrdersHandler>()
             
             // banks

@@ -3,6 +3,7 @@ using System;
 using LongDistanceService.Data.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LongDistanceService.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250731172322_ChangeOrdersPersonalsRelations")]
+    partial class ChangeOrdersPersonalsRelations
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -392,19 +395,11 @@ namespace LongDistanceService.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("IndividualId")
-                        .HasColumnType("integer")
-                        .HasColumnName("individual_id");
-
                     b.Property<bool>("IsEmailVerified")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
                         .HasColumnName("is_email_verified");
-
-                    b.Property<int?>("LegalId")
-                        .HasColumnType("integer")
-                        .HasColumnName("legal_id");
 
                     b.Property<string>("Login")
                         .IsRequired()
@@ -417,12 +412,6 @@ namespace LongDistanceService.Data.Migrations
                         .HasColumnName("password");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("IndividualId")
-                        .IsUnique();
-
-                    b.HasIndex("LegalId")
-                        .IsUnique();
 
                     b.HasIndex("Login")
                         .IsUnique();
@@ -757,6 +746,25 @@ namespace LongDistanceService.Data.Migrations
                     b.ToTable("legals", (string)null);
                 });
 
+            modelBuilder.Entity("LongDistanceService.Data.Entities.Personals.UserPersonals", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("user_id");
+
+                    b.Property<int>("PersonalId")
+                        .HasColumnType("integer")
+                        .HasColumnName("personal_id");
+
+                    b.Property<int>("PersonalType")
+                        .HasColumnType("integer")
+                        .HasColumnName("personal_type");
+
+                    b.HasKey("UserId");
+
+                    b.ToTable("user_personals", (string)null);
+                });
+
             modelBuilder.Entity("LongDistanceService.Data.Entities.UserRole", b =>
                 {
                     b.Property<int>("UserId")
@@ -987,21 +995,6 @@ namespace LongDistanceService.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("LongDistanceService.Data.Entities.Identity.User", b =>
-                {
-                    b.HasOne("LongDistanceService.Data.Entities.Personals.Individual", "Individual")
-                        .WithOne("User")
-                        .HasForeignKey("LongDistanceService.Data.Entities.Identity.User", "IndividualId");
-
-                    b.HasOne("LongDistanceService.Data.Entities.Personals.Legal", "Legal")
-                        .WithOne("User")
-                        .HasForeignKey("LongDistanceService.Data.Entities.Identity.User", "LegalId");
-
-                    b.Navigation("Individual");
-
-                    b.Navigation("Legal");
-                });
-
             modelBuilder.Entity("LongDistanceService.Data.Entities.Order", b =>
                 {
                     b.HasOne("LongDistanceService.Data.Entities.Personals.Individual", "IndividualReceiver")
@@ -1134,6 +1127,17 @@ namespace LongDistanceService.Data.Migrations
                     b.Navigation("Street");
                 });
 
+            modelBuilder.Entity("LongDistanceService.Data.Entities.Personals.UserPersonals", b =>
+                {
+                    b.HasOne("LongDistanceService.Data.Entities.Identity.User", "User")
+                        .WithOne("Personals")
+                        .HasForeignKey("LongDistanceService.Data.Entities.Personals.UserPersonals", "UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("LongDistanceService.Data.Entities.UserRole", b =>
                 {
                     b.HasOne("LongDistanceService.Data.Entities.Identity.Role", "Role")
@@ -1257,6 +1261,9 @@ namespace LongDistanceService.Data.Migrations
 
                     b.Navigation("AuthProviders");
 
+                    b.Navigation("Personals")
+                        .IsRequired();
+
                     b.Navigation("TwoFactorSecrets");
 
                     b.Navigation("UserRoles");
@@ -1279,8 +1286,6 @@ namespace LongDistanceService.Data.Migrations
                     b.Navigation("ReceivedOrders");
 
                     b.Navigation("SendedOrders");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("LongDistanceService.Data.Entities.Personals.Legal", b =>
@@ -1288,8 +1293,6 @@ namespace LongDistanceService.Data.Migrations
                     b.Navigation("ReceivedOrders");
 
                     b.Navigation("SendedOrders");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("LongDistanceService.Data.Entities.Vehicles.Vehicle", b =>

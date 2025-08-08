@@ -1,5 +1,6 @@
 ﻿using LongDistanceService.Data.Entities.Abstract;
 using LongDistanceService.Data.Entities.Addresses;
+using LongDistanceService.Data.Entities.Personals;
 using LongDistanceService.Data.Entities.Vehicles;
 using LongDistanceService.Domain.Enums;
 
@@ -11,10 +12,10 @@ public class Order : IEntity
     public int VehicleId { get; set; }
     public Vehicle Vehicle { get; set; } = new();
 
-    public int ReceiverId { get; set; }
-    public ClientTypes ReceiverType { get; set; }
-    public int SenderId { get; set; }
-    public ClientTypes SenderType { get; set; }
+    public int? IndividualReceiverId { get; set; }
+    public int? LegalReceiverId { get; set; }
+    public int? IndividualSenderId { get; set; }
+    public int? LegalSenderId { get; set; }
 
     public int SendCityId { get; set; }
     public int SendStreetId { get; set; }
@@ -34,4 +35,9 @@ public class Order : IEntity
 
     public IList<OrderCargo> OrderCargoes { get; set; } = new List<OrderCargo>();
     public IList<OrderDriver> OrderDrivers { get; set; } = new List<OrderDriver>();
+
+    public Individual? IndividualReceiver { get; set; }
+    public Individual? IndividualSender { get; set; }
+    public Legal? LegalReceiver { get; set; }
+    public Legal? LegalSender { get; set; }
 }

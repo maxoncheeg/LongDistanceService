@@ -13,16 +13,14 @@ public class OrderHandler(IApplicationDbContext context) : IRequestHandler<AddOr
     {
         try
         {
+            // todo: legals and individuals new scheme
             Order order = new()
             {
                 RouteLength = request.RouteLength,
                 LoadingDate = request.LoadingDate.ToUniversalTime(),
-                ReceiverType = request.ReceiverType,
-                SenderType = request.SenderType,
+                
                 SendHouseNumber = request.SendHouseNumber,
                 ReceiveHouseNumber = request.ReceiveHouseNumber,
-                SenderId = request.SenderId,
-                ReceiverId = request.ReceiverId,
                 State = request.State,
                 Vehicle =
                     await context.Vehicles.SingleOrDefaultAsync(v => v.Id == request.VehicleId, cancellationToken) ??

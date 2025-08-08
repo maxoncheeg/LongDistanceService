@@ -1,5 +1,6 @@
 ﻿using LongDistanceService.Data.Entities.Abstract;
 using LongDistanceService.Data.Entities.Addresses;
+using LongDistanceService.Data.Entities.Identity;
 
 namespace LongDistanceService.Data.Entities.Personals;
 
@@ -19,4 +20,8 @@ public class Legal : AbstractPersonalEntity
     public string BankAccount { get; set; }  = String.Empty;
     public string HouseNumber { get; set; }
     public string OfficeNumber { get; set; }
+    public IList<Order> ReceivedOrders { get; set; }
+    public IList<Order> SendedOrders { get; set; }
+    
+    public User? User { get; set; }
 }

@@ -82,7 +82,7 @@ public class AuthController(
         return BaseResponse(StatusCodes.Status200OK);
     }
 
-    [HttpPut(ServiceRoutes.Auth.Register)]
+    [HttpPost(ServiceRoutes.Auth.Register)]
     public async Task<IActionResult> Register([FromBody] UserModel model)
     {
         // todo: check mail

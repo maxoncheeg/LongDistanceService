@@ -2,7 +2,4 @@
 
 namespace LongDistanceService.Domain.CQRS.Queries.Orders;
 
-public record GetOrderInfosRequest : ScrolledRequest<OrderInfoResponse>
-{
-    
-}
+public record GetSlimOrdersRequest(int UserId) : ScrolledRequest<SlimOrderResponse>;
