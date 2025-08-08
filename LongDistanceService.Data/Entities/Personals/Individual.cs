@@ -12,4 +12,5 @@ public class Individual : AbstractPersonalEntity
 
     public IList<Order> ReceivedOrders { get; set; }
     public IList<Order> SendedOrders { get; set; }
+    public User? User { get; set; }
 }

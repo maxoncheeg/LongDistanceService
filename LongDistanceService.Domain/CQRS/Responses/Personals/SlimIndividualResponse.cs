@@ -2,8 +2,8 @@
 
 namespace LongDistanceService.Domain.CQRS.Responses.Personals;
 
-public class LegalInfoResponse : ILegalInfo
+public class SlimIndividualResponse : ISlimIndividual
 {
     public int Id { get; set; }
-    public string CompanyName { get; set; } = string.Empty;
+    public string Fullname { get; set; } = string.Empty;
 }

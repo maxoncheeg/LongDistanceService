@@ -25,8 +25,7 @@ public static class UserMappingExtensions
         });
     }
 
-    public static IQueryable<UserProfileResponse> ToUserProfileResponse(this IQueryable<User> @this,
-        IApplicationDbContext context)
+    public static IQueryable<UserProfileResponse> ToUserProfileResponse(this IQueryable<User> @this)
     {
         return @this.Select(user => new UserProfileResponse
         {
@@ -40,6 +39,9 @@ public static class UserMappingExtensions
                 Id = userRole.Role.Id,
                 Type = userRole.Role.Type
             }).ToList()),
+            
+            IndividualInfo = user.Individual.ToSlimIndividualResponse(),
+            LegalInfo = user.Legal.ToSlimLegalResponse()
         });
     }
 }

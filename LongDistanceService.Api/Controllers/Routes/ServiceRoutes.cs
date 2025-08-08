@@ -49,6 +49,11 @@ public static class ServiceRoutes
         public const string Email = Base + "/email";
         public const string VerifyEmail = Base + "/email/verify";
     }
+    
+    public static class Order
+    {
+        public const string Base = Api + "/orders";
+    }
 
     public static class Bank
     {

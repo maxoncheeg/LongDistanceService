@@ -1,7 +1,7 @@
 ﻿namespace LongDistanceService.Domain.Models.Abstract.Personals;
 
-public interface ILegalInfo
+public interface ISlimIndividual
 {
     public int Id { get; set; }
-    public string CompanyName { get; set; }
+    public string Fullname { get; set; }
 }

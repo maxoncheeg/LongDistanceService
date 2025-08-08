@@ -8,9 +8,9 @@ namespace LongDistanceService.Domain.Services.Entities;
 
 public class OrderService(IMediator mediator) : IOrderService
 {
-    public async Task<IList<IOrderInfo>> GetOrdersInfo()
+    public async Task<IList<ISlimOrder>> GetSlimOrders(int userId, int skip, int take)
     {
-        return [..await mediator.Send(new GetOrderInfosRequest())];
+        return [..await mediator.Send(new GetSlimOrdersRequest(userId) { Skip = skip, Take = take })];
     }
 
     public async Task<IOrder?> GetOrderById(int orderId)

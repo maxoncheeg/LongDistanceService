@@ -7,15 +7,15 @@ namespace LongDistanceService.Data.Mappings;
 
 public static class OrderMappingExtensions
 {
-    public static IQueryable<ProfileOrderResponse> ToProfileOrderResponse(this IQueryable<Order> @this)
+    public static IQueryable<SlimOrderResponse> ToSlimOrderResponse(this IQueryable<Order> @this)
     {
-        var query = @this.Select(order => new ProfileOrderResponse
+        var query = @this.Select(order => new SlimOrderResponse
         {
             Id = order.Id,
-            IndividualReceiver = order.IndividualReceiver.ToIndividualInfoResponse() ?? null,
-            IndividualSender = order.IndividualSender.ToIndividualInfoResponse() ?? null,
-            LegalReceiver = order.LegalReceiver.ToLegalInfoResponse() ?? null,
-            LegalSender = order.LegalSender.ToLegalInfoResponse() ?? null,
+            IndividualReceiver = order.IndividualReceiver.ToSlimIndividualResponse() ?? null,
+            IndividualSender = order.IndividualSender.ToSlimIndividualResponse() ?? null,
+            LegalReceiver = order.LegalReceiver.ToSlimLegalResponse() ?? null,
+            LegalSender = order.LegalSender.ToSlimLegalResponse() ?? null,
             
             ReceiverType = order.IndividualReceiverId != null ? ClientTypes.Individual : ClientTypes.Legal,
             SenderType = order.IndividualSenderId != null ? ClientTypes.Individual : ClientTypes.Legal,

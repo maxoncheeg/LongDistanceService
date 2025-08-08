@@ -1,4 +1,5 @@
 ﻿using LongDistanceService.Data.Contexts.Abstract;
+using LongDistanceService.Data.Mappings;
 using LongDistanceService.Domain.CQRS.Queries.Orders;
 using LongDistanceService.Domain.CQRS.Responses.Addresses;
 using LongDistanceService.Domain.CQRS.Responses.Cargoes;
@@ -16,37 +17,33 @@ using Microsoft.EntityFrameworkCore;
 namespace LongDistanceService.Data.Handlers.Queries.Orders;
 
 public class GetOrdersHandler(IApplicationDbContext context)
-    : IRequestHandler<GetOrderInfosRequest, IList<OrderInfoResponse>>, IRequestHandler<GetOrderRequest, OrderResponse?>
+    : IRequestHandler<GetSlimOrdersRequest, IList<SlimOrderResponse>>, IRequestHandler<GetOrderRequest, OrderResponse?>
 {
-    public async Task<IList<OrderInfoResponse>> Handle(GetOrderInfosRequest request,
+    public async Task<IList<SlimOrderResponse>> Handle(GetSlimOrdersRequest request,
         CancellationToken cancellationToken)
     {
         var orders = context.Orders
-            .Include(p => p.ReceiveCity)
-            .Include(p => p.ReceiveStreet)
-            .Include(p => p.SendCity)
-            .Include(p => p.SendStreet)
-            .Include(p => p.Vehicle).ThenInclude(v => v.Model).ThenInclude(v => v.Brand)
-            .Include(p => p.OrderDrivers)
-            .Select(o => new OrderInfoResponse
-            {
-                Id = o.Id,
-                DriversAmount = o.OrderDrivers.Count,
-                State = o.State,
-                From = $"{o.SendCity.Name}, {o.SendStreet.Name}",
-                To = $"{o.ReceiveCity.Name}, {o.ReceiveStreet.Name}",
-                ImagePath = o.Vehicle.ImagePath,
-                Vehicle = $"{o.Vehicle.Model.Brand.Name}, {o.Vehicle.Model.Name}, {o.Vehicle.Year}"
-            });
+            .Skip(request.Skip)
+            .Take(request.Take)
+            .OrderByDescending(order => order.Id)
+            .Where(order =>
+                order.IndividualReceiver != null && order.IndividualReceiver.User != null &&
+                order.IndividualReceiver.User.Id == request.UserId ||
+                order.IndividualSender != null && order.IndividualSender.User != null &&
+                order.IndividualSender.User.Id == request.UserId ||
+                order.LegalSender != null && order.LegalSender.User != null &&
+                order.LegalSender.User.Id == request.UserId ||
+                order.LegalReceiver != null && order.LegalReceiver.User != null &&
+                order.LegalReceiver.User.Id == request.UserId
+            ).ToSlimOrderResponse();
 
         return await orders.ToListAsync(cancellationToken);
     }
 
     public async Task<OrderResponse?> Handle(GetOrderRequest request, CancellationToken cancellationToken)
     {
-        
         // todo: legals and individuals new scheme
-        
+
         var order = await context.Orders
             .Include(p => p.ReceiveCity)
             .Include(p => p.ReceiveStreet)

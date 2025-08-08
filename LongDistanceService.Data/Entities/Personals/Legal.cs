@@ -22,4 +22,6 @@ public class Legal : AbstractPersonalEntity
     public string OfficeNumber { get; set; }
     public IList<Order> ReceivedOrders { get; set; }
     public IList<Order> SendedOrders { get; set; }
+    
+    public User? User { get; set; }
 }

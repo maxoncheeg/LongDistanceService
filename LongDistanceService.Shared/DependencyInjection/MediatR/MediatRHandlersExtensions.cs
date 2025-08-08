@@ -211,7 +211,7 @@ public static class MediatRHandlersExtensions
             .AddTransient<IRequestHandler<GetCargoesRequest, IList<CargoResponse>>, GetCargoesHandler>()
             
             // orders
-            .AddTransient<IRequestHandler<GetOrderInfosRequest, IList<OrderInfoResponse>>, GetOrdersHandler>()
+            .AddTransient<IRequestHandler<GetSlimOrdersRequest, IList<SlimOrderResponse>>, GetOrdersHandler>()
             .AddTransient<IRequestHandler<GetOrderRequest, OrderResponse?>, GetOrdersHandler>()
             
             // banks

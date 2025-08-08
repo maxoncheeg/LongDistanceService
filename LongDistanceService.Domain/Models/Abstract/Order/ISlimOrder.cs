@@ -4,7 +4,7 @@ using LongDistanceService.Domain.Models.Abstract.Vehicles;
 
 namespace LongDistanceService.Domain.Models.Abstract.Order;
 
-public interface IProfileOrder
+public interface ISlimOrder
 {
     public int Id { get; set; }
     public IVehicleInfo Vehicle { get; set; }

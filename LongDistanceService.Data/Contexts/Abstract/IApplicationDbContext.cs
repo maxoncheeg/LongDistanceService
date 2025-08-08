@@ -35,7 +35,6 @@ public interface IApplicationDbContext : IDbContext
     IQueryable<Order> Orders { get; }
     
     IQueryable<User> Users { get; }
-    IQueryable<UserPersonals> UserPersonals { get; }
     IQueryable<AuthProvider> AuthProviders { get; }
     IQueryable<Role> Roles { get; }
     IQueryable<UserRole> UserRoles { get; }

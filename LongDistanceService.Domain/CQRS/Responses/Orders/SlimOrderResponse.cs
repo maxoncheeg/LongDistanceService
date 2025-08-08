@@ -5,7 +5,7 @@ using LongDistanceService.Domain.Models.Abstract.Vehicles;
 
 namespace LongDistanceService.Domain.CQRS.Responses.Orders;
 
-public class ProfileOrderResponse : IProfileOrder
+public class SlimOrderResponse : ISlimOrder
 {
     public int Id { get; set; }
     public required IVehicleInfo Vehicle { get; set; }
@@ -20,8 +20,8 @@ public class ProfileOrderResponse : IProfileOrder
     public OrderState State { get; set; }
     public decimal RouteLength { get; set; }
     public DateTime? LoadingDate { get; set; }
-    public IIndividualInfo? IndividualSender { get; set; }
-    public IIndividualInfo? IndividualReceiver { get; set; }
-    public ILegalInfo? LegalSender { get; set; }
-    public ILegalInfo? LegalReceiver { get; set; }
+    public ISlimIndividual? IndividualSender { get; set; }
+    public ISlimIndividual? IndividualReceiver { get; set; }
+    public ISlimLegal? LegalSender { get; set; }
+    public ISlimLegal? LegalReceiver { get; set; }
 }
