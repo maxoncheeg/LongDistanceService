@@ -13,15 +13,18 @@ public class OrderController(
 {
     [Authorize]
     [HttpGet(ServiceRoutes.Order.Base)]
-    public async Task<IActionResult> GetMe(int skip = 0, int take = 5)
+    public async Task<IActionResult> GetSlimOrders(int skip = 0, int take = 5)
     {
+        var validation = ValidateGetRequestPagination(skip, take);
+        if (!validation.Result) return BaseResponse(validation.Code, null, validation.Message);
+
         var user = await securityService.GetCurrentUserAsync();
 
         if (user == null)
             return BaseResponse(StatusCodes.Status401Unauthorized);
-        
+
         var profile = await orderService.GetSlimOrders(user.Id, skip, take);
-       
+
         return BaseResponse(StatusCodes.Status200OK, profile);
     }
 }
