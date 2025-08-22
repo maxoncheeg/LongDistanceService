@@ -10,7 +10,7 @@ public static class PersonalsMappingExtensions
         return @this.Select(i => new SlimIndividualResponse()
         {
             Id = i.Id,
-            Fullname = $"{i.Surname} {i.Name} {i.Patronymic}"
+            Fullname = $"{i.Name[0]}.{(!string.IsNullOrEmpty(i.Patronymic) ? $" {i.Patronymic[0]}." : string.Empty)} {i.Surname}"
         });
     }
     
@@ -41,7 +41,7 @@ public static class PersonalsMappingExtensions
         return new SlimIndividualResponse
         {
             Id = @this.Id,
-            Fullname = $"{@this.Surname} {@this.Name} {@this.Patronymic}"
+            Fullname = $"{@this.Name[0]}.{(!string.IsNullOrEmpty(@this.Patronymic) ? $" {@this.Patronymic[0]}." : string.Empty)} {@this.Surname}"
         };
     }
 }

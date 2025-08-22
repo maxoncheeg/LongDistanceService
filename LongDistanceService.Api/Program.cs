@@ -23,7 +23,11 @@ builder.Services.AddSingleton(emailOptions);
 
 builder.Services.AddHttpContextAccessor();
 builder.Services
-    .AddControllers();
+    .AddControllers()    
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+    });;
 
 builder.Services
     .AddSwagger()

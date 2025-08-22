@@ -20,8 +20,8 @@ public static class OrderMappingExtensions
             ReceiverType = order.IndividualReceiverId != null ? ClientTypes.Individual : ClientTypes.Legal,
             SenderType = order.IndividualSenderId != null ? ClientTypes.Individual : ClientTypes.Legal,
             
-            SendAddress = order.SendCity.Name + ", " + order.SendStreet.Name + " " + order.SendHouseNumber,
-            ReceiveAddress = order.ReceiveCity.Name + ", " + order.ReceiveStreet.Name + " " + order.ReceiveHouseNumber,
+            SendAddress = order.SendCity.Name,
+            ReceiveAddress = order.ReceiveCity.Name,
             RouteLength = order.RouteLength,
             LoadingDate = order.LoadingDate,
             State = order.State,

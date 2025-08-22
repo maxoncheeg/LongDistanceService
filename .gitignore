@@ -7,3 +7,5 @@
 /environments/lds_docker/prometheus
 /environments/lds_docker/tempo-data
 /LongDistanceService.Api/appsettings.json
+/environments/lds_docker/nginx/logs/access.log
+/environments/lds_docker/nginx/logs/error.log

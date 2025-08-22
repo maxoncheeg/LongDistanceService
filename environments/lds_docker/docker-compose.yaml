@@ -8,7 +8,7 @@ services:
             POSTGRES_PASSWORD: "ldsforever"
         ports:
             - "5432:5432"
-   
+                
     whodb:
         image: clidey/whodb
         environment:
@@ -55,6 +55,14 @@ services:
         networks:
             - monitoring
 
+    nginx:
+        image: "nginx:latest"
+        restart: always
+        ports:
+        - 80:80
+        volumes:
+        - "./nginx/logs:/etc/logs/nginx"
+        - "./nginx/conf.d:/etc/nginx/conf.d/"
 volumes:
     grafana-storage: {}
     tempo-storage: {}
